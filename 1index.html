@@ -25,6 +25,7 @@
         html, body {
             margin: 0; padding: 0;
             width: 100%;
+            /* 스와이프 시 가로 흔들림 방지 (Sticky 고정 유지용 최신 코드) */
             overflow-x: clip; 
         }
 
@@ -52,7 +53,7 @@
         @keyframes fadeInPage { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* =========================================
-           2. 인트로
+           2. 인트로 (문제 해결됨)
            ========================================= */
         #intro-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -107,7 +108,7 @@
         #back-toast.show { visibility: visible; opacity: 1; }
 
         /* =========================================
-           4. 로고 영역 & 메뉴바
+           4. 로고 영역 & 메뉴바 (Sticky)
            ========================================= */
         .logo-section {
             width: 100%; height: 340px; 
@@ -156,31 +157,6 @@
             .logo-img { height: 240px !important; margin-bottom: 30px; }
             nav { gap: 15px; flex-direction: column; padding: 10px; } 
             nav .menu-items { gap: 20px; }
-        }
-
-        /* =========================================
-           ★ CEO 섹션 (수정됨: 페이드 & 블렌딩) ★
-           ========================================= */
-        .ceo-section-wrapper {
-            position: relative;
-            width: 100%; max-width: 300px; height: 300px;
-            margin: 0 auto 20px auto;
-            /* 배경과 자연스럽게 섞이도록 하단 마스킹 처리 */
-            -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
-            mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
-        }
-        .ceo-img-slide {
-            position: absolute; top: 0; left: 0;
-            width: 100%; height: 100%;
-            object-fit: cover;
-            border-radius: 150px 150px 0 0; /* 둥근 테두리 유지 */
-            opacity: 0; /* 기본 숨김 */
-            transition: opacity 2s ease-in-out; /* 부드러운 전환 (2초) */
-            filter: grayscale(20%);
-        }
-        .ceo-img-slide.active-slide {
-            opacity: 1; /* 보이는 상태 */
-            z-index: 1;
         }
 
         /* =========================================
@@ -264,7 +240,9 @@
         .dot-btn { width: 40px; height: 40px; background: #fff; border: 1px solid #ccc; border-radius: 4px; font-weight: bold; cursor: pointer; font-size:16px; }
         .dot-btn.active { background: #333; color: #fff; border-color: #333; }
 
-        /* 푸터 & 쫀득이 로고 */
+        /* =========================================
+           ★ 푸터 & 쫀득이 로고 (수정됨)
+           ========================================= */
         footer { 
             background: #2a2218; color: #999; 
             padding: 40px 20px; margin-top: 50px; 
@@ -275,8 +253,8 @@
         .admin-trigger { width: 60px; height: 60px; position: absolute; bottom: 0; right: 0; }
 
         .footer-logo-unit {
-            width: 120px; height: 120px; 
-            background-color: transparent; 
+            width: 120px; height: 120px; /* 큰 사이즈 */
+            background-color: transparent; /* 투명 배경 */
             flex-shrink: 0; position: relative; perspective: 500px;
         }
         #jelly-logo-footer {
@@ -335,23 +313,7 @@
     <div id="home" class="page active">
         <div class="hero"><h1>The Ritual of Anointing</h1><p>"피부에 바르는 성스러운 의식"</p></div>
         <div style="text-align:center;"><video width="85%" style="max-width:600px; border-radius:4px;" controls autoplay muted loop playsinline><source src="skin1.mp4"></video></div>
-        
-        <div style="text-align:center; padding:60px 20px;">
-            <div class="ceo-section-wrapper">
-                <img src="ceo1.jpg" class="ceo-img-slide active-slide" onerror="this.remove()">
-                <img src="ceo2.jpg" class="ceo-img-slide" onerror="this.remove()">
-                <img src="ceo3.jpg" class="ceo-img-slide" onerror="this.remove()">
-                <img src="ceo4.jpg" class="ceo-img-slide" onerror="this.remove()">
-                <img src="ceo5.jpg" class="ceo-img-slide" onerror="this.remove()">
-                <img src="ceo6.jpg" class="ceo-img-slide" onerror="this.remove()">
-                <img src="ceo7.jpg" class="ceo-img-slide" onerror="this.remove()">
-                <img src="ceo8.jpg" class="ceo-img-slide" onerror="this.remove()">
-                <img src="ceo9.jpg" class="ceo-img-slide" onerror="this.remove()">
-                <img src="ceo10.jpg" class="ceo-img-slide" onerror="this.remove()">
-            </div>
-            <h3>CEO MESSAGE</h3>
-            <p>"진정성 있는 원료가 가장 아름다운 피부를 만듭니다."</p>
-        </div>
+        <div style="text-align:center; padding:60px 20px;"><img src="ceo.jpg" style="width:100%; max-width:300px; border-radius:150px 150px 0 0; filter:grayscale(20%);"><h3>CEO MESSAGE</h3><p>"진정성 있는 원료가 가장 아름다운 피부를 만듭니다."</p></div>
     </div>
 
     <div id="products" class="page">
@@ -466,6 +428,8 @@
 
         var bgm=document.getElementById("bgm"), list=[], cur=-1, loop=false, modalImgs=[];
         var isExitReady = false, exitTimer = null;
+        
+        // 페이지 목록 (스와이프 순서)
         const pages = ['home', 'products', 'music', 'video'];
         let currentPageIdx = 0;
 
@@ -474,28 +438,10 @@
             bgm.volume = 0.5;
             updateMenuHighlight('home');
 
-            // --- ★ CEO 슬라이드쇼 자동 로직 (수정됨) ---
-            setInterval(() => {
-                // 현재 살아있는(로드된) 이미지들만 찾음
-                const slides = document.querySelectorAll('.ceo-img-slide');
-                if(slides.length < 2) return; // 사진이 1장이면 반복 안 함
-
-                let activeIdx = -1;
-                slides.forEach((slide, i) => {
-                    if(slide.classList.contains('active-slide')) activeIdx = i;
-                    slide.classList.remove('active-slide');
-                });
-
-                // 다음 이미지 활성화
-                let nextIdx = (activeIdx + 1) % slides.length;
-                slides[nextIdx].classList.add('active-slide');
-            }, 4000); // 4초마다 변경 (원하면 숫자 조절 가능)
-
-
             try {
                 firebase.initializeApp(cfg);
                 const db = firebase.database();
-                
+                // (파이어베이스 로딩 로직들... 생략 없이 그대로 작동)
                 db.ref('products').on('value', s => {
                     const d = document.getElementById('product-grid'); d.innerHTML="";
                     if(s.val()) Object.entries(s.val()).forEach(([k, p]) => {
@@ -531,38 +477,60 @@
             initSwipe();
         };
 
+        // 스와이프 기능
         function initSwipe() {
             let touchStartX = 0, touchEndX = 0, touchStartY = 0, touchEndY = 0;
             const minSwipeDistance = 50;
-            document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; touchStartY = e.changedTouches[0].screenY; }, {passive: true});
+
+            document.addEventListener('touchstart', e => {
+                touchStartX = e.changedTouches[0].screenX;
+                touchStartY = e.changedTouches[0].screenY;
+            }, {passive: true});
+
             document.addEventListener('touchend', e => {
-                touchEndX = e.changedTouches[0].screenX; touchEndY = e.changedTouches[0].screenY;
+                touchEndX = e.changedTouches[0].screenX;
+                touchEndY = e.changedTouches[0].screenY;
                 handleSwipeGesture();
             }, {passive: true});
+
             function handleSwipeGesture() {
                 if(document.getElementById('product-modal').style.display === 'block') return;
-                const xDiff = touchStartX - touchEndX; const yDiff = touchStartY - touchEndY;
+                const xDiff = touchStartX - touchEndX;
+                const yDiff = touchStartY - touchEndY;
                 if (Math.abs(xDiff) < Math.abs(yDiff)) return; 
-                if (Math.abs(xDiff) > minSwipeDistance) { if (xDiff > 0) goNextPage(); else goPrevPage(); }
+                if (Math.abs(xDiff) > minSwipeDistance) {
+                    if (xDiff > 0) goNextPage();
+                    else goPrevPage();
+                }
             }
         }
+
         function goNextPage() { if (currentPageIdx < pages.length - 1) goPage(pages[currentPageIdx + 1]); }
         function goPrevPage() { if (currentPageIdx > 0) goPage(pages[currentPageIdx - 1]); }
+
         function updateMenuHighlight(id) {
             document.querySelectorAll('.main-menu').forEach(el => el.classList.remove('current-menu'));
-            const menuEl = document.getElementById('menu-' + id); if(menuEl) menuEl.classList.add('current-menu');
+            const menuEl = document.getElementById('menu-' + id);
+            if(menuEl) menuEl.classList.add('current-menu');
         }
+
         function enterSite() {
             document.getElementById('intro-screen').style.opacity = 0;
             setTimeout(() => document.getElementById('intro-screen').style.display='none', 1000);
             if(bgm) bgm.play().then(() => updateBtn(true)).catch(() => {});
         }
+
         function goPage(id) {
-            currentPageIdx = pages.indexOf(id); updateMenuHighlight(id);
+            currentPageIdx = pages.indexOf(id);
+            updateMenuHighlight(id);
             document.querySelectorAll('.page').forEach(p => { p.classList.remove('active'); p.classList.remove('fade-in'); });
-            const target = document.getElementById(id); target.classList.add('active');
-            setTimeout(() => { target.classList.add('fade-in'); }, 10); window.scrollTo({ top: 0, behavior: 'smooth' });
+            const target = document.getElementById(id);
+            target.classList.add('active');
+            setTimeout(() => { target.classList.add('fade-in'); }, 10);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+
+        // 유틸리티 함수들 (공감, 모달 등)
         window.onpopstate = function(event) {
             const modal = document.getElementById('product-modal');
             if(modal.style.display === "block") { closeModal(); history.pushState(null, null, location.href); return; }
@@ -574,28 +542,15 @@
         };
         function showToast() { document.getElementById("back-toast").classList.add("show"); }
         function handleLike(id) {
-            const storageKey = 'liked_' + id; if (localStorage.getItem(storageKey)) { alert('이미 공감하셨습니다.'); return; }
-            document.getElementById('heart-'+id).classList.add('liked'); localStorage.setItem(storageKey, 'true');
+            const storageKey = 'liked_' + id;
+            if (localStorage.getItem(storageKey)) { alert('이미 공감하셨습니다.'); return; }
+            document.getElementById('heart-'+id).classList.add('liked');
+            localStorage.setItem(storageKey, 'true');
             firebase.database().ref('likes/' + id).transaction(c => (c || 0) + 1);
         }
-
-        // --- ★ 모달창 열기 함수 (수정됨: 이미지 미리 로딩 기능 추가) ---
         function openModal(name, sale, norm, desc, link, imgs) {
             history.pushState({modal:true}, null, "#modal"); modalImgs = imgs;
-            
-            // 1. 첫 번째 이미지 바로 보여주기
             document.getElementById('modal-img').src = imgs[0];
-            
-            // 2. [속도 개선] 나머지 이미지들 미리 몰래 로딩 (Preloading)
-            if(imgs.length > 1) {
-                imgs.forEach((imgUrl, index) => {
-                    if(index > 0) { // 첫장은 이미 불렀으니 패스
-                        const preloadImg = new Image();
-                        preloadImg.src = imgUrl; // 브라우저 캐시에 저장됨
-                    }
-                });
-            }
-
             document.getElementById('modal-title').innerText = name;
             let pHtml = norm ? `<span style="text-decoration:line-through; color:#ccc; font-size:18px;">${norm}</span> ${sale}` : sale;
             document.getElementById('modal-price').innerHTML = pHtml;
@@ -608,7 +563,6 @@
             document.getElementById('product-modal').style.display = "block";
             document.body.style.overflow = "hidden";
         }
-
         function setModalImg(i, el) {
             document.getElementById('modal-img').src = modalImgs[i];
             document.querySelectorAll('.dot-btn').forEach(b => b.classList.remove('active')); el.classList.add('active');
