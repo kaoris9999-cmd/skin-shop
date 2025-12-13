@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Touch Grip Jelly</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        #jelly-logo {
+            width: 70vw;
+            max-width: 400px;
+            display: block;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            
+            /* 마우스 커서를 '손바닥' 모양으로 변경 */
+            cursor: grab;
+            
+            /* 물리 엔진 사용을 위해 CSS 트랜지션 끔 */
+            will-change: transform;
+            
+            /* 드래그할 때 파란색 선택 영역 안 생기게 방지 */
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        /* 잡았을 때는 '쥐는 손' 모양 */
+        #jelly-logo:active {
+            cursor: grabbing;
+        }
+    </style>
+</head>
+<body>
+
+    <img src="logo.png" id="jelly-logo" alt="Skin Anointing">
+
+    <script>
+        const logo = document.getElementById('jelly-logo');
+        
+        let isDragging = false; // 드래그 중인지 확인하는 스위치
+        
+        // 물리 변수들
+        let currentX = 0, currentY = 0;
+        let targetX = 0, targetY = 0;
+        let velocityX = 0, velocityY = 0;
+        
+        // 쫀득함 조절 (숫자를 낮추면 더 묵직해짐)
+        const stiffness = 0.06; 
+        const friction = 0.8; 
+
+        let startX = 0, startY = 0;
+
+        // 물리 엔진 루프
+        function animate() {
+            // 스프링 효과 계산
+            const forceX = (targetX - currentX) * stiffness;
+            const forceY = (targetY - currentY) * stiffness;
+
+            velocityX += forceX;
+            velocityX *= friction;
+            velocityY += forceY;
+            velocityY *= friction;
+
+            currentX += velocityX;
+            currentY += velocityY;
+
+            // 촐랑거림 방지를 위해 찌그러짐(Skew) 효과를 약간 줄임 (0.05 -> 0.03)
+            const stretch = Math.max(Math.abs(velocityX), Math.abs(velocityY)) * 0.03;
+            const scale = 1 + stretch * 0.2;
+            const skewX = -velocityX * 1.0; 
+            const skewY = velocityY * 1.0;
+
+            logo.style.transform = `
+                translate3d(${currentX}px, ${currentY}px, 0)
+                skew(${skewX}deg, ${skewY}deg)
+                scale(${scale}, ${1/scale}) 
+                rotateZ(${velocityX * 0.3}deg)
+            `;
+
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // 1. 드래그 시작 (이미지를 눌렀을 때만 발동!)
+        const startDrag = (x, y) => {
+            isDragging = true;
+            // 현재 터치한 위치를 기억
+            startX = x;
+            startY = y;
+        };
+
+        logo.addEventListener('mousedown', e => startDrag(e.clientX, e.clientY));
+        logo.addEventListener('touchstart', e => {
+            const touch = e.touches[0];
+            startDrag(touch.clientX, touch.clientY);
+        }, { passive: false });
+
+
+        // 2. 드래그 중 (화면 어디로 움직여도 따라옴)
+        const onDrag = (x, y) => {
+            if (!isDragging) return; // 드래그 중이 아니면 무시 (핵심!)
+
+            // 시작 위치 기준으로 얼마나 움직였는지 계산
+            // 0.8을 곱해서 손가락보다 약간 늦게 따라오게 함 (무게감)
+            targetX = (x - startX) * 0.8;
+            targetY = (y - startY) * 0.8;
+        };
+
+        window.addEventListener('mousemove', e => onDrag(e.clientX, e.clientY));
+        window.addEventListener('touchmove', e => {
+            const touch = e.touches[0];
+            onDrag(touch.clientX, touch.clientY);
+        }, { passive: false });
+
+
+        // 3. 드래그 끝 (손을 떼면 원위치)
+        const stopDrag = () => {
+            isDragging = false;
+            targetX = 0;
+            targetY = 0;
+        };
+
+        window.addEventListener('mouseup', stopDrag);
+        window.addEventListener('touchend', stopDrag);
+
+    </script>
+</body>
+</html>

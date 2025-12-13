@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADMIN MASTER - SKIN ANOINTING</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+    
+    <style>
+        body { font-family: sans-serif; padding: 10px; background: #f4f4f4; margin: 0; }
+        .container { max-width: 600px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 8px; }
+        
+        input, textarea { width: 100%; padding: 12px; margin: 5px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; padding: 14px; background: #1a1a1a; color: #fff; border: none; cursor: pointer; margin-top: 10px; font-weight: bold; }
+        
+        /* 버튼 스타일 세분화 */
+        button.del-btn { background: #d9534f; width: auto; padding: 5px 10px; font-size: 12px; margin-left: 5px; }
+        button.edit-btn { background: #555; width: auto; padding: 5px 10px; font-size: 12px; }
+        button.reset-btn { background: #999; margin-top: 5px; }
+
+        .tab-menu { display: flex; gap: 5px; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .tab-btn { flex: 1; padding: 10px; background: #fff; border: 1px solid #ddd; cursor: pointer; font-weight: bold; color: #777; }
+        .tab-btn.active { background: #1a1a1a; color: #fff; border: none; }
+        
+        .form-group { display: none; }
+        .form-group.active { display: block; }
+        
+        /* 목록 스타일 */
+        .item-list { 
+            margin-top: 30px; border-top: 2px solid #333; padding-top: 10px; 
+            max-height: 500px; overflow-y: auto; 
+        }
+        .item-row { 
+            display: flex; justify-content: space-between; align-items: center; 
+            background: #f9f9f9; padding: 15px; margin-bottom: 8px; 
+            border: 1px solid #eee; border-radius: 4px; 
+        }
+        .item-info { flex-grow: 1; font-weight: bold; font-size: 14px; margin-right: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+        
+        .loading { color: orange; text-align: center; display: none; margin-top: 10px; font-weight: bold; }
+        .price-group { display: flex; gap: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="login-section" style="text-align:center;">
+            <h2>관리자 로그인</h2>
+            <input type="email" id="email" placeholder="아이디">
+            <input type="password" id="password" placeholder="비밀번호">
+            <button onclick="adminLogin()">접속하기</button>
+        </div>
+
+        <div id="admin-section" style="display:none;">
+            <div style="text-align:center; margin-bottom:20px;"><b>관리자 모드 (가사 수정 기능 추가됨)</b></div>
+            
+            <div class="tab-menu">
+                <button class="tab-btn active" onclick="showTab('product')">제품</button>
+                <button class="tab-btn" onclick="showTab('music')">음악</button>
+                <button class="tab-btn" onclick="showTab('video')">영상</button>
+            </div>
+
+            <div id="tab-product" class="form-group active">
+                <h3>🛍️ 제품 등록/수정</h3>
+                <input type="hidden" id="p-key"> <input type="hidden" id="p-old-imgs">
+                <label>이미지 (최대 3장)</label>
+                <input type="file" id="p-files" accept="image/*" multiple>
+                <input type="text" id="p-name" placeholder="제품명">
+                <div class="price-group">
+                    <input type="text" id="p-price-normal" placeholder="정상가 (선택)" oninput="formatNumber(this)">
+                    <input type="text" id="p-price-sale" placeholder="판매가 (필수)" oninput="formatNumber(this)">
+                </div>
+                <input type="text" id="p-link" placeholder="구매 링크">
+                <textarea id="p-desc" rows="5" placeholder="설명"></textarea>
+                
+                <button id="p-btn" onclick="saveProduct()">제품 업로드</button>
+                <button onclick="resetProductForm()" class="reset-btn">초기화</button>
+                
+                <div class="item-list"><h4>등록된 제품</h4><div id="product-list"></div></div>
+            </div>
+
+            <div id="tab-music" class="form-group">
+                <h3>🎵 음악 등록/수정</h3>
+                <input type="hidden" id="m-key">
+                <input type="hidden" id="m-old-url">
+
+                <label>음악 파일 (수정 시, 파일 변경 안 하려면 비워두세요)</label>
+                <input type="file" id="m-file" accept="audio/*">
+                <input type="text" id="m-title" placeholder="곡 제목 (Title)">
+                <textarea id="m-lyrics" placeholder="가사 입력 (Lyrics) - 줄바꿈 가능" rows="6"></textarea>
+                
+                <button id="m-btn" onclick="saveMusic()">음악 등록</button>
+                <button onclick="resetMusicForm()" class="reset-btn">초기화</button>
+                
+                <div class="item-list"><h4>등록된 음악</h4><div id="music-list-admin"></div></div>
+            </div>
+
+            <div id="tab-video" class="form-group">
+                <h3>🎬 영상 등록</h3>
+                <input type="text" id="v-link" placeholder="유튜브 링크">
+                <input type="text" id="v-title" placeholder="제목">
+                <button onclick="uploadVideo()">영상 추가</button>
+                <div class="item-list"><h4>등록된 영상</h4><div id="video-list-admin"></div></div>
+            </div>
+
+            <div id="loading-msg" class="loading">처리 중... 잠시만 기다려주세요.</div>
+            <button onclick="auth.signOut(); location.reload();" style="background:#555; margin-top:30px;">로그아웃</button>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDUoJtrTbXdYaq1MG_QXipkGPC0frKTFHk",
+            authDomain: "skin-anointing.firebaseapp.com",
+            projectId: "skin-anointing",
+            storageBucket: "skin-anointing.firebasestorage.app",
+            messagingSenderId: "284785258260",
+            appId: "1:284785258260:web:68910599076adad3305c01",
+            measurementId: "G-R0K0HQ59YM",
+            databaseURL: "https://skin-anointing-default-rtdb.firebaseio.com"
+        };
+
+        try {
+            firebase.initializeApp(firebaseConfig);
+        } catch(e) { console.log("Firebase Init Error"); }
+        
+        const auth = firebase.auth();
+        const db = firebase.database();
+        const storage = firebase.storage();
+
+        // [공통] 숫자 콤마 포맷
+        function formatNumber(el) { el.value = el.value.replace(/[^0-9]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+        
+        // [공통] 로딩 표시
+        function setLoading(b) { document.getElementById('loading-msg').style.display = b?'block':'none'; }
+
+        // [로그인]
+        function adminLogin() {
+            const e = document.getElementById('email').value;
+            const p = document.getElementById('password').value;
+            setLoading(true);
+            auth.signInWithEmailAndPassword(e, p).then(() => {
+                setLoading(false);
+                document.getElementById('login-section').style.display='none';
+                document.getElementById('admin-section').style.display='block';
+                loadData();
+            }).catch(() => { setLoading(false); alert("로그인 실패. 아이디/비번을 확인하세요."); });
+        }
+
+        // =======================
+        // 1. 제품 관련 함수
+        // =======================
+        async function saveProduct() {
+            const key = document.getElementById('p-key').value;
+            const files = document.getElementById('p-files').files;
+            const name = document.getElementById('p-name').value;
+            const pSale = document.getElementById('p-price-sale').value;
+            
+            if(!name || !pSale) return alert("제품명과 판매가는 필수입니다.");
+            setLoading(true);
+
+            try {
+                let imgUrls = [];
+                // 새 파일이 있으면 업로드
+                if(files.length > 0) {
+                    for(let i=0; i<files.length; i++) {
+                        const ref = storage.ref('products/'+Date.now()+'_'+i);
+                        await ref.put(files[i]);
+                        imgUrls.push(await ref.getDownloadURL());
+                    }
+                } else {
+                    // 없으면 기존 이미지 사용
+                    const old = document.getElementById('p-old-imgs').value;
+                    if(old) imgUrls = JSON.parse(old);
+                }
+                
+                if(imgUrls.length === 0) throw new Error("이미지를 최소 1개 등록해야 합니다.");
+
+                const data = {
+                    name: name,
+                    priceNormal: document.getElementById('p-price-normal').value,
+                    priceSale: pSale,
+                    link: document.getElementById('p-link').value,
+                    desc: document.getElementById('p-desc').value,
+                    images: imgUrls,
+                    date: new Date().toISOString()
+                };
+
+                if(key) { await db.ref('products/'+key).update(data); alert("수정 완료!"); }
+                else { await db.ref('products').push(data); alert("등록 완료!"); }
+                resetProductForm(); setLoading(false);
+            } catch(e) { setLoading(false); alert("에러: "+e.message); }
+        }
+
+        function resetProductForm() {
+            document.getElementById('p-key').value="";
+            document.getElementById('p-files').value="";
+            document.getElementById('p-name').value="";
+            document.getElementById('p-price-normal').value="";
+            document.getElementById('p-price-sale').value="";
+            document.getElementById('p-link').value="";
+            document.getElementById('p-desc').value="";
+            document.getElementById('p-old-imgs').value="";
+            document.getElementById('p-btn').innerText="제품 업로드";
+        }
+
+        window.editP = function(k, n, pn, ps, l, d, i) {
+            document.getElementById('p-key').value=k;
+            document.getElementById('p-name').value=n;
+            document.getElementById('p-price-normal').value=pn;
+            document.getElementById('p-price-sale').value=ps;
+            document.getElementById('p-link').value=l;
+            document.getElementById('p-desc').value=d;
+            document.getElementById('p-old-imgs').value=i;
+            document.getElementById('p-btn').innerText="수정하기 (저장)";
+            window.scrollTo(0,0);
+        }
+
+        // =======================
+        // 2. 음악 관련 함수 (가사 기능 강화)
+        // =======================
+        async function saveMusic() {
+            const key = document.getElementById('m-key').value; // 수정 모드일 때 키값
+            const file = document.getElementById('m-file').files[0];
+            const title = document.getElementById('m-title').value;
+            const lyrics = document.getElementById('m-lyrics').value;
+            const oldUrl = document.getElementById('m-old-url').value;
+
+            if(!title) return alert("곡 제목은 필수입니다.");
+            
+            // [신규 등록인데 파일이 없을 때]
+            if(!key && !file) return alert("음악 파일을 선택해주세요.");
+
+            setLoading(true);
+
+            try {
+                let downloadUrl = oldUrl; // 기본은 기존 URL
+
+                // 파일이 새로 선택되었다면 업로드
+                if(file) {
+                    const storageRef = storage.ref('music/' + Date.now() + "_" + file.name);
+                    const snapshot = await storageRef.put(file);
+                    downloadUrl = await snapshot.ref.getDownloadURL();
+                }
+
+                const musicData = {
+                    title: title,
+                    fileUrl: downloadUrl,
+                    lyrics: lyrics,
+                    date: Date.now()
+                };
+
+                if(key) {
+                    // 수정 모드
+                    await db.ref('music/' + key).update(musicData);
+                    alert("음악 정보(가사)가 수정되었습니다.");
+                } else {
+                    // 신규 등록
+                    await db.ref('music').push(musicData);
+                    alert("새로운 음악이 등록되었습니다.");
+                }
+
+                resetMusicForm();
+                setLoading(false);
+
+            } catch(error) {
+                setLoading(false);
+                alert("업로드 실패: " + error.message);
+            }
+        }
+
+        function resetMusicForm() {
+            document.getElementById('m-key').value = "";
+            document.getElementById('m-old-url').value = "";
+            document.getElementById('m-file').value = "";
+            document.getElementById('m-title').value = "";
+            document.getElementById('m-lyrics').value = "";
+            document.getElementById('m-btn').innerText = "음악 등록";
+        }
+
+        // [중요] 가사에 줄바꿈이 있어도 깨지지 않게 안전하게 가져오는 함수
+        window.editM = function(key, title, url, encodedLyrics) {
+            document.getElementById('m-key').value = key;
+            document.getElementById('m-title').value = title;
+            document.getElementById('m-old-url').value = url;
+            // 인코딩된 가사를 다시 원래대로 풀어서 입력창에 넣음
+            document.getElementById('m-lyrics').value = decodeURIComponent(encodedLyrics);
+            
+            document.getElementById('m-btn').innerText = "음악 수정하기";
+            window.scrollTo(0,0);
+        }
+
+        // =======================
+        // 3. 영상 관련 함수
+        // =======================
+        window.uploadVideo = function() {
+            const l = document.getElementById('v-link').value;
+            const t = document.getElementById('v-title').value;
+            let vid = "";
+            
+            // 유튜브 ID 추출 로직
+            if(l.includes("youtu.be/")) vid = l.split("youtu.be/")[1].split("?")[0];
+            else if(l.includes("v=")) vid = l.split("v=")[1].split("&")[0];
+            else if(l.includes("shorts/")) vid = l.split("shorts/")[1].split("?")[0];
+            
+            if(!vid) return alert("올바른 유튜브 링크가 아닙니다.");
+            
+            db.ref('videos').push({
+                title: t, 
+                link: l, 
+                thumbnail:`https://img.youtube.com/vi/${vid}/0.jpg`
+            });
+            alert("영상 추가 완료");
+            document.getElementById('v-link').value="";
+            document.getElementById('v-title').value="";
+        }
+
+        // =======================
+        // 4. 데이터 불러오기 & 삭제
+        // =======================
+        function loadData() {
+            // 제품 목록
+            db.ref('products').on('value', s => {
+                const d = document.getElementById('product-list'); d.innerHTML="";
+                s.forEach(c => {
+                    const v=c.val(); const imgs=JSON.stringify(v.images||[]);
+                    d.innerHTML += `
+                    <div class="item-row">
+                        <div class="item-info">${v.name}</div>
+                        <div>
+                            <button class="edit-btn" onclick='editP("${c.key}","${v.name}","${v.priceNormal}","${v.priceSale}","${v.link}",\`${v.desc}\`,\`${imgs}\`)'>수정</button>
+                            <button class="del-btn" onclick="del('products','${c.key}')">삭제</button>
+                        </div>
+                    </div>`;
+                });
+            });
+
+            // 음악 목록 (수정 버튼 추가됨)
+            db.ref('music').on('value', s => {
+                const d = document.getElementById('music-list-admin'); d.innerHTML="";
+                s.forEach(c => {
+                    const v = c.val();
+                    // 가사에 줄바꿈이나 특수문자가 있어도 안전하게 전달하기 위해 인코딩
+                    const safeLyrics = encodeURIComponent(v.lyrics || "");
+                    
+                    d.innerHTML += `
+                    <div class="item-row">
+                        <div class="item-info">${v.title}</div>
+                        <div>
+                            <button class="edit-btn" onclick="editM('${c.key}', '${v.title}', '${v.fileUrl}', '${safeLyrics}')">수정</button>
+                            <button class="del-btn" onclick="del('music','${c.key}')">삭제</button>
+                        </div>
+                    </div>`;
+                });
+            });
+
+            // 영상 목록
+            db.ref('videos').on('value', s => {
+                const d = document.getElementById('video-list-admin'); d.innerHTML="";
+                s.forEach(c => {
+                    d.innerHTML += `
+                    <div class="item-row">
+                        <div class="item-info">${c.val().title}</div>
+                        <button class="del-btn" onclick="del('videos','${c.key}')">삭제</button>
+                    </div>`;
+                });
+            });
+        }
+
+        window.del = function(collection, key) { 
+            if(confirm("정말 삭제하시겠습니까? (복구 불가)")) {
+                db.ref(collection+'/'+key).remove(); 
+            }
+        }
+
+        function showTab(t) {
+            document.querySelectorAll('.form-group').forEach(e=>e.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(e=>e.classList.remove('active'));
+            document.getElementById('tab-'+t).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

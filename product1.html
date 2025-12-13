@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>제품 상세정보</title>
+    <style>
+        /* 팝업 전용 디자인: 좁은 화면에서도 예쁘게 */
+        body { 
+            font-family: 'Times New Roman', serif; margin: 0; padding: 20px; 
+            color: #333; background-color: #fff; text-align: center;
+        }
+        
+        .p-image img { 
+            width: 100%; max-width: 400px; height: auto; 
+            border-radius: 5px; margin-bottom: 20px; 
+        }
+        
+        .brand-name { font-size: 12px; color: #888; letter-spacing: 2px; margin-bottom: 10px; }
+        .p-title { font-size: 24px; margin-bottom: 10px; }
+        .p-price { font-size: 20px; font-weight: bold; color: #8b5e3c; margin-bottom: 20px; display: block; }
+        
+        .p-desc { 
+            font-size: 14px; color: #555; line-height: 1.6; margin-bottom: 30px; 
+            background: #f9f9f9; padding: 20px; border-radius: 5px; text-align: left;
+        }
+
+        /* 닫기 및 구매 버튼 */
+        .btn-group { display: flex; gap: 10px; justify-content: center; }
+        
+        .btn {
+            flex: 1; padding: 15px; text-decoration: none; font-size: 14px; font-weight: bold; cursor: pointer; border-radius: 4px;
+        }
+        .btn-buy { background-color: #1a1a1a; color: #fff; }
+        .btn-close { background-color: #eee; color: #333; }
+        
+    </style>
+</head>
+<body>
+
+    <div class="brand-name">SKIN ANOINTING</div>
+    <h1 class="p-title">어노인팅 시그니처 세럼</h1>
+    <span class="p-price">₩ 58,000</span>
+
+    <div class="p-image">
+        <img src="product1.jpg" alt="제품이미지">
+    </div>
+
+    <div class="p-desc">
+        지친 피부에 깊은 영양을 공급하는 고농축 오일 세럼입니다.<br><br>
+        호호바 오일과 로즈힙 추출물이 피부 장벽을 보호하고,
+        하루 종일 촉촉한 광채를 유지해 줍니다.<br><br>
+        <strong>• 용량:</strong> 50ml<br>
+        <strong>• 피부타입:</strong> 모든 피부용
+    </div>
+
+    <div class="btn-group">
+        <a onclick="window.close()" class="btn btn-close">닫기</a>
+        <a href="#" class="btn btn-buy">구매하기</a>
+    </div>
+
+</body>
+</html>
