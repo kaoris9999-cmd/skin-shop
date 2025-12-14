@@ -17,19 +17,20 @@
     
     <style>
         /* =========================================
-           1. 기본 스타일 (좌우 스크롤 완벽 차단 수정됨)
+           1. 기본 스타일 (메뉴 고정됨 + 좌우 스크롤 방지)
            ========================================= */
         * { box-sizing: border-box; }
         html { scroll-behavior: smooth; }
 
+        /* html에는 overflow를 걸지 않아야 sticky 메뉴가 작동함 */
         html, body {
             margin: 0; padding: 0;
             width: 100%;
-            /* ★ 수정됨: 좌우 스크롤 강제 금지 (!important 추가) */
-            overflow-x: hidden !important; 
         }
-
+        
         body { 
+            /* body에만 적용하여 스크롤 방지와 메뉴 고정을 동시에 잡음 */
+            overflow-x: hidden; 
             font-family: 'Times New Roman', serif; 
             color: #1a1a1a; 
             background-color: #F2E8D5; 
@@ -53,7 +54,7 @@
         @keyframes fadeInPage { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* =========================================
-           2. 인트로 (GIF + 흐림/숨쉬기 효과 포함)
+           2. 인트로 (GIF + 흐림/숨쉬기 효과)
            ========================================= */
         #intro-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -82,7 +83,7 @@
         @keyframes fadeInBtn { from { opacity: 0; } to { opacity: 1; } }
 
         /* =========================================
-           3. 상단 플레이어 (세련된 Glassmorphism 스타일)
+           3. 상단 플레이어 (Glassmorphism)
            ========================================= */
         .top-player-bar {
             position: fixed; top: 0; 
@@ -353,7 +354,12 @@
 
     <div id="home" class="page active">
         <div class="hero"><h1>The Ritual of Anointing</h1><p>"피부에 바르는 성스러운 의식"</p></div>
-        <div style="text-align:center;"><video width="85%" style="max-width:600px; border-radius:4px;" controls autoplay muted loop playsinline><source src="skin1.mp4"></video></div>
+        
+        <div style="text-align:center;">
+            <video id="main-video" width="85%" style="max-width:600px; border-radius:4px;" controls playsinline>
+                <source src="skin1.mp4">
+            </video>
+        </div>
         
         <div style="text-align:center; padding:60px 20px;">
             <div class="ceo-section-wrapper">
@@ -425,6 +431,53 @@
     </footer>
 
     <script>
+        (function() {
+            const logoFoot = document.getElementById('jelly-logo-footer');
+            if(!logoFoot) return;
+            
+            let isDraggingFoot = false;
+            let currentXF = 0, currentYF = 0;
+            let targetXF = 0, targetYF = 0;
+            let velocityXF = 0, velocityYF = 0;
+            const stiffnessF = 0.08, frictionF = 0.75; 
+            let startXF = 0, startYF = 0;
+
+            function animateFoot() {
+                const forceX = (targetXF - currentXF) * stiffnessF;
+                const forceY = (targetYF - currentYF) * stiffnessF;
+                velocityXF += forceX; velocityXF *= frictionF;
+                velocityYF += forceY; velocityYF *= frictionF;
+                currentXF += velocityXF; currentYF += velocityYF;
+
+                const stretch = Math.max(Math.abs(velocityXF), Math.abs(velocityYF)) * 0.02;
+                const scale = 1 + stretch * 0.15;
+                const skewX = -velocityXF * 1.2; 
+                const skewY = velocityYF * 1.2;
+
+                logoFoot.style.transform = `translate3d(${currentXF}px, ${currentYF}px, 0) skew(${skewX}deg, ${skewY}deg) scale(${scale}, ${1/scale}) rotateZ(${velocityXF * 0.5}deg)`;
+                requestAnimationFrame(animateFoot);
+            }
+            requestAnimationFrame(animateFoot);
+
+            const startDragFoot = (x, y) => { isDraggingFoot = true; startXF = x; startYF = y; };
+            logoFoot.addEventListener('mousedown', e => startDragFoot(e.clientX, e.clientY));
+            logoFoot.addEventListener('touchstart', e => { const touch = e.touches[0]; startDragFoot(touch.clientX, touch.clientY); }, { passive: false });
+
+            const onDragFoot = (x, y) => {
+                if (!isDraggingFoot) return;
+                targetXF = (x - startXF) * 0.5; 
+                targetYF = (y - startYF) * 0.5;
+            };
+            window.addEventListener('mousemove', e => onDragFoot(e.clientX, e.clientY));
+            window.addEventListener('touchmove', e => { if(isDraggingFoot) { onDragFoot(e.touches[0].clientX, e.touches[0].clientY); } }, { passive: false });
+
+            const stopDragFoot = () => { isDraggingFoot = false; targetXF = 0; targetYF = 0; };
+            window.addEventListener('mouseup', stopDragFoot);
+            window.addEventListener('touchend', stopDragFoot);
+        })();
+    </script>
+
+    <script>
         const cfg = {
             apiKey: "AIzaSyDUoJtrTbXdYaq1MG_QXipkGPC0frKTFHk",
             authDomain: "skin-anointing.firebaseapp.com",
@@ -440,12 +493,81 @@
         var isExitReady = false, exitTimer = null;
         const pages = ['home', 'products', 'music', 'video'];
         let currentPageIdx = 0;
+        
+        // ★ [핵심] BGM 중복 시작 방지 플래그 (절대 꺼지지 않음)
+        let isBgmStarted = false;
+
+        // ★ [핵심] 입장 버튼 클릭 시 -> skin1 소리 켜고 재생 + 화면 스크롤
+        function enterSite() {
+            document.getElementById('intro-screen').style.opacity = 0;
+            setTimeout(() => document.getElementById('intro-screen').style.display='none', 1000);
+
+            // 1. 메인 영상 찾기
+            const mv = document.getElementById('main-video');
+            if(mv) {
+                // 소리 켜기 & 재생
+                mv.muted = false; 
+                // ★ 수정됨: 볼륨 0.6으로 설정
+                mv.volume = 0.6; 
+                mv.play().catch(e => console.log(e));
+                // 영상 위치로 스크롤 이동
+                mv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        // ★ [핵심] 동영상 연속 재생 & BGM 트리거 로직
+        document.addEventListener('DOMContentLoaded', () => {
+             const mv = document.getElementById('main-video');
+             if(mv) {
+                 let mvIdx = 1;
+
+                 mv.addEventListener('ended', () => {
+                    // skin1이 끝났을 때 -> "아직 BGM 안 켜졌으면" 켜라!
+                    if(mvIdx === 1 && !isBgmStarted) {
+                        playBgmWithFadeIn();
+                        isBgmStarted = true; // 체크박스 잠금! (다시는 안 켜짐)
+                    }
+
+                    // 다음 영상으로 넘어가기 (skin2 부터는 소리 끄고 재생)
+                    mvIdx++;
+                    mv.src = `skin${mvIdx}.mp4`;
+                    mv.muted = true; // BGM이 나오므로 영상 소리는 끔
+                    mv.play().catch(() => {
+                        // 다음 영상 없으면 다시 1번으로 (소리 끈 상태로 반복)
+                        mvIdx = 1; mv.src = 'skin1.mp4'; mv.muted=true; mv.play();
+                    });
+                 });
+
+                 // 에러 발생 시 처리 (다음 영상 없으면 1번으로)
+                 mv.addEventListener('error', () => {
+                     mvIdx = 1; mv.src = 'skin1.mp4'; mv.muted=true; mv.play();
+                 }, true);
+             }
+        });
+
+        // BGM 페이드인 함수
+        function playBgmWithFadeIn() {
+            if(!bgm) return;
+            bgm.volume = 0; 
+            bgm.play().then(() => {
+                updateBtn(true);
+                let fadeInterval = setInterval(() => {
+                    if(bgm.volume < 0.5) {
+                        bgm.volume = Math.min(bgm.volume + 0.02, 0.5);
+                    } else {
+                        clearInterval(fadeInterval);
+                    }
+                }, 200);
+            }).catch(e => console.log(e));
+        }
 
         window.onload = function() {
             history.pushState(null, null, location.href);
+            // 초기 볼륨 설정은 enterSite에서 덮어씌워지므로 여기선 크게 의미 없으나 유지
             bgm.volume = 0.5;
             updateMenuHighlight('home');
 
+            // --- CEO 슬라이드쇼 ---
             setInterval(() => {
                 const slides = document.querySelectorAll('.ceo-img-slide');
                 if(slides.length < 2) return; 
@@ -518,11 +640,6 @@
             document.querySelectorAll('.main-menu').forEach(el => el.classList.remove('current-menu'));
             const menuEl = document.getElementById('menu-' + id); if(menuEl) menuEl.classList.add('current-menu');
         }
-        function enterSite() {
-            document.getElementById('intro-screen').style.opacity = 0;
-            setTimeout(() => document.getElementById('intro-screen').style.display='none', 1000);
-            if(bgm) bgm.play().then(() => updateBtn(true)).catch(() => {});
-        }
         function goPage(id) {
             currentPageIdx = pages.indexOf(id); updateMenuHighlight(id);
             document.querySelectorAll('.page').forEach(p => { p.classList.remove('active'); p.classList.remove('fade-in'); });
@@ -567,15 +684,11 @@
             document.querySelectorAll('.dot-btn').forEach(b => b.classList.remove('active')); el.classList.add('active');
         }
 
-        // ★ 수정된 closeModal 함수 (좌우 스크롤 잠금 유지)
+        // ★ [유지] 좌우 스크롤 잠금 기능이 포함된 닫기 함수
         function closeModal() {
             document.getElementById('product-modal').style.display = "none";
-            
-            // 기존: document.body.style.overflow = "auto"; (X)
-            // 변경: 좌우 스크롤(overflowX)은 'hidden'으로 계속 꽉 잡고 있어야 함
             document.body.style.overflowY = "auto";
             document.body.style.overflowX = "hidden";
-
             if(location.hash === "#modal") history.back();
         }
 
