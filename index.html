@@ -3,112 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
     <meta property="og:type" content="website">
     <meta property="og:title" content="SKIN ANOINTING">
     <meta property="og:description" content="피부에 바르는 성스러운 의식">
     <meta property="og:image" content="logo.jpg">
     <meta property="og:url" content="https://skin-anointing.netlify.app">
-
     <title>SKIN ANOINTING</title>
-    
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    
     <style>
-        /* =========================================
-           1. 기본 스타일 (메뉴 고정됨 + 좌우 스크롤 방지)
-           ========================================= */
         * { box-sizing: border-box; }
         html { scroll-behavior: smooth; }
-
-        /* html에는 overflow를 걸지 않아야 sticky 메뉴가 작동함 */
-        html, body {
-            margin: 0; padding: 0;
-            width: 100%;
-        }
-        
-        body { 
-            /* body에만 적용하여 스크롤 방지와 메뉴 고정을 동시에 잡음 */
-            overflow-x: hidden; 
-            font-family: 'Times New Roman', serif; 
-            color: #1a1a1a; 
-            background-color: #F2E8D5; 
-            line-height: 1.6; 
-            padding-top: 60px; 
-            text-align: center; 
-            max-width: 100vw; 
-        }
-        
+        html, body { margin: 0; padding: 0; width: 100%; }
+        body { overflow-x: hidden; font-family: 'Times New Roman', serif; color: #1a1a1a; background-color: #F2E8D5; line-height: 1.6; padding-top: 60px; text-align: center; max-width: 100vw; }
         ::-webkit-scrollbar { display: none; }
         a { text-decoration: none; color: inherit; }
-
-        img, video { 
-            max-width: 100%; 
-            height: auto; 
-            display: block; 
-            margin: 0 auto !important; 
-        }
-
+        img, video { max-width: 100%; height: auto; display: block; margin: 0 auto !important; }
         .fade-in { animation: fadeInPage 0.6s ease-out forwards; }
         @keyframes fadeInPage { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* =========================================
-           2. 인트로 (GIF + 흐림/숨쉬기 효과)
-           ========================================= */
-        #intro-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #F2E8D5; z-index: 9999;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            transition: opacity 1.5s ease-out;
-        }
-        .intro-logo-img {
-            width: 90%; max-width: 650px;
-            animation: logoEntrance 3s ease-out forwards, breathe 4s infinite alternate 3s;
-            opacity: 0;
-            -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 95%);
-            mask-image: radial-gradient(circle, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 95%);
-        }
+        #intro-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #F2E8D5; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 1.5s ease-out; }
+        .intro-logo-img { width: 90%; max-width: 650px; animation: logoEntrance 3s ease-out forwards, breathe 4s infinite alternate 3s; opacity: 0; -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 95%); mask-image: radial-gradient(circle, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 95%); }
         @keyframes logoEntrance { 0% { opacity: 0; transform: translateY(30px) scale(0.8); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
         @keyframes breathe { from { transform: scale(1); } to { transform: scale(1.05); } }
-
-        .enter-btn {
-            margin-top: 60px; padding: 15px 50px; 
-            border: 2px solid #5e4b35; color: #5e4b35; 
-            background: transparent; font-family: 'Times New Roman'; 
-            font-size: 16px; letter-spacing: 4px; font-weight: bold;
-            cursor: pointer; transition: 0.3s;
-            opacity: 0; animation: fadeInBtn 2s forwards 1.5s;
-        }
+        .enter-btn { margin-top: 60px; padding: 15px 50px; border: 2px solid #5e4b35; color: #5e4b35; background: transparent; font-family: 'Times New Roman'; font-size: 16px; letter-spacing: 4px; font-weight: bold; cursor: pointer; transition: 0.3s; opacity: 0; animation: fadeInBtn 2s forwards 1.5s; }
         @keyframes fadeInBtn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* =========================================
-           3. 상단 플레이어 (Glassmorphism)
-           ========================================= */
-        .top-player-bar {
-            position: fixed; top: 0; 
-            left: 0; right: 0; margin: 0 auto; 
-            width: 100%; height: 60px;
-            background: rgba(20, 15, 10, 0.75); 
-            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            z-index: 3000;
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0 20px;
-        }
-        .marquee-container {
-            flex: 1; overflow: hidden; white-space: nowrap; position: relative;
-            margin-right: 20px; height: 100%; display: flex; align-items: center;
-            mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-            -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-        }
-        .player-info { 
-            display: inline-block;
-            font-size: 14px; color: #f2e8d5; font-weight: normal; letter-spacing: 1px;
-            padding-left: 100%; animation: marquee 12s linear infinite;
-        }
+        .top-player-bar { position: fixed; top: 0; left: 0; right: 0; margin: 0 auto; width: 100%; height: 60px; background: rgba(20, 15, 10, 0.75); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.08); z-index: 3000; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
+        .marquee-container { flex: 1; overflow: hidden; white-space: nowrap; position: relative; margin-right: 20px; height: 100%; display: flex; align-items: center; mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); }
+        .player-info { display: inline-block; font-size: 14px; color: #f2e8d5; font-weight: normal; letter-spacing: 1px; padding-left: 100%; animation: marquee 12s linear infinite; }
         @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
-
         .player-controls { display: flex; gap: 25px; align-items: center; }
         .ctrl-btn { cursor: pointer; color: #ccc; font-size: 18px; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
         .ctrl-btn:active { transform: scale(0.85); color: #fff; }
@@ -116,90 +40,29 @@
         .loop-btn.active { opacity: 1; color: #d4a066; }
         #p-btn { font-size: 22px; color: #f2e8d5; }
 
-        #back-toast {
-            visibility: hidden; min-width: 250px; background-color: rgba(0, 0, 0, 0.85);
-            color: #fff; text-align: center; border-radius: 50px; padding: 14px 20px;
-            position: fixed; z-index: 9999; left: 50%; bottom: 30px;
-            transform: translateX(-50%); font-size: 14px; font-weight: bold;
-            opacity: 0; transition: opacity 0.3s; pointer-events: none;
-        }
+        #back-toast { visibility: hidden; min-width: 250px; background-color: rgba(0, 0, 0, 0.85); color: #fff; text-align: center; border-radius: 50px; padding: 14px 20px; position: fixed; z-index: 9999; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 14px; font-weight: bold; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
         #back-toast.show { visibility: visible; opacity: 1; }
 
-        /* =========================================
-           4. 로고 영역 & 메뉴바
-           ========================================= */
-        .logo-section {
-            width: 100%; height: 340px; 
-            display: flex; justify-content: center; align-items: center;
-            background-color: #F2E8D5; 
-        }
-        .logo-img { 
-            height: 240px; width: auto; object-fit: contain; cursor: pointer; 
-            margin-bottom: 40px; 
-            -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 95%);
-            mask-image: radial-gradient(circle, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 95%);
-            transform: scale(1.1);
-        }
+        .logo-section { width: 100%; height: 340px; display: flex; justify-content: center; align-items: center; background-color: #F2E8D5; }
+        .logo-img { height: 240px; width: auto; object-fit: contain; cursor: pointer; margin-bottom: 40px; -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 95%); mask-image: radial-gradient(circle, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 95%); transform: scale(1.1); }
 
-        nav { 
-            position: -webkit-sticky; position: sticky;
-            top: 60px; z-index: 2000;
-            display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
-            gap: 30px; width: 100%; padding: 15px 20px; 
-            background: rgba(242, 232, 213, 0.96); backdrop-filter: blur(5px);
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
-        }
+        nav { position: -webkit-sticky; position: sticky; top: 60px; z-index: 2000; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 30px; width: 100%; padding: 15px 20px; background: rgba(242, 232, 213, 0.96); backdrop-filter: blur(5px); border-bottom: 1px solid rgba(0,0,0,0.05); transition: all 0.3s ease; }
         nav .menu-items { display: flex; gap: 25px; }
-        nav span.main-menu { 
-            font-size: 14px; font-weight: bold; color: #555; cursor: pointer; letter-spacing: 1px; white-space: nowrap; 
-            transition: color 0.3s; position: relative;
-        }
+        nav span.main-menu { font-size: 14px; font-weight: bold; color: #555; cursor: pointer; letter-spacing: 1px; white-space: nowrap; transition: color 0.3s; position: relative; }
         nav span.main-menu.current-menu { color: #8b5e3c; }
-        nav span.main-menu.current-menu::after {
-            content: ''; position: absolute; bottom: -5px; left: 0; width: 100%; height: 2px; background: #8b5e3c;
-        }
-        
+        nav span.main-menu.current-menu::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 100%; height: 2px; background: #8b5e3c; }
         nav .sns-group { display: flex; gap: 10px; }
-        .sns-btn {
-            display: flex; align-items: center; gap: 5px;
-            font-size: 12px; color: #555; text-decoration: none;
-            padding: 5px 12px; border: 1px solid #ccc; border-radius: 20px;
-            background: rgba(255,255,255,0.6); transition: 0.2s;
-        }
+        .sns-btn { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #555; text-decoration: none; padding: 5px 12px; border: 1px solid #ccc; border-radius: 20px; background: rgba(255,255,255,0.6); transition: 0.2s; }
         .sns-icon { width: 14px; height: 14px; fill: currentColor; }
+        @media (max-width: 600px) { .logo-section { height: 320px; } .logo-img { height: 240px !important; margin-bottom: 30px; } nav { gap: 15px; flex-direction: column; padding: 10px; } nav .menu-items { gap: 20px; } }
 
-        @media (max-width: 600px) {
-            .logo-section { height: 320px; }
-            .logo-img { height: 240px !important; margin-bottom: 30px; }
-            nav { gap: 15px; flex-direction: column; padding: 10px; } 
-            nav .menu-items { gap: 20px; }
-        }
-
-        /* CEO 섹션 */
-        .ceo-section-wrapper {
-            position: relative;
-            width: 100%; max-width: 300px; height: 300px;
-            margin: 0 auto 20px auto;
-            -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
-            mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
-        }
-        .ceo-img-slide {
-            position: absolute; top: 0; left: 0;
-            width: 100%; height: 100%;
-            object-fit: cover;
-            border-radius: 150px 150px 0 0; 
-            opacity: 0; 
-            transition: opacity 2s ease-in-out; 
-            filter: grayscale(20%);
-        }
+        .ceo-section-wrapper { position: relative; width: 100%; max-width: 300px; height: 300px; margin: 0 auto 20px auto; -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%); mask-image: linear-gradient(to bottom, black 70%, transparent 100%); }
+        .ceo-img-slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 150px 150px 0 0; opacity: 0; transition: opacity 2s ease-in-out; filter: grayscale(20%); }
         .ceo-img-slide.active-slide { opacity: 1; z-index: 1; }
 
-        /* 페이지 공통 */
         .page { display: none; padding-bottom: 80px; width: 100%; min-height: 60vh; }
         .active { display: block; }
         .hero { padding: 60px 20px; text-align: center; } 
-        
         .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 15px; max-width: 1000px; margin: 0 auto; width: 100%; }
         .product-card { text-align: center; cursor: pointer; }
         .product-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; background: #eee; border-radius: 4px; margin-bottom: 5px; }
@@ -209,19 +72,9 @@
         .heart-icon { font-size: 18px; color: #ccc; transition: 0.2s; }
         .heart-icon.liked { color: #e74c3c; transform: scale(1.2); }
 
-        /* 뮤직 라운지 */
-        .music-lounge-bg { 
-            position: relative; min-height: 60vh; width: 100%; 
-            background: #333; color: #fff; display: flex; 
-            justify-content: center; align-items: center; overflow: hidden; padding: 40px 20px;
-        }
-        .music-lounge-bg::before { 
-            content:""; position:absolute; top:0; left:0; width:100%; height:100%; 
-            background: url('music.jpg') center/cover; 
-            animation: bgMove 20s infinite alternate; opacity: 0.8; 
-        }
+        .music-lounge-bg { position: relative; min-height: 60vh; width: 100%; background: #333; color: #fff; display: flex; justify-content: center; align-items: center; overflow: hidden; padding: 40px 20px; }
+        .music-lounge-bg::before { content:""; position:absolute; top:0; left:0; width:100%; height:100%; background: url('music.jpg') center/cover; animation: bgMove 20s infinite alternate; opacity: 0.8; }
         @keyframes bgMove { from { transform: scale(1); } to { transform: scale(1.1); } }
-        
         .lounge-container { position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 900px; gap: 40px; }
         .lounge-left { flex: 1; text-align: left; display: flex; flex-direction: column; justify-content: center; }
         .lounge-right { flex: 1; display: flex; justify-content: flex-end; align-items: center; }
@@ -232,26 +85,10 @@
         .bar { width: 5px; background: #fff; animation: eq 1s infinite; }
         .bar:nth-child(1) { animation-delay: 0.1s; } .bar:nth-child(2) { animation-delay: 0.3s; } .bar:nth-child(3) { animation-delay: 0.5s; } .bar:nth-child(4) { animation-delay: 0.2s; } .bar:nth-child(5) { animation-delay: 0.4s; }
         @keyframes eq { 0%, 100% { height: 5px; opacity:0.6; } 50% { height: 30px; opacity:1; } }
-
-        #lyrics-box {
-            width: 100%; max-width: 400px; height: 300px; overflow-y: auto;
-            background: rgba(0, 0, 0, 0.4); color: rgba(255, 255, 255, 0.9);
-            padding: 20px; border-radius: 8px; font-size: 15px; line-height: 2.2;
-            white-space: pre-wrap; text-align: left;
-            border-left: 3px solid rgba(255,255,255,0.4); display: none;
-            -ms-overflow-style: none; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.3) transparent;
-        }
+        #lyrics-box { width: 100%; max-width: 400px; height: 300px; overflow-y: auto; background: rgba(0, 0, 0, 0.4); color: rgba(255, 255, 255, 0.9); padding: 20px; border-radius: 8px; font-size: 15px; line-height: 2.2; white-space: pre-wrap; text-align: left; border-left: 3px solid rgba(255,255,255,0.4); display: none; -ms-overflow-style: none; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.3) transparent; }
         #lyrics-box::-webkit-scrollbar { width: 6px; }
         #lyrics-box::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.3); border-radius: 3px; }
-
-        @media (max-width: 768px) {
-            .lounge-container { flex-direction: column; text-align: center; gap: 30px; }
-            .lounge-left { text-align: center; align-items: center; width: 100%; }
-            .visualizer { justify-content: center; }
-            .lounge-credit { align-self: center; }
-            .lounge-right { width: 100%; justify-content: center; }
-            #lyrics-box { height: 200px; text-align: center; border-left: none; border-top: 3px solid rgba(255,255,255,0.4); }
-        }
+        @media (max-width: 768px) { .lounge-container { flex-direction: column; text-align: center; gap: 30px; } .lounge-left { text-align: center; align-items: center; width: 100%; } .visualizer { justify-content: center; } .lounge-credit { align-self: center; } .lounge-right { width: 100%; justify-content: center; } #lyrics-box { height: 200px; text-align: center; border-left: none; border-top: 3px solid rgba(255,255,255,0.4); } }
 
         .music-list-container { max-width: 600px; margin: 0 auto; padding: 20px; width: 100%; }
         .track { padding: 15px; border-bottom: 1px solid #d4c5b0; display: flex; justify-content: space-between; cursor: pointer; align-items: center; }
@@ -261,7 +98,6 @@
         .video-grid { display: flex; flex-direction: column; align-items: center; gap: 40px; padding: 20px; width: 100%; }
         .video-card { width: 100%; max-width: 500px; text-align: center; }
         
-        /* 모달 */
         #product-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 4000; overflow-y: auto; }
         .modal-close-btn { position: absolute; top: 20px; right: 20px; width: 50px; height: 50px; line-height: 50px; text-align: center; background: rgba(0,0,0,0.6); color: #fff; border-radius: 50%; font-size: 28px; cursor: pointer; z-index: 4001; }
         #modal-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; background: #eee; }
@@ -274,65 +110,32 @@
         .dot-btn { width: 40px; height: 40px; background: #fff; border: 1px solid #ccc; border-radius: 4px; font-weight: bold; cursor: pointer; font-size:16px; }
         .dot-btn.active { background: #333; color: #fff; border-color: #333; }
 
-        /* 푸터 & 쫀득이 로고 */
-        footer { 
-            background: #2a2218; color: #999; 
-            padding: 40px 20px; margin-top: 50px; 
-            position: relative; width: 100%;
-            display: flex; justify-content: center; align-items: center; gap: 30px; 
-        }
+        footer { background: #2a2218; color: #999; padding: 40px 20px; margin-top: 50px; position: relative; width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 20px; }
+        .footer-content { display: flex; justify-content: center; align-items: center; gap: 30px; }
         .footer-text { text-align: left; font-size: 13px; color: #bbb; }
+        .visit-stats { font-family: 'Times New Roman', serif; font-size: 12px; color: #777; letter-spacing: 1px; margin-top: 10px; }
         .admin-trigger { width: 60px; height: 60px; position: absolute; bottom: 0; right: 0; }
-
-        .footer-logo-unit {
-            width: 120px; height: 120px; 
-            background-color: transparent; 
-            flex-shrink: 0; position: relative; perspective: 500px;
-        }
-        #jelly-logo-footer {
-            width: 100%; height: 100%; object-fit: contain;
-            display: block; will-change: transform; cursor: grab;
-            user-select: none; -webkit-user-drag: none;
-        }
+        .footer-logo-unit { width: 120px; height: 120px; background-color: transparent; flex-shrink: 0; position: relative; perspective: 500px; }
+        #jelly-logo-footer { width: 100%; height: 100%; object-fit: contain; display: block; will-change: transform; cursor: grab; user-select: none; -webkit-user-drag: none; }
         #jelly-logo-footer:active { cursor: grabbing; }
-
     </style>
 </head>
 <body>
-
-    <div id="intro-screen">
-        <img src="logo.gif" class="intro-logo-img" alt="LOGO">
-        <button class="enter-btn" onclick="enterSite()">ENTER THE RITUAL</button>
-    </div>
-
+    <div id="intro-screen"><img src="logo.gif" class="intro-logo-img" alt="LOGO"><button class="enter-btn" onclick="enterSite()">ENTER THE RITUAL</button></div>
     <div id="back-toast">한 번 더 누르면 종료됩니다.</div>
-
     <audio id="bgm" loop onended="handleEnd()"><source src="bgm1.mp3" type="audio/mp3"></audio>
 
     <div class="top-player-bar">
-        <div class="marquee-container">
-            <div class="player-info" id="m-title">Ready</div>
-        </div>
+        <div class="marquee-container"><div class="player-info" id="m-title">Ready</div></div>
         <div class="player-controls">
-            <span class="ctrl-btn loop-btn" id="loop-btn" onclick="toggleLoop()">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v3z"/></svg>
-            </span>
-            <span class="ctrl-btn" onclick="prevTrack()">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
-            </span>
-            <span class="ctrl-btn" id="p-btn" onclick="togglePlay()">
-                <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-            </span>
-            <span class="ctrl-btn" onclick="nextTrack()">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
-            </span>
+            <span class="ctrl-btn loop-btn" id="loop-btn" onclick="toggleLoop()"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v3z"/></svg></span>
+            <span class="ctrl-btn" onclick="prevTrack()"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></span>
+            <span class="ctrl-btn" id="p-btn" onclick="togglePlay()"><svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
+            <span class="ctrl-btn" onclick="nextTrack()"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></span>
         </div>
     </div>
 
-    <div class="logo-section" onclick="goPage('home')">
-        <img src="logo.jpg" class="logo-img" alt="MAIN LOGO">
-    </div>
-
+    <div class="logo-section" onclick="goPage('home')"><img src="logo.jpg" class="logo-img" alt="MAIN LOGO"></div>
     <nav>
         <div class="menu-items">
             <span class="main-menu" id="menu-home" onclick="goPage('home')">Home</span>
@@ -341,41 +144,17 @@
             <span class="main-menu" id="menu-video" onclick="goPage('video')">Video</span>
         </div>
         <div class="sns-group">
-            <a class="sns-btn" href="https://instagram.com/skinanointing_ceo" target="_blank">
-                <svg class="sns-icon" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-                Instagram
-            </a>
-            <a class="sns-btn" href="http://pf.kakao.com/_BlAxfb" target="_blank">
-                <svg class="sns-icon" viewBox="0 0 24 24"><path d="M12 3c-5.523 0-10 3.582-10 8 0 2.875 1.905 5.419 4.815 6.864-.21.777-1.353 4.938-1.408 5.304-.087.575.487.754.858.503.542-.366 5.875-3.957 6.688-4.523.344.048.696.074 1.047.074 5.523 0 10-3.582 10-8s-4.477-8-10-8z"/></svg>
-                Kakao CH
-            </a>
+            <a class="sns-btn" href="https://instagram.com/skinanointing_ceo" target="_blank"><svg class="sns-icon" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>Instagram</a>
+            <a class="sns-btn" href="http://pf.kakao.com/_BlAxfb" target="_blank"><svg class="sns-icon" viewBox="0 0 24 24"><path d="M12 3c-5.523 0-10 3.582-10 8 0 2.875 1.905 5.419 4.815 6.864-.21.777-1.353 4.938-1.408 5.304-.087.575.487.754.858.503.542-.366 5.875-3.957 6.688-4.523.344.048.696.074 1.047.074 5.523 0 10-3.582 10-8s-4.477-8-10-8z"/></svg>Kakao CH</a>
         </div>
     </nav>
 
     <div id="home" class="page active">
         <div class="hero"><h1>The Ritual of Anointing</h1><p>"피부에 바르는 성스러운 의식"</p></div>
-        
-        <div style="text-align:center;">
-            <video id="main-video" width="85%" style="max-width:600px; border-radius:4px;" controls playsinline>
-                <source src="skin1.mp4">
-            </video>
-        </div>
-        
+        <div style="text-align:center;"><video id="main-video" width="85%" style="max-width:600px; border-radius:4px;" controls playsinline><source src="skin1.mp4"></video></div>
         <div style="text-align:center; padding:60px 20px;">
-            <div class="ceo-section-wrapper">
-                <img src="ceo1.jpg" class="ceo-img-slide active-slide" onerror="this.remove()">
-                <img src="ceo2.jpg" class="ceo-img-slide" onerror="this.remove()">
-                <img src="ceo3.jpg" class="ceo-img-slide" onerror="this.remove()">
-                <img src="ceo4.jpg" class="ceo-img-slide" onerror="this.remove()">
-                <img src="ceo5.jpg" class="ceo-img-slide" onerror="this.remove()">
-                <img src="ceo6.jpg" class="ceo-img-slide" onerror="this.remove()">
-                <img src="ceo7.jpg" class="ceo-img-slide" onerror="this.remove()">
-                <img src="ceo8.jpg" class="ceo-img-slide" onerror="this.remove()">
-                <img src="ceo9.jpg" class="ceo-img-slide" onerror="this.remove()">
-                <img src="ceo10.jpg" class="ceo-img-slide" onerror="this.remove()">
-            </div>
-            <h3>CEO MESSAGE</h3>
-            <p>"진정성 있는 원료가 가장 아름다운 피부를 만듭니다."</p>
+            <div class="ceo-section-wrapper"><img src="ceo1.jpg" class="ceo-img-slide active-slide" onerror="this.remove()"><img src="ceo2.jpg" class="ceo-img-slide" onerror="this.remove()"><img src="ceo3.jpg" class="ceo-img-slide" onerror="this.remove()"><img src="ceo4.jpg" class="ceo-img-slide" onerror="this.remove()"><img src="ceo5.jpg" class="ceo-img-slide" onerror="this.remove()"><img src="ceo6.jpg" class="ceo-img-slide" onerror="this.remove()"><img src="ceo7.jpg" class="ceo-img-slide" onerror="this.remove()"><img src="ceo8.jpg" class="ceo-img-slide" onerror="this.remove()"><img src="ceo9.jpg" class="ceo-img-slide" onerror="this.remove()"><img src="ceo10.jpg" class="ceo-img-slide" onerror="this.remove()"></div>
+            <h3>CEO MESSAGE</h3><p>"진정성 있는 원료가 가장 아름다운 피부를 만듭니다."</p>
         </div>
     </div>
 
@@ -394,9 +173,7 @@
                     <div class="lounge-text-sub">"A Gift of Rest for Your Weary Daily Life"</div>
                     <div class="lounge-credit">Original Sound Created by <strong>hong see</strong></div>
                 </div>
-                <div class="lounge-right">
-                    <div id="lyrics-box"></div>
-                </div>
+                <div class="lounge-right"><div id="lyrics-box"></div></div>
             </div>
         </div>
         <div id="music-list" class="music-list-container"></div>
@@ -415,18 +192,16 @@
             <div id="modal-title" class="modal-title"></div>
             <div id="modal-price" class="modal-price"></div>
             <div id="modal-desc" class="modal-desc"></div>
-            <a id="modal-link" href="#" target="_blank" class="modal-buy-btn">구매하러 가기</a>
+            <a id="modal-link" href="#" target="_blank" class="modal-buy-btn" onclick="countProductClick()">구매하러 가기</a>
         </div>
     </div>
 
     <footer>
-        <div class="footer-logo-unit">
-            <img src="logo.png" id="jelly-logo-footer" alt="Skin Anointing">
+        <div class="footer-content">
+            <div class="footer-logo-unit"><img src="logo.png" id="jelly-logo-footer" alt="Skin Anointing"></div>
+            <div class="footer-text"><p>Representative: Seunghwa Seo</p><p>Copyright © 2024 SKIN ANOINTING.</p></div>
         </div>
-        <div class="footer-text">
-            <p>Representative: Seunghwa Seo</p>
-            <p>Copyright © 2024 SKIN ANOINTING.</p>
-        </div>
+        <div class="visit-stats" id="visit-stat">Total: 0 · Today: 0</div>
         <div class="admin-trigger" onclick="goAdmin()"></div>
     </footer>
 
@@ -434,236 +209,125 @@
         (function() {
             const logoFoot = document.getElementById('jelly-logo-footer');
             if(!logoFoot) return;
-            
-            let isDraggingFoot = false;
-            let currentXF = 0, currentYF = 0;
-            let targetXF = 0, targetYF = 0;
-            let velocityXF = 0, velocityYF = 0;
+            let isDraggingFoot = false, currentXF = 0, currentYF = 0, targetXF = 0, targetYF = 0, velocityXF = 0, velocityYF = 0, startXF = 0, startYF = 0;
             const stiffnessF = 0.08, frictionF = 0.75; 
-            let startXF = 0, startYF = 0;
-
             function animateFoot() {
-                const forceX = (targetXF - currentXF) * stiffnessF;
-                const forceY = (targetYF - currentYF) * stiffnessF;
-                velocityXF += forceX; velocityXF *= frictionF;
-                velocityYF += forceY; velocityYF *= frictionF;
+                const forceX = (targetXF - currentXF) * stiffnessF; const forceY = (targetYF - currentYF) * stiffnessF;
+                velocityXF += forceX; velocityXF *= frictionF; velocityYF += forceY; velocityYF *= frictionF;
                 currentXF += velocityXF; currentYF += velocityYF;
-
                 const stretch = Math.max(Math.abs(velocityXF), Math.abs(velocityYF)) * 0.02;
-                const scale = 1 + stretch * 0.15;
-                const skewX = -velocityXF * 1.2; 
-                const skewY = velocityYF * 1.2;
-
+                const scale = 1 + stretch * 0.15; const skewX = -velocityXF * 1.2; const skewY = velocityYF * 1.2;
                 logoFoot.style.transform = `translate3d(${currentXF}px, ${currentYF}px, 0) skew(${skewX}deg, ${skewY}deg) scale(${scale}, ${1/scale}) rotateZ(${velocityXF * 0.5}deg)`;
                 requestAnimationFrame(animateFoot);
             }
             requestAnimationFrame(animateFoot);
-
             const startDragFoot = (x, y) => { isDraggingFoot = true; startXF = x; startYF = y; };
             logoFoot.addEventListener('mousedown', e => startDragFoot(e.clientX, e.clientY));
             logoFoot.addEventListener('touchstart', e => { const touch = e.touches[0]; startDragFoot(touch.clientX, touch.clientY); }, { passive: false });
-
-            const onDragFoot = (x, y) => {
-                if (!isDraggingFoot) return;
-                targetXF = (x - startXF) * 0.5; 
-                targetYF = (y - startYF) * 0.5;
-            };
+            const onDragFoot = (x, y) => { if (!isDraggingFoot) return; targetXF = (x - startXF) * 0.5; targetYF = (y - startYF) * 0.5; };
             window.addEventListener('mousemove', e => onDragFoot(e.clientX, e.clientY));
             window.addEventListener('touchmove', e => { if(isDraggingFoot) { onDragFoot(e.touches[0].clientX, e.touches[0].clientY); } }, { passive: false });
-
             const stopDragFoot = () => { isDraggingFoot = false; targetXF = 0; targetYF = 0; };
             window.addEventListener('mouseup', stopDragFoot);
             window.addEventListener('touchend', stopDragFoot);
         })();
     </script>
-
     <script>
-        const cfg = {
-            apiKey: "AIzaSyDUoJtrTbXdYaq1MG_QXipkGPC0frKTFHk",
-            authDomain: "skin-anointing.firebaseapp.com",
-            projectId: "skin-anointing",
-            storageBucket: "skin-anointing.firebasestorage.app",
-            messagingSenderId: "284785258260",
-            appId: "1:284785258260:web:68910599076adad3305c01",
-            measurementId: "G-R0K0HQ59YM",
-            databaseURL: "https://skin-anointing-default-rtdb.firebaseio.com"
-        };
+        const cfg = { apiKey: "AIzaSyDUoJtrTbXdYaq1MG_QXipkGPC0frKTFHk", authDomain: "skin-anointing.firebaseapp.com", projectId: "skin-anointing", storageBucket: "skin-anointing.firebasestorage.app", messagingSenderId: "284785258260", appId: "1:284785258260:web:68910599076adad3305c01", measurementId: "G-R0K0HQ59YM", databaseURL: "https://skin-anointing-default-rtdb.firebaseio.com" };
+        var bgm=document.getElementById("bgm"), list=[], cur=-1, loop=false, modalImgs=[], currentProductKey = null;
+        var isExitReady = false, exitTimer = null, isBgmStarted = false;
+        const pages = ['home', 'products', 'music', 'video']; let currentPageIdx = 0;
 
-        var bgm=document.getElementById("bgm"), list=[], cur=-1, loop=false, modalImgs=[];
-        var isExitReady = false, exitTimer = null;
-        const pages = ['home', 'products', 'music', 'video'];
-        let currentPageIdx = 0;
-        
-        // ★ [핵심] BGM 중복 시작 방지 플래그 (절대 꺼지지 않음)
-        let isBgmStarted = false;
-
-        // ★ [핵심] 입장 버튼 클릭 시 -> skin1 소리 켜고 재생 + 화면 스크롤
         function enterSite() {
-            document.getElementById('intro-screen').style.opacity = 0;
-            setTimeout(() => document.getElementById('intro-screen').style.display='none', 1000);
-
-            // 1. 메인 영상 찾기
+            document.getElementById('intro-screen').style.opacity = 0; setTimeout(() => document.getElementById('intro-screen').style.display='none', 1000);
             const mv = document.getElementById('main-video');
-            if(mv) {
-                // 소리 켜기 & 재생
-                mv.muted = false; 
-                // ★ 수정됨: 볼륨 0.6으로 설정
-                mv.volume = 0.6; 
-                mv.play().catch(e => console.log(e));
-                // 영상 위치로 스크롤 이동
-                mv.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
+            if(mv) { mv.muted = false; mv.volume = 0.6; mv.play().catch(e => console.log(e)); mv.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+            countVisit();
         }
-
-        // ★ [핵심] 동영상 연속 재생 & BGM 트리거 로직
         document.addEventListener('DOMContentLoaded', () => {
              const mv = document.getElementById('main-video');
              if(mv) {
                  let mvIdx = 1;
-
                  mv.addEventListener('ended', () => {
-                    // skin1이 끝났을 때 -> "아직 BGM 안 켜졌으면" 켜라!
-                    if(mvIdx === 1 && !isBgmStarted) {
-                        playBgmWithFadeIn();
-                        isBgmStarted = true; // 체크박스 잠금! (다시는 안 켜짐)
-                    }
-
-                    // 다음 영상으로 넘어가기 (skin2 부터는 소리 끄고 재생)
-                    mvIdx++;
-                    mv.src = `skin${mvIdx}.mp4`;
-                    mv.muted = true; // BGM이 나오므로 영상 소리는 끔
-                    mv.play().catch(() => {
-                        // 다음 영상 없으면 다시 1번으로 (소리 끈 상태로 반복)
-                        mvIdx = 1; mv.src = 'skin1.mp4'; mv.muted=true; mv.play();
-                    });
+                    if(mvIdx === 1 && !isBgmStarted) { playBgmWithFadeIn(); isBgmStarted = true; }
+                    mvIdx++; mv.src = `skin${mvIdx}.mp4`; mv.muted = true;
+                    mv.play().catch(() => { mvIdx = 1; mv.src = 'skin1.mp4'; mv.muted=true; mv.play(); });
                  });
-
-                 // 에러 발생 시 처리 (다음 영상 없으면 1번으로)
-                 mv.addEventListener('error', () => {
-                     mvIdx = 1; mv.src = 'skin1.mp4'; mv.muted=true; mv.play();
-                 }, true);
+                 mv.addEventListener('error', () => { mvIdx = 1; mv.src = 'skin1.mp4'; mv.muted=true; mv.play(); }, true);
              }
         });
-
-        // BGM 페이드인 함수
         function playBgmWithFadeIn() {
-            if(!bgm) return;
-            bgm.volume = 0; 
-            bgm.play().then(() => {
-                updateBtn(true);
-                let fadeInterval = setInterval(() => {
-                    if(bgm.volume < 0.5) {
-                        bgm.volume = Math.min(bgm.volume + 0.02, 0.5);
-                    } else {
-                        clearInterval(fadeInterval);
-                    }
-                }, 200);
-            }).catch(e => console.log(e));
+            if(!bgm) return; bgm.volume = 0; 
+            bgm.play().then(() => { updateBtn(true); let fadeInterval = setInterval(() => { if(bgm.volume < 0.5) { bgm.volume = Math.min(bgm.volume + 0.02, 0.5); } else { clearInterval(fadeInterval); } }, 200); }).catch(e => console.log(e));
+        }
+        // ★ 방문자 집계
+        function countVisit() {
+            try { const db = firebase.database(); const today = new Date().toISOString().slice(0,10);
+                db.ref('stats_visits').transaction(data => {
+                    if(!data) data = { total: 0, daily: {} };
+                    data.total = (data.total || 0) + 1;
+                    if(!data.daily) data.daily = {}; if(!data.daily[today]) data.daily[today] = 0; data.daily[today] += 1;
+                    return data;
+                });
+            } catch(e) {}
+        }
+        // ★ 상품 클릭 집계
+        function countProductClick() {
+            if(currentProductKey) {
+                try { firebase.database().ref('stats_product_clicks/' + currentProductKey).transaction(c => (c || 0) + 1); } catch(e){}
+            }
         }
 
         window.onload = function() {
-            history.pushState(null, null, location.href);
-            // 초기 볼륨 설정은 enterSite에서 덮어씌워지므로 여기선 크게 의미 없으나 유지
-            bgm.volume = 0.5;
-            updateMenuHighlight('home');
-
-            // --- CEO 슬라이드쇼 ---
-            setInterval(() => {
-                const slides = document.querySelectorAll('.ceo-img-slide');
-                if(slides.length < 2) return; 
-                let activeIdx = -1;
-                slides.forEach((slide, i) => {
-                    if(slide.classList.contains('active-slide')) activeIdx = i;
-                    slide.classList.remove('active-slide');
+            history.pushState(null, null, location.href); bgm.volume = 0.5; updateMenuHighlight('home');
+            setInterval(() => { const slides = document.querySelectorAll('.ceo-img-slide'); if(slides.length < 2) return; let activeIdx = -1; slides.forEach((slide, i) => { if(slide.classList.contains('active-slide')) activeIdx = i; slide.classList.remove('active-slide'); }); let nextIdx = (activeIdx + 1) % slides.length; slides[nextIdx].classList.add('active-slide'); }, 4000); 
+            try { firebase.initializeApp(cfg); const db = firebase.database();
+                // 방문자수 실시간 업데이트
+                const todayStr = new Date().toISOString().slice(0,10);
+                db.ref('stats_visits').on('value', s => {
+                    const val = s.val();
+                    if(val) { const t = val.total || 0; const d = (val.daily && val.daily[todayStr]) ? val.daily[todayStr] : 0; document.getElementById('visit-stat').innerText = `Total: ${t} · Today: ${d}`; }
                 });
-                let nextIdx = (activeIdx + 1) % slides.length;
-                slides[nextIdx].classList.add('active-slide');
-            }, 4000); 
-
-            try {
-                firebase.initializeApp(cfg);
-                const db = firebase.database();
-                
                 db.ref('products').on('value', s => {
                     const d = document.getElementById('product-grid'); d.innerHTML="";
                     if(s.val()) Object.entries(s.val()).forEach(([k, p]) => {
-                        const imgs = p.images || [p.imageUrl];
-                        const jsonImgs = JSON.stringify(imgs).replace(/"/g, '&quot;');
-                        const safeDesc = (p.desc||"").replace(/"/g, '&quot;');
+                        const imgs = p.images || [p.imageUrl]; const jsonImgs = JSON.stringify(imgs).replace(/"/g, '&quot;'); const safeDesc = (p.desc||"").replace(/"/g, '&quot;');
                         let price = p.priceNormal ? `<span style="text-decoration:line-through; color:#999; margin-right:5px;">${p.priceNormal}</span> <b>${p.priceSale}</b>` : `<b>${p.priceSale}</b>`;
-                        db.ref('likes/prod_'+k).on('value', ls => {
-                            const c = ls.val() || 0;
-                            const el = document.getElementById('like-prod-'+k); if(el) el.innerText = c;
-                        });
-                        d.innerHTML += `<div class="product-card"><div onclick="openModal('${p.name}', '${p.priceSale}', '${p.priceNormal||""}', \`${safeDesc}\`, '${p.link}', ${jsonImgs})"><img src="${imgs[0]}" class="product-img"><div class="p-name">${p.name}</div><div class="p-price">${price}</div></div><div class="like-box" onclick="handleLike('prod_${k}')"><span class="heart-icon" id="heart-prod_${k}">♥</span><span id="like-prod-${k}">0</span></div></div>`;
+                        db.ref('likes/prod_'+k).on('value', ls => { const c = ls.val() || 0; const el = document.getElementById('like-prod-'+k); if(el) el.innerText = c; });
+                        d.innerHTML += `<div class="product-card"><div onclick="openModal('${k}', '${p.name}', '${p.priceSale}', '${p.priceNormal||""}', \`${safeDesc}\`, '${p.link}', ${jsonImgs})"><img src="${imgs[0]}" class="product-img"><div class="p-name">${p.name}</div><div class="p-price">${price}</div></div><div class="like-box" onclick="handleLike('prod_${k}')"><span class="heart-icon" id="heart-prod_${k}">♥</span><span id="like-prod-${k}">0</span></div></div>`;
                     });
                 });
                 db.ref('music').on('value', s => {
-                    const d = document.getElementById('music-list'); d.innerHTML=""; list=[];
-                    let i=0;
+                    const d = document.getElementById('music-list'); d.innerHTML=""; list=[]; let i=0;
                     if(s.val()) Object.entries(s.val()).forEach(([k, m]) => {
-                        list.push(m);
-                        db.ref('likes/music_'+k).on('value', ls => { const c = ls.val() || 0; const el = document.getElementById('like-music-'+k); if(el) el.innerText = c; });
-                        d.innerHTML += `<div class="track" id="tr-${i}"><div class="track-info" onclick="play(${i})"><span>${(i+1).toString().padStart(2,'0')}</span> &nbsp; <span>${m.title}</span></div><div class="like-box" onclick="handleLike('music_${k}')"><span class="heart-icon" id="heart-music_${k}">♥</span><span id="like-music-${k}">0</span></div></div>`;
+                        list.push(m); db.ref('likes/music_'+k).on('value', ls => { const c = ls.val() || 0; const el = document.getElementById('like-music-'+k); if(el) el.innerText = c; });
+                        d.innerHTML += `<div class="track" id="tr-${i}"><div class="track-info" onclick="play(${i}, '${k}')"><span>${(i+1).toString().padStart(2,'0')}</span> &nbsp; <span>${m.title}</span></div><div class="like-box" onclick="handleLike('music_${k}')"><span class="heart-icon" id="heart-music_${k}">♥</span><span id="like-music-${k}">0</span></div></div>`;
                         i++;
                     });
                 });
                 db.ref('videos').on('value', s => {
                     const d = document.getElementById('video-grid'); d.innerHTML="";
-                    if(s.val()) Object.values(s.val()).forEach(v => {
-                        d.innerHTML += `<div class="video-card"><img src="${v.thumbnail}" style="width:100%; border-radius:8px;" onclick="window.open('${v.link}')"><div style="margin-top:5px;">${v.title}</div></div>`;
-                    });
+                    if(s.val()) Object.values(s.val()).forEach(v => { d.innerHTML += `<div class="video-card"><img src="${v.thumbnail}" style="width:100%; border-radius:8px;" onclick="window.open('${v.link}')"><div style="margin-top:5px;">${v.title}</div></div>`; });
                 });
             } catch(e) {}
-            
             initSwipe();
         };
-
         function initSwipe() {
-            let touchStartX = 0, touchEndX = 0, touchStartY = 0, touchEndY = 0;
-            const minSwipeDistance = 50;
+            let touchStartX = 0, touchEndX = 0, touchStartY = 0, touchEndY = 0; const minSwipeDistance = 50;
             document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; touchStartY = e.changedTouches[0].screenY; }, {passive: true});
-            document.addEventListener('touchend', e => {
-                touchEndX = e.changedTouches[0].screenX; touchEndY = e.changedTouches[0].screenY;
-                handleSwipeGesture();
-            }, {passive: true});
-            function handleSwipeGesture() {
-                if(document.getElementById('product-modal').style.display === 'block') return;
-                const xDiff = touchStartX - touchEndX; const yDiff = touchStartY - touchEndY;
-                if (Math.abs(xDiff) < Math.abs(yDiff)) return; 
-                if (Math.abs(xDiff) > minSwipeDistance) { if (xDiff > 0) goNextPage(); else goPrevPage(); }
-            }
+            document.addEventListener('touchend', e => { touchEndX = e.changedTouches[0].screenX; touchEndY = e.changedTouches[0].screenY; handleSwipeGesture(); }, {passive: true});
+            function handleSwipeGesture() { if(document.getElementById('product-modal').style.display === 'block') return; const xDiff = touchStartX - touchEndX; const yDiff = touchStartY - touchEndY; if (Math.abs(xDiff) < Math.abs(yDiff)) return; if (Math.abs(xDiff) > minSwipeDistance) { if (xDiff > 0) goNextPage(); else goPrevPage(); } }
         }
         function goNextPage() { if (currentPageIdx < pages.length - 1) goPage(pages[currentPageIdx + 1]); }
         function goPrevPage() { if (currentPageIdx > 0) goPage(pages[currentPageIdx - 1]); }
-        function updateMenuHighlight(id) {
-            document.querySelectorAll('.main-menu').forEach(el => el.classList.remove('current-menu'));
-            const menuEl = document.getElementById('menu-' + id); if(menuEl) menuEl.classList.add('current-menu');
-        }
-        function goPage(id) {
-            currentPageIdx = pages.indexOf(id); updateMenuHighlight(id);
-            document.querySelectorAll('.page').forEach(p => { p.classList.remove('active'); p.classList.remove('fade-in'); });
-            const target = document.getElementById(id); target.classList.add('active');
-            setTimeout(() => { target.classList.add('fade-in'); }, 10); window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-        window.onpopstate = function(event) {
-            const modal = document.getElementById('product-modal');
-            if(modal.style.display === "block") { closeModal(); history.pushState(null, null, location.href); return; }
-            if(isExitReady) { } else {
-                history.pushState(null, null, location.href); showToast(); isExitReady = true;
-                if(exitTimer) clearTimeout(exitTimer);
-                exitTimer = setTimeout(() => { isExitReady = false; document.getElementById("back-toast").classList.remove("show"); }, 2000);
-            }
-        };
+        function updateMenuHighlight(id) { document.querySelectorAll('.main-menu').forEach(el => el.classList.remove('current-menu')); const menuEl = document.getElementById('menu-' + id); if(menuEl) menuEl.classList.add('current-menu'); }
+        function goPage(id) { currentPageIdx = pages.indexOf(id); updateMenuHighlight(id); document.querySelectorAll('.page').forEach(p => { p.classList.remove('active'); p.classList.remove('fade-in'); }); const target = document.getElementById(id); target.classList.add('active'); setTimeout(() => { target.classList.add('fade-in'); }, 10); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        window.onpopstate = function(event) { const modal = document.getElementById('product-modal'); if(modal.style.display === "block") { closeModal(); history.pushState(null, null, location.href); return; } if(isExitReady) { } else { history.pushState(null, null, location.href); showToast(); isExitReady = true; if(exitTimer) clearTimeout(exitTimer); exitTimer = setTimeout(() => { isExitReady = false; document.getElementById("back-toast").classList.remove("show"); }, 2000); } };
         function showToast() { document.getElementById("back-toast").classList.add("show"); }
-        function handleLike(id) {
-            const storageKey = 'liked_' + id; if (localStorage.getItem(storageKey)) { alert('이미 공감하셨습니다.'); return; }
-            document.getElementById('heart-'+id).classList.add('liked'); localStorage.setItem(storageKey, 'true');
-            firebase.database().ref('likes/' + id).transaction(c => (c || 0) + 1);
-        }
+        function handleLike(id) { const storageKey = 'liked_' + id; if (localStorage.getItem(storageKey)) { alert('이미 공감하셨습니다.'); return; } document.getElementById('heart-'+id).classList.add('liked'); localStorage.setItem(storageKey, 'true'); firebase.database().ref('likes/' + id).transaction(c => (c || 0) + 1); }
 
-        function openModal(name, sale, norm, desc, link, imgs) {
-            history.pushState({modal:true}, null, "#modal"); modalImgs = imgs;
+        function openModal(key, name, sale, norm, desc, link, imgs) {
+            history.pushState({modal:true}, null, "#modal"); modalImgs = imgs; currentProductKey = key; // 키 저장
             document.getElementById('modal-img').src = imgs[0];
             if(imgs.length > 1) { imgs.forEach((imgUrl, index) => { if(index > 0) { const preloadImg = new Image(); preloadImg.src = imgUrl; } }); }
             document.getElementById('modal-title').innerText = name;
@@ -678,59 +342,24 @@
             document.getElementById('product-modal').style.display = "block";
             document.body.style.overflow = "hidden";
         }
-
-        function setModalImg(i, el) {
-            document.getElementById('modal-img').src = modalImgs[i];
-            document.querySelectorAll('.dot-btn').forEach(b => b.classList.remove('active')); el.classList.add('active');
-        }
-
-        // ★ [유지] 좌우 스크롤 잠금 기능이 포함된 닫기 함수
-        function closeModal() {
-            document.getElementById('product-modal').style.display = "none";
-            document.body.style.overflowY = "auto";
-            document.body.style.overflowX = "hidden";
-            if(location.hash === "#modal") history.back();
-        }
-
-        function toggleLoop() {
-            loop = !loop; bgm.loop = loop;
-            const btn = document.getElementById('loop-btn');
-            if(loop) { btn.classList.add('active'); } else { btn.classList.remove('active'); }
-        }
-        function togglePlay() {
-            if(!bgm) return;
-            if(bgm.paused) { bgm.play(); updateBtn(true); } else { bgm.pause(); updateBtn(false); }
-        }
-        function updateBtn(p) {
-            const pBtn = document.getElementById('p-btn');
-            if(p) {
-                pBtn.innerHTML = '<svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
-                document.getElementById('visualizer').style.opacity = 1;
-            } else {
-                pBtn.innerHTML = '<svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
-                document.getElementById('visualizer').style.opacity = 0;
-            }
-        }
-        function play(i) {
+        function setModalImg(i, el) { document.getElementById('modal-img').src = modalImgs[i]; document.querySelectorAll('.dot-btn').forEach(b => b.classList.remove('active')); el.classList.add('active'); }
+        function closeModal() { document.getElementById('product-modal').style.display = "none"; document.body.style.overflowY = "auto"; document.body.style.overflowX = "hidden"; currentProductKey = null; if(location.hash === "#modal") history.back(); }
+        function toggleLoop() { loop = !loop; bgm.loop = loop; const btn = document.getElementById('loop-btn'); if(loop) { btn.classList.add('active'); } else { btn.classList.remove('active'); } }
+        function togglePlay() { if(!bgm) return; if(bgm.paused) { bgm.play(); updateBtn(true); } else { bgm.pause(); updateBtn(false); } }
+        function updateBtn(p) { const pBtn = document.getElementById('p-btn'); if(p) { pBtn.innerHTML = '<svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>'; document.getElementById('visualizer').style.opacity = 1; } else { pBtn.innerHTML = '<svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>'; document.getElementById('visualizer').style.opacity = 0; } }
+        
+        function play(i, musicKey) {
             if(!list[i]) return; cur = i; bgm.src = list[i].fileUrl; bgm.play();
-            document.getElementById('m-title').innerText = list[i].title;
-            updateBtn(true);
-            document.querySelectorAll('.track').forEach(t=>t.classList.remove('active-track'));
-            document.getElementById('tr-'+i).classList.add('active-track');
-            const lyricsBox = document.getElementById('lyrics-box');
-            if (list[i].lyrics && list[i].lyrics.trim() !== "") {
-                lyricsBox.innerText = list[i].lyrics; lyricsBox.style.display = "block"; lyricsBox.scrollTop = 0; 
-            } else { lyricsBox.style.display = "none"; }
+            // 음악 재생 집계
+            if(musicKey) { try { firebase.database().ref('stats_music_plays/' + musicKey).transaction(c => (c || 0) + 1); } catch(e){} }
+            document.getElementById('m-title').innerText = list[i].title; updateBtn(true);
+            document.querySelectorAll('.track').forEach(t=>t.classList.remove('active-track')); document.getElementById('tr-'+i).classList.add('active-track');
+            const lyricsBox = document.getElementById('lyrics-box'); if (list[i].lyrics && list[i].lyrics.trim() !== "") { lyricsBox.innerText = list[i].lyrics; lyricsBox.style.display = "block"; lyricsBox.scrollTop = 0; } else { lyricsBox.style.display = "none"; }
         }
         function nextTrack() { if(cur < list.length-1) play(cur+1); else play(0); }
         function prevTrack() { if(cur > 0) play(cur-1); else play(list.length-1); }
         function handleEnd() { if(!loop) nextTrack(); }
-
-        let cnt=0, tm;
-        function goAdmin() {
-            cnt++; if(cnt==5) { if(prompt("Code?")=="2025") location.href="admin.html"; cnt=0; }
-            clearTimeout(tm); tm=setTimeout(()=>cnt=0, 1000);
-        }
+        let cnt=0, tm; function goAdmin() { cnt++; if(cnt==5) { if(prompt("Code?")=="2025") location.href="admin.html"; cnt=0; } clearTimeout(tm); tm=setTimeout(()=>cnt=0, 1000); }
     </script>
 </body>
 </html>

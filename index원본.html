@@ -17,18 +17,20 @@
     
     <style>
         /* =========================================
-           1. 기본 스타일 (좌우 스크롤 완벽 차단 유지)
+           1. 기본 스타일 (메뉴 고정됨 + 좌우 스크롤 방지)
            ========================================= */
         * { box-sizing: border-box; }
         html { scroll-behavior: smooth; }
 
+        /* html에는 overflow를 걸지 않아야 sticky 메뉴가 작동함 */
         html, body {
             margin: 0; padding: 0;
             width: 100%;
-            overflow-x: hidden !important; /* 좌우 스크롤 강력 차단 */
         }
-
+        
         body { 
+            /* body에만 적용하여 스크롤 방지와 메뉴 고정을 동시에 잡음 */
+            overflow-x: hidden; 
             font-family: 'Times New Roman', serif; 
             color: #1a1a1a; 
             background-color: #F2E8D5; 
@@ -52,7 +54,7 @@
         @keyframes fadeInPage { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* =========================================
-           2. 인트로 (GIF + 흐림/숨쉬기 효과 유지)
+           2. 인트로 (GIF + 흐림/숨쉬기 효과)
            ========================================= */
         #intro-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -81,7 +83,7 @@
         @keyframes fadeInBtn { from { opacity: 0; } to { opacity: 1; } }
 
         /* =========================================
-           3. 상단 플레이어 (Glassmorphism 유지)
+           3. 상단 플레이어 (Glassmorphism)
            ========================================= */
         .top-player-bar {
             position: fixed; top: 0; 
@@ -340,7 +342,7 @@
         </div>
         <div class="sns-group">
             <a class="sns-btn" href="https://instagram.com/skinanointing_ceo" target="_blank">
-                <svg class="sns-icon" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                <svg class="sns-icon" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
                 Instagram
             </a>
             <a class="sns-btn" href="http://pf.kakao.com/_BlAxfb" target="_blank">
@@ -354,7 +356,7 @@
         <div class="hero"><h1>The Ritual of Anointing</h1><p>"피부에 바르는 성스러운 의식"</p></div>
         
         <div style="text-align:center;">
-            <video id="main-video" width="85%" style="max-width:600px; border-radius:4px;" controls autoplay muted playsinline>
+            <video id="main-video" width="85%" style="max-width:600px; border-radius:4px;" controls playsinline>
                 <source src="skin1.mp4">
             </video>
         </div>
@@ -491,26 +493,77 @@
         var isExitReady = false, exitTimer = null;
         const pages = ['home', 'products', 'music', 'video'];
         let currentPageIdx = 0;
+        
+        // ★ [핵심] BGM 중복 시작 방지 플래그 (절대 꺼지지 않음)
+        let isBgmStarted = false;
 
-        // ★ 동영상 로직: 다른 로딩 기다리지 않고 바로 실행되도록 밖으로 뺌
+        // ★ [핵심] 입장 버튼 클릭 시 -> skin1 소리 켜고 재생 + 화면 스크롤
+        function enterSite() {
+            document.getElementById('intro-screen').style.opacity = 0;
+            setTimeout(() => document.getElementById('intro-screen').style.display='none', 1000);
+
+            // 1. 메인 영상 찾기
+            const mv = document.getElementById('main-video');
+            if(mv) {
+                // 소리 켜기 & 재생
+                mv.muted = false; 
+                // ★ 수정됨: 볼륨 0.6으로 설정
+                mv.volume = 0.6; 
+                mv.play().catch(e => console.log(e));
+                // 영상 위치로 스크롤 이동
+                mv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        // ★ [핵심] 동영상 연속 재생 & BGM 트리거 로직
         document.addEventListener('DOMContentLoaded', () => {
              const mv = document.getElementById('main-video');
              if(mv) {
                  let mvIdx = 1;
+
                  mv.addEventListener('ended', () => {
+                    // skin1이 끝났을 때 -> "아직 BGM 안 켜졌으면" 켜라!
+                    if(mvIdx === 1 && !isBgmStarted) {
+                        playBgmWithFadeIn();
+                        isBgmStarted = true; // 체크박스 잠금! (다시는 안 켜짐)
+                    }
+
+                    // 다음 영상으로 넘어가기 (skin2 부터는 소리 끄고 재생)
                     mvIdx++;
                     mv.src = `skin${mvIdx}.mp4`;
+                    mv.muted = true; // BGM이 나오므로 영상 소리는 끔
                     mv.play().catch(() => {
-                        mvIdx = 1; mv.src = 'skin1.mp4'; mv.play();
+                        // 다음 영상 없으면 다시 1번으로 (소리 끈 상태로 반복)
+                        mvIdx = 1; mv.src = 'skin1.mp4'; mv.muted=true; mv.play();
                     });
                  });
-                 // 즉시 재생 시도
-                 mv.play().catch(()=>{});
+
+                 // 에러 발생 시 처리 (다음 영상 없으면 1번으로)
+                 mv.addEventListener('error', () => {
+                     mvIdx = 1; mv.src = 'skin1.mp4'; mv.muted=true; mv.play();
+                 }, true);
              }
         });
 
+        // BGM 페이드인 함수
+        function playBgmWithFadeIn() {
+            if(!bgm) return;
+            bgm.volume = 0; 
+            bgm.play().then(() => {
+                updateBtn(true);
+                let fadeInterval = setInterval(() => {
+                    if(bgm.volume < 0.5) {
+                        bgm.volume = Math.min(bgm.volume + 0.02, 0.5);
+                    } else {
+                        clearInterval(fadeInterval);
+                    }
+                }, 200);
+            }).catch(e => console.log(e));
+        }
+
         window.onload = function() {
             history.pushState(null, null, location.href);
+            // 초기 볼륨 설정은 enterSite에서 덮어씌워지므로 여기선 크게 의미 없으나 유지
             bgm.volume = 0.5;
             updateMenuHighlight('home');
 
@@ -586,11 +639,6 @@
         function updateMenuHighlight(id) {
             document.querySelectorAll('.main-menu').forEach(el => el.classList.remove('current-menu'));
             const menuEl = document.getElementById('menu-' + id); if(menuEl) menuEl.classList.add('current-menu');
-        }
-        function enterSite() {
-            document.getElementById('intro-screen').style.opacity = 0;
-            setTimeout(() => document.getElementById('intro-screen').style.display='none', 1000);
-            if(bgm) bgm.play().then(() => updateBtn(true)).catch(() => {});
         }
         function goPage(id) {
             currentPageIdx = pages.indexOf(id); updateMenuHighlight(id);
