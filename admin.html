@@ -9,6 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
@@ -17,13 +18,12 @@
             authDomain: "skin-anointing.firebaseapp.com", 
             projectId: "skin-anointing" 
         };
-        firebase.initializeApp(authCfg);
-        
-        // 로그인 상태 체크 (없으면 메인으로 추방)
+        if (!firebase.apps.length) firebase.initializeApp(authCfg);
+
         firebase.auth().onAuthStateChanged((user) => {
             const sessionToken = sessionStorage.getItem("skin_admin_token");
             if (!user && sessionToken !== "true") {
-                alert("접근 권한이 없습니다. 로그인해주세요.");
+                alert("접근 권한이 없습니다. 메인에서 로그인해주세요.");
                 location.href = "index.html";
             }
         });
@@ -32,50 +32,59 @@
     <style>
         body { font-family: 'Times New Roman', serif; background-color: #f4f4f4; margin: 0; padding: 20px; }
         .admin-container { max-width: 900px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        h1 { text-align: center; color: #333; margin-bottom: 30px; }
+        h1 { text-align: center; color: #333; margin-bottom: 30px; letter-spacing: 2px; }
         
-        /* 탭 스타일 */
         .tabs { display: flex; border-bottom: 2px solid #ddd; margin-bottom: 20px; }
-        .tab { flex: 1; text-align: center; padding: 15px; cursor: pointer; font-weight: bold; color: #777; transition: 0.3s; }
-        .tab:hover { background: #f9f9f9; }
-        .tab.active { border-bottom: 3px solid #8b5e3c; color: #8b5e3c; }
+        .tab { flex: 1; text-align: center; padding: 15px; cursor: pointer; font-weight: bold; color: #777; transition: 0.3s; background:#f9f9f9; }
+        .tab:hover { background: #eee; }
+        .tab.active { border-bottom: 3px solid #8b5e3c; color: #8b5e3c; background:#fff; }
         
-        .panel { display: none; }
+        .panel { display: none; animation: fadeIn 0.5s; }
         .panel.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* 입력 폼 */
-        .form-box { background: #fafafa; padding: 20px; border-radius: 8px; border: 1px solid #eee; margin-bottom: 30px; }
+        .form-box { background: #fafafa; padding: 25px; border-radius: 8px; border: 1px solid #eee; margin-bottom: 30px; }
         .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
-        input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-family: sans-serif; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 14px; color: #555; }
+        input[type="text"], input[type="file"], textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
         
-        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
-        button.submit-btn { flex: 2; padding: 12px; background: #8b5e3c; color: #fff; border: none; cursor: pointer; font-size: 16px; border-radius: 4px; font-weight: bold; }
-        button.submit-btn:hover { background: #6f4b30; }
-        button.cancel-btn { flex: 1; padding: 12px; background: #999; color: #fff; border: none; cursor: pointer; font-size: 16px; border-radius: 4px; display: none; } /* 평소엔 숨김 */
+        /* ★ 사진 미리보기 영역 스타일 */
+        .img-preview-container { 
+            display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; 
+            padding: 10px; background: #fff; border: 1px solid #ddd; border-radius: 4px; min-height: 80px;
+        }
+        .img-preview-item { position: relative; width: 70px; height: 70px; border: 1px solid #ccc; border-radius: 4px; overflow: hidden; }
+        .img-preview-item img { width: 100%; height: 100%; object-fit: cover; }
+        .btn-remove-img {
+            position: absolute; top: 0; right: 0; background: rgba(231, 76, 60, 0.9); color: white;
+            width: 20px; height: 20px; text-align: center; line-height: 20px; font-size: 12px; cursor: pointer; font-weight: bold;
+        }
 
-        /* 리스트 스타일 */
+        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
+        button.submit-btn { flex: 2; padding: 15px; background: #8b5e3c; color: #fff; border: none; cursor: pointer; font-size: 16px; border-radius: 4px; font-weight: bold; }
+        button.submit-btn:hover { background: #6f4b30; }
+        button.cancel-btn { flex: 1; padding: 15px; background: #999; color: #fff; border: none; cursor: pointer; font-size: 16px; border-radius: 4px; display: none; }
+
         .item-list { margin-top: 10px; border-top: 2px solid #333; }
         .item { display: flex; justify-content: space-between; align-items: center; padding: 15px 10px; border-bottom: 1px solid #eee; background: #fff; }
         .item:hover { background: #f9f9f9; }
         .item-info { display: flex; align-items: center; gap: 15px; flex: 1; }
         .item img { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd; }
         .item-text { display: flex; flex-direction: column; }
-        .item-title { font-weight: bold; font-size: 16px; }
-        .item-sub { font-size: 13px; color: #777; }
+        .item-title { font-weight: bold; font-size: 16px; color: #333; }
+        .item-sub { font-size: 13px; color: #777; margin-top: 4px; }
 
         .btn-action-group { display: flex; gap: 5px; }
-        .btn-edit { background: #3498db; color: #fff; border: none; padding: 6px 12px; cursor: pointer; border-radius: 4px; font-size: 12px; }
-        .btn-del { background: #e74c3c; color: #fff; border: none; padding: 6px 12px; cursor: pointer; border-radius: 4px; font-size: 12px; }
+        .btn-edit { background: #3498db; color: #fff; border: none; padding: 8px 15px; cursor: pointer; border-radius: 4px; font-size: 12px; }
+        .btn-del { background: #e74c3c; color: #fff; border: none; padding: 8px 15px; cursor: pointer; border-radius: 4px; font-size: 12px; }
 
         /* 통계 스타일 */
-        .stat-box { margin-bottom: 40px; }
+        .stat-box { margin-bottom: 40px; background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .stat-header { font-size: 18px; font-weight: bold; border-left: 4px solid #8b5e3c; padding-left: 10px; margin-bottom: 15px; color: #333; }
         .chart-wrapper { width: 100%; height: 300px; background: #fff; border: 1px solid #eee; padding: 10px; }
-        
         .rank-table { width: 100%; border-collapse: collapse; font-size: 14px; background: #fff; }
-        .rank-table th { background: #eee; text-align: left; padding: 10px; border-bottom: 2px solid #ddd; }
-        .rank-table td { border-bottom: 1px solid #eee; padding: 10px; }
+        .rank-table th { background: #eee; text-align: left; padding: 12px; border-bottom: 2px solid #ddd; color: #555; }
+        .rank-table td { border-bottom: 1px solid #eee; padding: 12px; color: #333; }
         .rank-num { font-weight: bold; color: #8b5e3c; width: 50px; text-align: center; }
     </style>
 </head>
@@ -94,33 +103,36 @@
     <div id="stats" class="panel active">
         <div class="stat-box">
             <div class="stat-header">📉 주간 방문자 (Weekly Visitors)</div>
-            <div class="chart-wrapper">
-                <canvas id="visitChart"></canvas>
-            </div>
+            <div class="chart-wrapper"><canvas id="visitChart"></canvas></div>
         </div>
-
         <div class="stat-box">
             <div class="stat-header">🛍️ 상품 구매 클릭 순위</div>
-            <table class="rank-table" id="product-rank-table"></table>
+            <table class="rank-table" id="product-rank-table"><tr><td colspan="3">로딩 중...</td></tr></table>
         </div>
-
         <div class="stat-box">
             <div class="stat-header">🎵 음악 재생 순위</div>
-            <table class="rank-table" id="music-rank-table"></table>
+            <table class="rank-table" id="music-rank-table"><tr><td colspan="3">로딩 중...</td></tr></table>
         </div>
     </div>
 
     <div id="products" class="panel">
         <div class="form-box">
             <h3 id="p-form-title">상품 등록 (New Product)</h3>
-            <input type="hidden" id="p-key"> <input type="hidden" id="p-old-img"> <div class="form-group"><label>상품명</label><input type="text" id="p-name"></div>
-            <div class="form-group"><label>할인가 (예: 25,000)</label><input type="text" id="p-price"></div>
-            <div class="form-group"><label>정상가 (선택)</label><input type="text" id="p-norm"></div>
-            <div class="form-group"><label>구매 링크</label><input type="text" id="p-link"></div>
+            <input type="hidden" id="p-key"> 
+            
+            <div class="form-group"><label>상품명</label><input type="text" id="p-name" placeholder="예: 스킨 어노인팅 토너"></div>
+            
+            <div class="form-group"><label>할인가 (숫자만 입력하면 콤마 자동)</label><input type="text" id="p-price" placeholder="예: 25,000" onkeyup="inputNumberFormat(this)"></div>
+            <div class="form-group"><label>정상가 (선택)</label><input type="text" id="p-norm" placeholder="예: 35,000" onkeyup="inputNumberFormat(this)"></div>
+            
+            <div class="form-group"><label>구매 링크</label><input type="text" id="p-link" placeholder="https://..."></div>
             <div class="form-group"><label>상세 설명</label><textarea id="p-desc" rows="3"></textarea></div>
+            
             <div class="form-group">
-                <label>이미지 (수정 시 선택 안 하면 기존 이미지 유지)</label>
-                <input type="file" id="p-imgs" multiple>
+                <label>이미지 (여러 번 선택해서 추가 가능)</label>
+                <input type="file" id="p-imgs-input" multiple onchange="handleAddImages(this)">
+                <div class="img-preview-container" id="p-preview-box">
+                    </div>
             </div>
             
             <div class="btn-group">
@@ -133,17 +145,12 @@
 
     <div id="music" class="panel">
         <div class="form-box">
-            <h3 id="m-form-title">음악 등록 (New Music)</h3>
+            <h3 id="m-form-title">음악 등록</h3>
             <input type="hidden" id="m-key">
             <input type="hidden" id="m-old-file">
-            
             <div class="form-group"><label>곡 제목</label><input type="text" id="m-title"></div>
-            <div class="form-group"><label>가사 (선택)</label><textarea id="m-lyrics" rows="5"></textarea></div>
-            <div class="form-group">
-                <label>MP3 파일 (수정 시 선택 안 하면 기존 파일 유지)</label>
-                <input type="file" id="m-file">
-            </div>
-            
+            <div class="form-group"><label>가사</label><textarea id="m-lyrics" rows="5"></textarea></div>
+            <div class="form-group"><label>MP3 파일</label><input type="file" id="m-file"></div>
             <div class="btn-group">
                 <button class="cancel-btn" id="m-cancel" onclick="resetForm('music')">취소</button>
                 <button class="submit-btn" id="m-submit" onclick="saveMusic()">음악 등록</button>
@@ -154,14 +161,12 @@
 
     <div id="video" class="panel">
         <div class="form-box">
-            <h3 id="v-form-title">비디오 등록 (New Video)</h3>
+            <h3 id="v-form-title">비디오 등록</h3>
             <input type="hidden" id="v-key">
             <input type="hidden" id="v-old-thumb">
-            
             <div class="form-group"><label>영상 제목</label><input type="text" id="v-title"></div>
             <div class="form-group"><label>유튜브 링크</label><input type="text" id="v-link"></div>
-            <div class="form-group"><label>썸네일 URL (자동생성)</label><input type="text" id="v-thumb" placeholder="비워두면 자동 생성"></div>
-            
+            <div class="form-group"><label>썸네일 URL</label><input type="text" id="v-thumb" placeholder="자동 생성"></div>
             <div class="btn-group">
                 <button class="cancel-btn" id="v-cancel" onclick="resetForm('video')">취소</button>
                 <button class="submit-btn" id="v-submit" onclick="saveVideo()">비디오 등록</button>
@@ -169,14 +174,65 @@
         </div>
         <div class="item-list" id="v-list"></div>
     </div>
-
 </div>
 
 <script>
     const db = firebase.database();
     const storage = firebase.storage();
 
-    // 탭 전환 함수
+    // ★ [기능] 가격 콤마 자동 찍기 함수
+    function inputNumberFormat(obj) {
+        obj.value = comma(uncomma(obj.value));
+    }
+    function comma(str) {
+        str = String(str);
+        return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
+    }
+    function uncomma(str) {
+        str = String(str);
+        return str.replace(/[^\d]+/g, '');
+    }
+
+    // ★ [기능] 이미지 누적 관리 시스템
+    let currentProductFiles = []; // 현재 선택된 파일들 (File 객체 또는 URL 문자열)
+
+    function handleAddImages(input) {
+        const files = Array.from(input.files);
+        if(files.length === 0) return;
+
+        // 배열에 추가
+        currentProductFiles = currentProductFiles.concat(files);
+        renderPreview();
+        input.value = ""; // 입력창 초기화 (같은 파일 다시 선택 가능하게)
+    }
+
+    function renderPreview() {
+        const box = document.getElementById('p-preview-box');
+        box.innerHTML = "";
+        
+        currentProductFiles.forEach((file, idx) => {
+            const div = document.createElement('div');
+            div.className = 'img-preview-item';
+            
+            // 기존 이미지(URL 문자열)인지 새 파일(File 객체)인지 구분
+            let src = "";
+            if(typeof file === 'string') {
+                src = file;
+            } else {
+                src = URL.createObjectURL(file);
+            }
+
+            div.innerHTML = `<img src="${src}"><div class="btn-remove-img" onclick="removeImage(${idx})">X</div>`;
+            box.appendChild(div);
+        });
+    }
+
+    function removeImage(idx) {
+        currentProductFiles.splice(idx, 1); // 배열에서 삭제
+        renderPreview(); // 화면 갱신
+    }
+
+    // 탭 전환
     function showPanel(id) {
         document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
         document.getElementById(id).classList.add('active');
@@ -185,49 +241,47 @@
         if(id === 'stats') loadStats();
     }
 
-    // ==========================================
-    // 1. 상품 (Product) - 등록/수정/삭제
-    // ==========================================
+    // ================== 1. 상품 로직 (대폭 수정됨) ==================
     function saveProduct() {
-        const key = document.getElementById('p-key').value; // 키가 있으면 수정, 없으면 등록
+        const key = document.getElementById('p-key').value;
         const name = document.getElementById('p-name').value;
         const price = document.getElementById('p-price').value;
         const norm = document.getElementById('p-norm').value;
         const link = document.getElementById('p-link').value;
         const desc = document.getElementById('p-desc').value;
-        const files = document.getElementById('p-imgs').files;
-        const oldImg = document.getElementById('p-old-img').value;
 
         if(!name || !price) return alert("상품명과 가격은 필수입니다.");
+        if(currentProductFiles.length === 0) return alert("이미지를 최소 1장 등록해주세요.");
 
-        // 파일 업로드 처리
-        let uploadPromise;
-        if(files.length > 0) {
-            // 새 파일이 있으면 업로드
-            const file = files[0];
-            const ref = storage.ref('products/' + new Date().getTime() + '_' + file.name);
-            uploadPromise = ref.put(file).then(s => s.ref.getDownloadURL()).then(url => [url]);
-        } else {
-            // 새 파일 없으면 기존 이미지 사용
-            if(key && oldImg) uploadPromise = Promise.resolve(JSON.parse(oldImg));
-            else return alert("이미지를 선택해주세요.");
-        }
+        // 파일 업로드 처리 (Promise.all 사용)
+        const uploadPromises = currentProductFiles.map(item => {
+            if(typeof item === 'string') {
+                // 이미 URL인 경우 (기존 이미지)
+                return Promise.resolve(item);
+            } else {
+                // 새 파일인 경우 업로드
+                const ref = storage.ref('products/' + Date.now() + '_' + item.name);
+                return ref.put(item).then(s => s.ref.getDownloadURL());
+            }
+        });
 
-        uploadPromise.then(urls => {
+        // 모든 처리(업로드/유지)가 끝나면 저장
+        Promise.all(uploadPromises).then(urls => {
             const data = { name, priceSale: price, priceNormal: norm, link, desc, images: urls };
             
-            if(key) { // 수정
+            if(key) {
                 db.ref('products/' + key).update(data);
-                alert("수정되었습니다.");
-            } else { // 등록
+                alert("수정 완료되었습니다.");
+            } else {
                 db.ref('products').push(data);
-                alert("등록되었습니다.");
+                alert("등록 완료되었습니다.");
             }
             resetForm('product');
+        }).catch(err => {
+            alert("업로드 중 오류가 발생했습니다: " + err.message);
         });
     }
 
-    // 수정 버튼 클릭 시 폼에 데이터 채우기
     function editProduct(key) {
         db.ref('products/' + key).once('value', s => {
             const v = s.val();
@@ -237,20 +291,21 @@
             document.getElementById('p-norm').value = v.priceNormal || "";
             document.getElementById('p-link').value = v.link || "";
             document.getElementById('p-desc').value = v.desc || "";
-            document.getElementById('p-old-img').value = JSON.stringify(v.images || []);
             
-            // UI 변경
-            document.getElementById('p-form-title').innerText = "상품 수정 (Edit Product)";
-            document.getElementById('p-submit').innerText = "수정 완료";
-            document.getElementById('p-submit').style.background = "#3498db";
+            // 기존 이미지들을 미리보기 배열에 넣기
+            currentProductFiles = v.images || [];
+            renderPreview();
+
+            document.getElementById('p-form-title').innerText = "상품 수정";
+            const btn = document.getElementById('p-submit');
+            btn.innerText = "수정 완료";
+            btn.style.background = "#3498db";
             document.getElementById('p-cancel').style.display = "block";
             window.scrollTo(0,0);
         });
     }
 
-    // ==========================================
-    // 2. 음악 (Music) - 등록/수정/삭제
-    // ==========================================
+    // ================== 2. 음악 로직 ==================
     function saveMusic() {
         const key = document.getElementById('m-key').value;
         const title = document.getElementById('m-title').value;
@@ -258,26 +313,21 @@
         const file = document.getElementById('m-file').files[0];
         const oldFile = document.getElementById('m-old-file').value;
 
-        if(!title) return alert("곡 제목은 필수입니다.");
+        if(!title) return alert("곡 제목 필수");
 
-        let uploadPromise;
+        let p;
         if(file) {
-            const ref = storage.ref('music/' + new Date().getTime() + '_' + file.name);
-            uploadPromise = ref.put(file).then(s => s.ref.getDownloadURL());
+            p = storage.ref('music/' + Date.now() + '_' + file.name).put(file).then(s => s.ref.getDownloadURL());
         } else {
-            if(key && oldFile) uploadPromise = Promise.resolve(oldFile);
-            else return alert("음악 파일을 선택해주세요.");
+            if(key && oldFile) p = Promise.resolve(oldFile);
+            else return alert("MP3 파일을 선택하세요.");
         }
 
-        uploadPromise.then(url => {
+        p.then(url => {
             const data = { title, lyrics, fileUrl: url };
-            if(key) {
-                db.ref('music/' + key).update(data);
-                alert("수정되었습니다.");
-            } else {
-                db.ref('music').push(data);
-                alert("등록되었습니다.");
-            }
+            if(key) db.ref('music/' + key).update(data);
+            else db.ref('music').push(data);
+            alert("저장되었습니다.");
             resetForm('music');
         });
     }
@@ -289,8 +339,7 @@
             document.getElementById('m-title').value = v.title;
             document.getElementById('m-lyrics').value = v.lyrics || "";
             document.getElementById('m-old-file').value = v.fileUrl;
-
-            document.getElementById('m-form-title').innerText = "음악 수정 (Edit Music)";
+            
             document.getElementById('m-submit').innerText = "수정 완료";
             document.getElementById('m-submit').style.background = "#3498db";
             document.getElementById('m-cancel').style.display = "block";
@@ -298,9 +347,7 @@
         });
     }
 
-    // ==========================================
-    // 3. 비디오 (Video) - 등록/수정/삭제
-    // ==========================================
+    // ================== 3. 비디오 로직 ==================
     function saveVideo() {
         const key = document.getElementById('v-key').value;
         const title = document.getElementById('v-title').value;
@@ -308,27 +355,19 @@
         let thumb = document.getElementById('v-thumb').value;
         const oldThumb = document.getElementById('v-old-thumb').value;
 
-        if(!title || !link) return alert("제목과 링크는 필수입니다.");
+        if(!title || !link) return alert("제목과 링크 필수");
 
         if(!thumb) {
-            if(key && oldThumb && !link.includes('youtu')) thumb = oldThumb; // 기존 유지
+            if(key && oldThumb && !link.includes('youtu')) thumb = oldThumb;
             else {
-                // 유튜브 썸네일 자동 추출
-                try {
-                    const vidId = link.split('v=')[1].split('&')[0];
-                    thumb = `https://img.youtube.com/vi/${vidId}/0.jpg`;
-                } catch(e) { thumb = 'logo.jpg'; }
+                try { const vidId = link.split('v=')[1].split('&')[0]; thumb = `https://img.youtube.com/vi/${vidId}/0.jpg`; } 
+                catch(e) { thumb = 'logo.jpg'; }
             }
         }
-
         const data = { title, link, thumbnail: thumb };
-        if(key) {
-            db.ref('videos/' + key).update(data);
-            alert("수정되었습니다.");
-        } else {
-            db.ref('videos').push(data);
-            alert("등록되었습니다.");
-        }
+        if(key) db.ref('videos/' + key).update(data);
+        else db.ref('videos').push(data);
+        alert("저장되었습니다.");
         resetForm('video');
     }
 
@@ -341,7 +380,6 @@
             document.getElementById('v-thumb').value = v.thumbnail;
             document.getElementById('v-old-thumb').value = v.thumbnail;
 
-            document.getElementById('v-form-title').innerText = "비디오 수정 (Edit Video)";
             document.getElementById('v-submit').innerText = "수정 완료";
             document.getElementById('v-submit').style.background = "#3498db";
             document.getElementById('v-cancel').style.display = "block";
@@ -349,9 +387,7 @@
         });
     }
 
-    // ==========================================
-    // 4. 공통 함수 (초기화, 삭제, 리스트 로드)
-    // ==========================================
+    // ================== 공통 함수 ==================
     function resetForm(type) {
         if(type === 'product') {
             document.getElementById('p-key').value = "";
@@ -360,17 +396,22 @@
             document.getElementById('p-norm').value = "";
             document.getElementById('p-link').value = "";
             document.getElementById('p-desc').value = "";
-            document.getElementById('p-imgs').value = "";
-            document.getElementById('p-form-title').innerText = "상품 등록 (New Product)";
-            document.getElementById('p-submit').innerText = "상품 등록";
-            document.getElementById('p-submit').style.background = "#8b5e3c";
+            document.getElementById('p-imgs-input').value = "";
+            currentProductFiles = []; // 이미지 배열 초기화
+            renderPreview(); // 미리보기 초기화
+            
+            document.getElementById('p-form-title').innerText = "상품 등록";
+            const btn = document.getElementById('p-submit');
+            btn.innerText = "상품 등록";
+            btn.style.background = "#8b5e3c";
             document.getElementById('p-cancel').style.display = "none";
-        } else if (type === 'music') {
+        } 
+        // (음악, 비디오 초기화 로직은 기존과 동일)
+        else if (type === 'music') {
             document.getElementById('m-key').value = "";
             document.getElementById('m-title').value = "";
             document.getElementById('m-lyrics').value = "";
             document.getElementById('m-file').value = "";
-            document.getElementById('m-form-title').innerText = "음악 등록 (New Music)";
             document.getElementById('m-submit').innerText = "음악 등록";
             document.getElementById('m-submit').style.background = "#8b5e3c";
             document.getElementById('m-cancel').style.display = "none";
@@ -379,7 +420,6 @@
             document.getElementById('v-title').value = "";
             document.getElementById('v-link').value = "";
             document.getElementById('v-thumb').value = "";
-            document.getElementById('v-form-title').innerText = "비디오 등록 (New Video)";
             document.getElementById('v-submit').innerText = "비디오 등록";
             document.getElementById('v-submit').style.background = "#8b5e3c";
             document.getElementById('v-cancel').style.display = "none";
@@ -387,134 +427,58 @@
     }
 
     function del(path, key) {
-        if(confirm("정말 삭제하시겠습니까? (복구 불가)")) {
-            db.ref(path + '/' + key).remove();
-        }
+        if(confirm("삭제하시겠습니까?")) db.ref(path + '/' + key).remove();
     }
 
-    // 리스트 실시간 불러오기 (수정 버튼 추가됨)
     function loadLists() {
         db.ref('products').on('value', s => {
             const d = document.getElementById('p-list'); d.innerHTML="";
             if(s.val()) Object.entries(s.val()).forEach(([k,v]) => {
-                const img = v.images ? v.images[0] : v.imageUrl;
-                d.innerHTML += `
-                    <div class="item">
-                        <div class="item-info">
-                            <img src="${img}">
-                            <div class="item-text">
-                                <div class="item-title">${v.name}</div>
-                                <div class="item-sub">${v.priceSale}</div>
-                            </div>
-                        </div>
-                        <div class="btn-action-group">
-                            <button class="btn-edit" onclick="editProduct('${k}')">수정</button>
-                            <button class="btn-del" onclick="del('products','${k}')">삭제</button>
-                        </div>
-                    </div>`;
+                const img = v.images ? v.images[0] : 'logo.jpg';
+                d.innerHTML += `<div class="item"><div class="item-info"><img src="${img}"><div class="item-text"><div class="item-title">${v.name}</div><div class="item-sub">${v.priceSale}</div></div></div><div class="btn-action-group"><button class="btn-edit" onclick="editProduct('${k}')">수정</button><button class="btn-del" onclick="del('products','${k}')">삭제</button></div></div>`;
             });
         });
-
         db.ref('music').on('value', s => {
             const d = document.getElementById('m-list'); d.innerHTML="";
             if(s.val()) Object.entries(s.val()).forEach(([k,v]) => {
-                d.innerHTML += `
-                    <div class="item">
-                        <div class="item-info">
-                            <div class="item-text">
-                                <div class="item-title">🎵 ${v.title}</div>
-                            </div>
-                        </div>
-                        <div class="btn-action-group">
-                            <button class="btn-edit" onclick="editMusic('${k}')">수정</button>
-                            <button class="btn-del" onclick="del('music','${k}')">삭제</button>
-                        </div>
-                    </div>`;
+                d.innerHTML += `<div class="item"><div class="item-info"><div class="item-text"><div class="item-title">🎵 ${v.title}</div></div></div><div class="btn-action-group"><button class="btn-edit" onclick="editMusic('${k}')">수정</button><button class="btn-del" onclick="del('music','${k}')">삭제</button></div></div>`;
             });
         });
-
         db.ref('videos').on('value', s => {
             const d = document.getElementById('v-list'); d.innerHTML="";
             if(s.val()) Object.entries(s.val()).forEach(([k,v]) => {
-                d.innerHTML += `
-                    <div class="item">
-                        <div class="item-info">
-                            <img src="${v.thumbnail}">
-                            <div class="item-text">
-                                <div class="item-title">🎬 ${v.title}</div>
-                            </div>
-                        </div>
-                        <div class="btn-action-group">
-                            <button class="btn-edit" onclick="editVideo('${k}')">수정</button>
-                            <button class="btn-del" onclick="del('videos','${k}')">삭제</button>
-                        </div>
-                    </div>`;
+                d.innerHTML += `<div class="item"><div class="item-info"><img src="${v.thumbnail}"><div class="item-text"><div class="item-title">🎬 ${v.title}</div></div></div><div class="btn-action-group"><button class="btn-edit" onclick="editVideo('${k}')">수정</button><button class="btn-del" onclick="del('videos','${k}')">삭제</button></div></div>`;
             });
         });
     }
 
-    // ==========================================
-    // 5. 통계 로직 (그래프, 순위)
-    // ==========================================
     let visitChartInstance = null;
     function loadStats() {
         db.ref('stats_visits/daily').limitToLast(7).once('value', s => {
             const data = s.val() || {};
             const labels = Object.keys(data).sort();
             const counts = labels.map(date => data[date]);
-
             const ctx = document.getElementById('visitChart').getContext('2d');
             if(visitChartInstance) visitChartInstance.destroy();
-            
             visitChartInstance = new Chart(ctx, {
                 type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: '일별 방문자 수',
-                        data: counts,
-                        borderColor: '#8b5e3c',
-                        backgroundColor: 'rgba(139, 94, 60, 0.1)',
-                        fill: true,
-                        tension: 0.3
-                    }]
-                },
+                data: { labels: labels, datasets: [{ label: '방문자', data: counts, borderColor: '#8b5e3c', backgroundColor: 'rgba(139, 94, 60, 0.1)', fill: true }] },
                 options: { responsive: true, maintainAspectRatio: false }
             });
         });
-
-        Promise.all([db.ref('stats_product_clicks').once('value'), db.ref('products').once('value')])
-        .then(([clickSnap, prodSnap]) => {
-            const clicks = clickSnap.val() || {};
-            const products = prodSnap.val() || {};
-            let rankArr = [];
-            Object.keys(clicks).forEach(key => {
-                const name = products[key] ? products[key].name : '삭제된 상품';
-                rankArr.push({ name: name, count: clicks[key] });
-            });
-            rankArr.sort((a,b) => b.count - a.count);
-            const tbl = document.getElementById('product-rank-table');
-            tbl.innerHTML = `<tr><th>순위</th><th>상품명</th><th>클릭수</th></tr>`;
-            rankArr.forEach((item, i) => {
-                tbl.innerHTML += `<tr><td class="rank-num">${i+1}</td><td>${item.name}</td><td>${item.count}회</td></tr>`;
-            });
+        
+        Promise.all([db.ref('stats_product_clicks').once('value'), db.ref('products').once('value')]).then(([c, p]) => {
+            const clicks = c.val() || {}, prods = p.val() || {};
+            let arr = Object.keys(clicks).map(k => ({ name: prods[k]?prods[k].name:'삭제됨', count: clicks[k] })).sort((a,b)=>b.count-a.count);
+            const t = document.getElementById('product-rank-table'); t.innerHTML = `<tr><th>순위</th><th>이름</th><th>클릭</th></tr>`;
+            arr.forEach((i, idx) => t.innerHTML += `<tr><td class="rank-num">${idx+1}</td><td>${i.name}</td><td>${i.count}</td></tr>`);
         });
 
-        Promise.all([db.ref('stats_music_plays').once('value'), db.ref('music').once('value')])
-        .then(([playSnap, musicSnap]) => {
-            const plays = playSnap.val() || {};
-            const musics = musicSnap.val() || {};
-            let rankArr = [];
-            Object.keys(plays).forEach(key => {
-                const title = musics[key] ? musics[key].title : '삭제된 음악';
-                rankArr.push({ title: title, count: plays[key] });
-            });
-            rankArr.sort((a,b) => b.count - a.count);
-            const tbl = document.getElementById('music-rank-table');
-            tbl.innerHTML = `<tr><th>순위</th><th>곡 제목</th><th>재생수</th></tr>`;
-            rankArr.forEach((item, i) => {
-                tbl.innerHTML += `<tr><td class="rank-num">${i+1}</td><td>${item.title}</td><td>${item.count}회</td></tr>`;
-            });
+        Promise.all([db.ref('stats_music_plays').once('value'), db.ref('music').once('value')]).then(([c, m]) => {
+            const plays = c.val() || {}, musics = m.val() || {};
+            let arr = Object.keys(plays).map(k => ({ title: musics[k]?musics[k].title:'삭제됨', count: plays[k] })).sort((a,b)=>b.count-a.count);
+            const t = document.getElementById('music-rank-table'); t.innerHTML = `<tr><th>순위</th><th>곡명</th><th>재생</th></tr>`;
+            arr.forEach((i, idx) => t.innerHTML += `<tr><td class="rank-num">${idx+1}</td><td>${i.title}</td><td>${i.count}</td></tr>`);
         });
     }
 
