@@ -1,12 +1,12 @@
 <!doctype html>
 <html lang="ko">
 <head>
-<meta name="app-version" content="8.17-catalog-polish">
+<meta name="app-version" content="8.18-music-admin">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#f6f2e9">
 <title>스킨어노인팅 · Skin Anointing</title>
-<meta name="application-version" content="8.17-catalog-polish">
+<meta name="application-version" content="8.18-music-admin">
 <meta name="description" content="가장 소중한 당신에게, 온전한 케어를 붓다. 18년의 피부 관리 경험을 바탕으로 피부·바디·두피를 위한 일상의 리추얼을 제안합니다.">
 <link rel="canonical" href="https://skinanointing.com/">
 <meta property="og:type" content="website">
@@ -57,22 +57,33 @@ h1,h2,h3{text-wrap:balance}p{text-wrap:pretty}
 .nav{display:flex;align-items:center;gap:22px;font-weight:600;font-size:14px;letter-spacing:-.02em}
 .nav a{min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;position:relative}
 .nav a:after{content:"";position:absolute;left:0;right:100%;bottom:4px;height:1px;background:var(--ink);transition:right .25s}
+/* Quiet, compact music bar; details stay in its optional drawer. */
 .mini-music{position:sticky;top:var(--header-height);z-index:29;min-height:var(--player-height);background:rgba(31,33,26,.97);color:#f7f3ea;border-bottom:1px solid rgba(255,255,255,.08);backdrop-filter:blur(16px)}
-.mini-music-in{min-height:calc(var(--player-height) - 1px);display:grid;grid-template-columns:minmax(190px,360px) 44px minmax(80px,1fr) 42px;align-items:center;gap:14px}
-.mini-music-title{min-width:0;display:flex;align-items:center;gap:10px;white-space:nowrap;overflow:hidden}
-.mini-music-title>span:last-child{display:flex;align-items:baseline;gap:8px;min-width:0;overflow:hidden}
-.mini-music-title b{font-size:10px;letter-spacing:.14em;font-weight:600;overflow:hidden;text-overflow:ellipsis}
-.mini-music-title small{font-size:11px;color:#c5bdae;overflow:hidden;text-overflow:ellipsis}
-.eq{width:16px;height:16px;display:flex;align-items:flex-end;justify-content:center;gap:2px;flex:none}
-.eq i{display:block;width:2px;background:#d7c294;border-radius:9px;animation:eq 1s ease-in-out infinite}
-.eq i:nth-child(1){height:6px;animation-delay:-.35s}.eq i:nth-child(2){height:12px;animation-delay:-.1s}.eq i:nth-child(3){height:8px;animation-delay:-.55s}
-.mini-music.paused .eq i{animation-play-state:paused;height:4px}
-@keyframes eq{0%,100%{transform:scaleY(.45)}50%{transform:scaleY(1)}}
-.mini-play{width:44px;height:44px;border:1px solid rgba(255,255,255,.26);border-radius:50%;background:rgba(255,255,255,.06);color:white;display:grid;place-items:center;padding:0;cursor:pointer;font-size:13px;line-height:1}
-.mini-seek{min-width:0;height:44px;display:flex;align-items:center;cursor:pointer;position:relative;touch-action:manipulation}
-.mini-seek:before{content:"";position:absolute;left:0;right:0;height:2px;background:rgba(255,255,255,.22);border-radius:9px}
-.mini-seek span{height:2px;width:0;background:#d7c294;border-radius:9px;position:relative;z-index:1;pointer-events:none}
-.mini-time{font-variant-numeric:tabular-nums;font-size:11px;color:#c5bdae;text-align:right}
+.mini-music-in{min-height:calc(var(--player-height) - 1px);display:flex;align-items:center;gap:4px}
+.mini-music-title{flex:1;min-width:0;min-height:44px;display:flex;align-items:center;gap:14px;padding:0 8px 0 0;border:0;background:none;color:inherit;text-align:left;cursor:pointer;overflow:hidden}
+.mini-music-title b{flex:none;font-size:9px;letter-spacing:.16em;font-weight:500;color:#c5bdae}
+.mini-music-title small{min-width:0;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini-control{flex:none;width:44px;height:44px;display:grid;place-items:center;border:0;padding:0;background:transparent;color:#ede6d8;cursor:pointer}
+.mini-control svg{width:14px;height:14px;fill:currentColor}
+.mini-play{font-size:12px;line-height:1}
+.mini-control:disabled{opacity:.25;cursor:default}
+.mini-control:hover:not(:disabled),.mini-music-title:hover{color:#d7c294}
+.mini-expand svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.4}
+.mini-expand[aria-expanded="true"] svg{transform:rotate(180deg)}
+.mini-drawer{border-top:1px solid rgba(255,255,255,.09);padding-block:0 12px}
+.mini-drawer[hidden]{display:none}
+.mini-position{display:flex;align-items:center;gap:18px}
+.mini-seek{flex:1;min-width:0;height:44px;display:flex;align-items:center;cursor:pointer;position:relative;touch-action:manipulation}
+.mini-seek:before{content:"";position:absolute;left:0;right:0;height:2px;background:rgba(255,255,255,.16);border-radius:9px}
+.mini-seek span{height:2px;width:0;background:#c5b18a;border-radius:9px;position:relative;z-index:1;pointer-events:none}
+.mini-time{font-variant-numeric:tabular-nums;font-size:10px;color:#c5bdae;text-align:right;white-space:nowrap}
+.mini-tracks{max-height:min(176px,36dvh);overflow-y:auto;overscroll-behavior:contain}
+.mini-track{width:100%;min-height:44px;display:flex;align-items:center;gap:14px;border:0;border-radius:4px;background:none;color:#c5bdae;text-align:left;padding:10px 12px;cursor:pointer;font-size:12px}
+.mini-track span{flex:none;font-size:10px;font-variant-numeric:tabular-nums;opacity:.65}
+.mini-track strong{font-weight:400;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mini-track[aria-current="true"]{background:rgba(215,194,148,.09);color:#e4d2ad}
+.mini-track:hover{background:rgba(255,255,255,.06)}
+.mini-empty{font-size:11px;color:#c5bdae;padding:12px}
 .hero-wrap{padding-top:20px}
 .hero{position:relative;display:flex;align-items:flex-end;min-height:680px;padding:clamp(24px,3.3vw,44px);border-radius:34px;overflow:hidden;box-shadow:var(--shadow);background-image:linear-gradient(90deg,rgba(248,244,236,.22),rgba(248,244,236,.02)),url('brand-0e0148d460995469.webp');background-size:cover;background-position:center}
 .hero-panel{position:relative;width:min(560px,100%);padding:34px 36px 32px;background:rgba(251,248,242,.93);border:1px solid rgba(255,255,255,.8);border-radius:28px;backdrop-filter:blur(14px);box-shadow:0 18px 60px rgba(59,43,27,.14)}
@@ -167,8 +178,7 @@ h1,h2,h3{text-wrap:balance}p{text-wrap:pretty}
 @media(max-width:820px){
   :root{--header-height:68px}
   .brand{width:150px}.nav{gap:12px;font-size:13px}.header-in{gap:16px}
-  .mini-music-in{grid-template-columns:minmax(0,1fr) 44px minmax(64px,.7fr);gap:12px}.mini-time{display:none}
-  .mini-music-title>span:last-child{display:block;line-height:1.2}.mini-music-title b,.mini-music-title small{display:block}.mini-music-title b{font-size:10px;letter-spacing:.1em}.mini-music-title small{font-size:10px;margin-top:4px}
+  .mini-music-title{display:block;padding-block:6px}.mini-music-title b,.mini-music-title small{display:block}.mini-music-title b{font-size:8px;letter-spacing:.12em;margin-bottom:3px}.mini-music-title small{font-size:10px}
   .section-head{display:block;margin-bottom:28px}.section-lead{max-width:440px;margin-top:18px}
   .hero-panel{width:min(530px,100%);padding:30px}.hero h1{font-size:36px}
   .video-inner{flex-direction:column;align-items:flex-start;min-height:390px;gap:36px}.video-inner>div:last-child{display:flex;align-items:center;gap:20px}.video-link{margin-top:0}.play-orb{width:58px;height:58px;font-size:20px}
@@ -196,7 +206,7 @@ h1,h2,h3{text-wrap:balance}p{text-wrap:pretty}
 }
 @media(max-width:379px){
   :root{--gutter:16px}.brand{width:116px}.nav{gap:0}.header-in{gap:8px}
-  .mini-music-in{gap:8px;grid-template-columns:minmax(0,1fr) 44px minmax(56px,.55fr)}.mini-music-title{gap:6px}.mini-music-title b{font-size:9px;letter-spacing:.04em}.mini-music-title small{font-size:10px}.eq{width:12px}
+  .mini-music-in{gap:0}.mini-music-title b{letter-spacing:.05em;font-size:7px}
   .hero{padding-inline:10px;min-height:620px}.hero-panel{padding:24px 20px}.hero h1{font-size:26px}.hero-logo{max-width:90%}.primary{min-width:0;width:100%}
   .products{grid-template-columns:minmax(0,1fr);gap:18px}.product-copy{padding:20px}.product-copy h3{font-size:19px}.product-copy>span{font-size:12px}.store-chip{right:12px;top:12px;font-size:10px}
   .video-inner{padding:28px 23px}.video-inner>div:last-child{flex-wrap:wrap}.story-scene-copy{padding-inline:22px}
@@ -218,15 +228,19 @@ h1,h2,h3{text-wrap:balance}p{text-wrap:pretty}
   <a class="brand" href="#top" aria-label="Skin Anointing 홈"><img src="brand-d665bdbd7703fe28.webp" alt="Skin Anointing" width="750" height="342"></a>
   <nav class="nav" aria-label="주요 메뉴"><a href="#products">제품</a><a href="#story">브랜드</a><a href="#media">콘텐츠</a></nav>
 </div></header>
-<div class="mini-music paused" id="miniMusic" aria-label="Skin Anointing 음악 플레이어">
+<div class="mini-music paused" id="miniMusic" role="region" aria-label="Skin Anointing 음악 플레이어">
   <div class="container mini-music-in">
-    <div class="mini-music-title">
-      <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
-      <span><b>SKIN ANOINTING MUSIC</b><small id="miniStatus" aria-live="polite">불러오는 중</small></span>
+    <button class="mini-music-title" id="miniTitleBtn" type="button" aria-label="음악 목록" aria-expanded="false" aria-controls="miniDrawer"><b>SKIN ANOINTING MUSIC</b><small id="miniStatus" aria-live="polite">불러오는 중</small></button>
+    <button class="mini-control" id="miniPrevBtn" type="button" aria-label="이전 곡" disabled><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3h1.5v10H3zM13 3v10L5 8z"/></svg></button>
+    <button class="mini-control mini-play" id="miniPlayBtn" type="button" aria-label="음악 재생" aria-pressed="false" disabled>▶</button>
+    <button class="mini-control" id="miniNextBtn" type="button" aria-label="다음 곡" disabled><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.5 3H13v10h-1.5zM3 3l8 5-8 5z"/></svg></button>
+    <button class="mini-control mini-expand" id="miniExpandBtn" type="button" aria-label="음악 목록" aria-expanded="false" aria-controls="miniDrawer"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3 6 5 5 5-5"/></svg></button>
+  </div>
+  <div class="mini-drawer" id="miniDrawer" hidden>
+    <div class="container">
+      <div class="mini-position"><div class="mini-seek" id="miniSeek" role="slider" tabindex="0" aria-label="음악 재생 위치" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="miniProgress"></span></div><span class="mini-time" id="miniTime">0:00 / 0:00</span></div>
+      <div class="mini-tracks" id="miniTracks" role="group" aria-label="음악 목록"></div>
     </div>
-    <button class="mini-play" id="miniPlayBtn" type="button" aria-label="음악 재생" aria-pressed="false" disabled>▶</button>
-    <div class="mini-seek" id="miniSeek" role="slider" tabindex="0" aria-label="음악 재생 위치" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="miniProgress"></span></div>
-    <span class="mini-time" id="miniTime">0:00</span>
   </div>
   <audio id="audio" preload="none"></audio>
 </div>
@@ -355,7 +369,7 @@ let productsRef=null,productsCallback=null,lastProductSignature=null;
 function visibleProducts(raw){
   if(!window.SkinCatalog) return [];
   const text=(value,max)=>typeof value==='string'?value.trim().slice(0,max):'';
-  return window.SkinCatalog.merge(raw).filter(item=>item.homepageVisible===true).map(item=>({
+  return window.SkinCatalog.merge(raw).filter(item=>item.homepageVisible===true&&item.trashed!==true).map(item=>({
     key:item.key,name:text(item.name,100),label:text(item.label,80),desc:text(item.desc,160),
     link:window.SkinCatalog.safeUrl(item.link),
     image:(Array.isArray(item.images)?item.images:[]).map(window.SkinCatalog.safeUrl).find(Boolean)||''
@@ -369,7 +383,7 @@ function renderProducts(raw){
   const fragment=document.createDocumentFragment();
   const element=(tag,className,text)=>{const el=document.createElement(tag);if(className)el.className=className;if(text!==undefined)el.textContent=text;return el;};
   items.forEach(item=>{
-    const naver=/(^|\.)naver\.com$/.test(new URL(item.link).hostname);
+    const host=new URL(item.link).hostname,naver=host==='naver.me'||/(^|\.)naver\.com$/.test(host);
     const card=element('a','product-card');
     card.href=item.link;card.target='_blank';card.rel='noopener noreferrer';
     card.setAttribute('aria-label',item.name+(naver?' 스마트스토어에서 보기':' 구매처에서 보기'));
@@ -412,6 +426,27 @@ const statusEl=document.getElementById('miniStatus');
 const seek=document.getElementById('miniSeek');
 const progress=document.getElementById('miniProgress');
 const timeEl=document.getElementById('miniTime');
+const prevBtn=document.getElementById('miniPrevBtn'),nextBtn=document.getElementById('miniNextBtn');
+const titleBtn=document.getElementById('miniTitleBtn'),expandBtn=document.getElementById('miniExpandBtn');
+const drawer=document.getElementById('miniDrawer'),trackList=document.getElementById('miniTracks');
+let trackButtons=[],restorePending=false;
+function toggleMusicList(){
+  drawer.hidden=!drawer.hidden;
+  [titleBtn,expandBtn].forEach(control=>control.setAttribute('aria-expanded',String(!drawer.hidden)));
+}
+titleBtn.addEventListener('click',toggleMusicList);
+expandBtn.addEventListener('click',toggleMusicList);
+mini.addEventListener('keydown',event=>{if(event.key==='Escape'&&!drawer.hidden){toggleMusicList();titleBtn.focus();}});
+function renderMusicList(){
+  trackList.replaceChildren();trackButtons=[];
+  playlist.forEach((track,index)=>{
+    const row=document.createElement('button'),number=document.createElement('span'),name=document.createElement('strong');
+    row.type='button';row.className='mini-track';number.textContent=String(index+1).padStart(2,'0');name.textContent=track.title;
+    row.appendChild(number);row.appendChild(name);row.addEventListener('click',()=>selectMusic(index,true));
+    trackButtons.push(row);trackList.appendChild(row);
+  });
+  if(!playlist.length){const empty=document.createElement('div');empty.className='mini-empty';empty.textContent='등록된 음악 없음';trackList.appendChild(empty);}
+}
 let playlist=[],trackIndex=0,musicLoadState='loading',playlistFinished=false;
 let musicRef=null,musicCallback=null,musicLoadTimer=null,musicRequest=0;
 let playRequest=0,playRequested=false,playPending=false,musicPlayError=false;
@@ -436,13 +471,16 @@ function syncPlayer(){
   if(statusEl.textContent!==title)statusEl.textContent=title;
   statusEl.setAttribute('title',title);
   const duration=sourceTrackId&&Number.isFinite(audio.duration)&&audio.duration>0?audio.duration:lastDuration;
-  const time=sourceTrackId&&Number.isFinite(audio.currentTime)?audio.currentTime:resumeTime;
+  const time=sourceTrackId&&!restorePending&&Number.isFinite(audio.currentTime)?audio.currentTime:resumeTime;
   const percent=duration>0?Math.max(0,Math.min(100,time/duration*100)):0;
   progress.style.width=percent+'%';
   seek.setAttribute('aria-valuenow',String(Math.round(percent)));
   seek.setAttribute('aria-valuetext',fmt(time)+' / '+fmt(duration));
   seek.setAttribute('aria-disabled',String(!sourceTrackId||!(duration>0)));
-  timeEl.textContent=fmt(time);
+  timeEl.textContent=fmt(time)+' / '+fmt(duration);
+  prevBtn.disabled=musicLoadState!=='ready'||trackIndex<=0||!track;
+  nextBtn.disabled=musicLoadState!=='ready'||trackIndex>=playlist.length-1||!track;
+  trackButtons.forEach((row,index)=>row.setAttribute('aria-current',String(index===trackIndex)));
 }
 function clearMusicSession(){
   if(typeof navigator==='undefined'||!navigator.mediaSession)return;
@@ -457,29 +495,44 @@ function setMusicSession(){
     if(track&&typeof MediaMetadata!=='undefined')session.metadata=new MediaMetadata({title:track.title,artist:'Skin Anointing'});
     session.playbackState='playing';
     session.setActionHandler('play',()=>{if(musicVisible())startMusic();});
-    session.setActionHandler('pause',()=>stopMusic(true));
+    session.setActionHandler('pause',pauseMusic);
     session.setActionHandler('stop',()=>stopMusic(true));
+    session.setActionHandler('previoustrack',trackIndex>0?()=>selectMusic(trackIndex-1,playRequested):null);
+    session.setActionHandler('nexttrack',trackIndex<playlist.length-1?()=>selectMusic(trackIndex+1,playRequested):null);
   }catch(_){}
 }
 function stopMusic(preservePosition=true){
   ++playRequest;playRequested=false;playPending=false;
-  if(preservePosition&&sourceTrackId){
+  if(preservePosition&&sourceTrackId&&!restorePending){
     if(Number.isFinite(audio.currentTime))resumeTime=audio.currentTime;
     if(Number.isFinite(audio.duration)&&audio.duration>0)lastDuration=audio.duration;
   }else if(!preservePosition){resumeTime=0;lastDuration=0;}
   const hadSource=!!sourceTrackId;
-  sourceTrackId='';
+  sourceTrackId='';restorePending=false;
   audio.pause();
   audio.removeAttribute('src');
   if(hadSource)audio.load();
   clearMusicSession();syncPlayer();
 }
+function pauseMusic(){
+  ++playRequest;playRequested=false;playPending=false;
+  if(sourceTrackId&&!restorePending&&Number.isFinite(audio.currentTime))resumeTime=audio.currentTime;
+  audio.pause();clearMusicSession();syncPlayer();
+}
+function selectMusic(index,shouldPlay){
+  if(musicLoadState!=='ready'||index<0||index>=playlist.length)return;
+  if(index!==trackIndex||playlistFinished){stopMusic(false);trackIndex=index;playlistFinished=false;}
+  musicPlayError=false;syncPlayer();
+  if(shouldPlay)startMusic();
+}
+prevBtn.addEventListener('click',()=>selectMusic(trackIndex-1,playRequested));
+nextBtn.addEventListener('click',()=>selectMusic(trackIndex+1,playRequested));
 async function startMusic(){
   if(!musicVisible()||musicLoadState!=='ready'||!playlist.length)return;
   if(playlistFinished){trackIndex=0;resumeTime=0;lastDuration=0;playlistFinished=false;}
   const track=musicTrack(),request=++playRequest;
   playRequested=true;playPending=true;musicPlayError=false;
-  if(!sourceTrackId){sourceTrackId=track.id;audio.src=track.url;audio.load();}
+  if(!sourceTrackId){sourceTrackId=track.id;restorePending=resumeTime>0;audio.src=track.url;audio.load();}
   audio.volume=.14;syncPlayer();
   try{
     await audio.play();
@@ -503,6 +556,7 @@ function acceptMusic(value){
   if(retained<0){stopMusic(false);trackIndex=0;playlistFinished=false;}
   else trackIndex=retained;
   playlist=next;musicLoadState='ready';musicPlayError=false;
+  renderMusicList();
   if(playRequested)setMusicSession();
   syncPlayer();
 }
@@ -527,10 +581,10 @@ function loadMusic(){
 }
 btn.addEventListener('click',()=>{
   if(musicLoadState==='error'){loadMusic();return;}
-  if(playRequested)stopMusic(true);else startMusic();
+  if(playRequested)pauseMusic();else startMusic();
 });
 function seekMusic(time){
-  if(!sourceTrackId||!Number.isFinite(audio.duration)||audio.duration<=0)return;
+  if(!sourceTrackId||restorePending||!Number.isFinite(audio.duration)||audio.duration<=0)return;
   audio.currentTime=Math.max(0,Math.min(audio.duration,time));resumeTime=audio.currentTime;syncPlayer();
 }
 seek.addEventListener('click',event=>{const r=seek.getBoundingClientRect();if(r.width>0)seekMusic((event.clientX-r.left)/r.width*audio.duration);});
@@ -541,14 +595,18 @@ seek.addEventListener('keydown',event=>{
   seekMusic(next);
 });
 audio.addEventListener('loadedmetadata',()=>{
-  if(!sourceTrackId)return;
-  if(Number.isFinite(audio.duration)&&audio.duration>0){lastDuration=audio.duration;if(resumeTime>0)audio.currentTime=Math.min(resumeTime,audio.duration);}
+  if(!sourceTrackId||audio.readyState<1||audio.currentSrc!==musicTrack()?.url)return;
+  if(Number.isFinite(audio.duration)&&audio.duration>0){
+    lastDuration=audio.duration;
+    if(restorePending&&resumeTime>0)audio.currentTime=Math.min(resumeTime,audio.duration);
+    restorePending=false;
+  }
   syncPlayer();
 });
-audio.addEventListener('timeupdate',()=>{if(sourceTrackId&&Number.isFinite(audio.currentTime))resumeTime=audio.currentTime;syncPlayer();});
+audio.addEventListener('timeupdate',()=>{if(sourceTrackId&&!restorePending&&audio.readyState>=1&&Number.isFinite(audio.currentTime))resumeTime=audio.currentTime;syncPlayer();});
 audio.addEventListener('play',()=>{if(!playRequested||!musicVisible()){stopMusic(true);return;}syncPlayer();});
 audio.addEventListener('pause',()=>{
-  if(audio.paused&&!audio.ended&&sourceTrackId&&playRequested&&!playPending){stopMusic(true);return;}
+  if(audio.paused&&!audio.ended&&sourceTrackId&&playRequested&&!playPending){pauseMusic();return;}
   syncPlayer();
 });
 audio.addEventListener('error',()=>{if(!sourceTrackId)return;stopMusic(true);musicPlayError=true;syncPlayer();});

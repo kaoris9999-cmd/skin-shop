@@ -77,6 +77,21 @@
         .product-admin-actions{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}.product-admin-actions button{width:auto;margin:0;min-height:44px;font-size:12px;font-weight:500;padding:8px 14px;background:#eeebe4;color:#514a3e;border:1px solid #e0d9ce}.product-admin-actions .product-edit{background:#24231f;border-color:#24231f;color:#fff}.product-admin-actions .product-order{padding:8px 10px;min-width:44px}.product-admin-actions .product-order-up{margin-left:auto}
         .product-admin-actions button:disabled{cursor:default;opacity:.38}
         @media(max-width:480px){body{padding:10px}.container{padding:18px 14px;border-radius:12px}.product-fields{grid-template-columns:minmax(0,1fr) 100px;gap:8px}.product-form-heading span{font-size:10px}.product-admin-actions button{padding:8px 11px}.product-form-actions .reset-btn{padding:12px}}
+
+        [hidden]{display:none!important}
+        #tab-product input:not([type=checkbox]),#tab-product textarea{font-size:16px;min-height:46px}
+        .product-save-bar{position:sticky;bottom:0;z-index:5;background:rgba(255,253,249,.97);border-top:1px solid #dfd6c7;padding:12px 0 max(12px,env(safe-area-inset-bottom));margin-top:20px}
+        .product-status{padding:12px 14px;background:#f3efe6;border-radius:8px;font-size:13px;line-height:1.65;overflow-wrap:anywhere;margin:12px 0}
+        .product-status.error{background:#fff0ec;color:#952f24}.product-status.success{background:#eaf1e7;color:#31512c}
+        .product-save-bar .product-status{margin:0 0 10px}
+        #product-trash{border-top:1px solid #ded6c7;margin-top:28px;padding-top:14px}#product-trash>summary,.product-price-fields summary{min-height:44px;line-height:1.7;padding:10px 0;box-sizing:border-box;cursor:pointer}
+        .product-admin-card.saved{background:#f1f5e9;box-shadow:inset 3px 0 #66734c;border-radius:8px;padding-left:10px;padding-right:10px}
+        .product-admin-actions .product-trash-button{color:#845041}.product-admin-actions .product-order-up{margin-left:0}
+        #product-list-status{position:sticky;bottom:max(10px,env(safe-area-inset-bottom));z-index:6;border:1px solid #ded6c7;box-shadow:0 4px 20px #24231f12;background:#f8f5ee;margin:16px 0 0}#product-list-status.success{background:#eaf1e7}#product-list-status.error{background:#fff0ec}
+        .product-saved-label{font-weight:700;color:#36542e}
+        #product-list-view:has(#product-list-status:not([hidden])) .product-admin-card{scroll-margin-bottom:110px}
+        #product-add{margin:8px 0 0}#product-list-view .item-list{margin-top:24px}
+        @media(max-width:480px){.product-admin-actions{gap:7px}.product-admin-actions button{flex:1 0 auto}.product-admin-actions .product-order{flex:0 0 44px}.product-form-heading h3{font-size:22px}.product-save-bar{padding-bottom:max(14px,env(safe-area-inset-bottom))}}
     </style>
 </head>
 <body>
@@ -93,7 +108,7 @@
         </div>
 
         <div id="admin-section" style="display:none;">
-            <div style="text-align:center; margin-bottom:20px;"><b>관리자 모드 · V8.17</b></div>
+            <div style="text-align:center; margin-bottom:20px;"><b>관리자 모드 · V8.18</b></div>
 
             <div class="tab-menu">
                 <button class="tab-btn" onclick="showTab('product')">제품</button>
@@ -103,27 +118,31 @@
             </div>
 
             <div id="tab-product" class="form-group">
-                <div class="product-form-heading"><h3 id="product-form-title">제품 추가</h3><span>COLLECTION</span></div>
-                <p class="notice">제품을 추가하거나 수정하면 홈페이지에 반영됩니다. 공개 여부와 진열 순서도 여기에서 관리하세요.</p>
-                <input type="hidden" id="p-key"> <input type="hidden" id="p-old-imgs">
-                <label for="p-name">제품명</label><input type="text" id="p-name" maxlength="100" placeholder="제품명">
-                <div class="product-fields">
-                    <div><label for="p-label">영문 분류 · 선택</label><input type="text" id="p-label" maxlength="50" placeholder="예: SCALP SOLUTION"></div>
-                    <div><label for="p-order">진열 순서</label><input type="number" id="p-order" min="0" max="999999" step="1" value="60" inputmode="numeric"></div>
-                </div>
-                <label for="p-desc">짧은 제품 소개 · 선택</label><textarea id="p-desc" maxlength="160" rows="2" placeholder="제품 아래에 표시할 간결한 소개"></textarea>
-                <label for="p-link">구매 링크</label><input type="url" id="p-link" maxlength="2048" placeholder="https://...">
-                <label for="p-image-urls">제품 이미지 주소 · 최대 3장</label><textarea id="p-image-urls" rows="3" placeholder="https://...&#10;이미지 주소를 한 줄에 하나씩 입력하세요" spellcheck="false"></textarea>
-                <label for="p-files">또는 사진 업로드</label><input type="file" id="p-files" accept="image/*" multiple>
-                <p class="product-help">첫 번째 사진이 홈페이지에 표시됩니다. 새 파일을 선택하면 위 이미지 주소 대신 업로드한 사진으로 바뀝니다.</p>
-                <div id="p-image-preview" class="product-image-preview" aria-label="제품 이미지 미리보기"></div>
-                <details class="product-price-fields"><summary>가격 정보 · 선택</summary><p class="product-help">관리용으로 보관하며 홈페이지 카드에는 표시하지 않습니다.</p><div class="price-group"><div style="min-width:0;flex:1"><label for="p-price-normal">정상가</label><input type="text" id="p-price-normal" inputmode="numeric" placeholder="선택" oninput="formatNumber(this)"></div><div style="min-width:0;flex:1"><label for="p-price-sale">판매가</label><input type="text" id="p-price-sale" inputmode="numeric" placeholder="선택" oninput="formatNumber(this)"></div></div></details>
-                <div class="check-row"><input type="checkbox" id="p-visible" checked><label for="p-visible">홈페이지에 표시</label></div>
-                <div class="product-form-actions"><button id="p-btn" onclick="saveProduct()">제품 저장</button><button onclick="resetProductForm()" class="reset-btn">새 제품 작성</button></div>
-
-                <div class="item-list"><div class="product-list-heading"><h4>제품 목록</h4><span id="product-count"></span></div><p class="product-help">숫자가 작을수록 먼저 표시됩니다. 숨긴 제품도 언제든 다시 공개할 수 있습니다.</p><div id="product-list"></div></div>
+                <section id="product-list-view">
+                    <div class="product-form-heading"><h3>제품 관리</h3><span>COLLECTION</span></div>
+                    <p class="product-help">제품을 수정하고 홈페이지 공개 여부와 진열 순서를 관리하세요.</p>
+                    <button id="product-add" type="button" onclick="startProductAdd()">+ 새 제품 추가</button>
+                    <div class="item-list"><div class="product-list-heading"><h4>제품 목록</h4><span id="product-count"></span></div><p class="product-help">↑ ↓ 버튼으로 순서를 바꿀 수 있습니다. 휴지통으로 옮긴 제품은 홈페이지에서 내려가며 언제든 복원할 수 있습니다.</p><div id="product-list"></div></div>
+                    <details id="product-trash"><summary>휴지통 <span id="product-trash-count">0</span></summary><p class="product-help">제품 정보는 보관됩니다. 복원하면 이전 공개 설정으로 돌아갑니다.</p><div id="product-trash-list"></div></details>
+                    <p id="product-list-status" class="product-status" role="status" aria-live="polite" hidden></p>
+                </section>
+                <section id="product-editor" hidden aria-labelledby="product-form-title">
+                    <div class="product-form-heading"><h3 id="product-form-title">새 제품 추가</h3><span>COLLECTION</span></div>
+                    <p class="product-help">저장한 뒤 제품 목록에서 결과를 확인할 수 있습니다.</p>
+                    <input type="hidden" id="p-key"><input type="hidden" id="p-old-imgs"><input type="hidden" id="p-order">
+                    <label for="p-name">제품명</label><input type="text" id="p-name" maxlength="100" placeholder="제품명">
+                    <label for="p-label">영문 분류 · 선택</label><input type="text" id="p-label" maxlength="50" placeholder="예: SCALP SOLUTION">
+                    <label for="p-desc">짧은 제품 소개 · 선택</label><textarea id="p-desc" maxlength="160" rows="2" placeholder="제품 아래에 표시할 간결한 소개"></textarea>
+                    <label for="p-link">구매 링크</label><input type="url" id="p-link" maxlength="2048" placeholder="https://...">
+                    <label for="p-files">제품 사진 · 최대 3장</label><input type="file" id="p-files" accept="image/*" multiple>
+                    <p class="product-help">첫 번째 사진이 홈페이지에 표시됩니다. 새 사진을 선택하면 기존 사진을 교체합니다. 사진을 선택하지 않으면 기존 사진을 유지합니다.</p>
+                    <div id="p-image-preview" class="product-image-preview" aria-label="제품 이미지 미리보기"></div>
+                    <details id="product-image-advanced" class="product-price-fields"><summary>이미지 주소 직접 입력 · 선택</summary><label for="p-image-urls">이미지 주소 · 최대 3개</label><textarea id="p-image-urls" rows="3" placeholder="https://...&#10;한 줄에 주소 하나씩 입력하세요" spellcheck="false"></textarea><p class="product-help">사진 업로드를 선택하면 업로드한 사진이 우선 적용됩니다.</p></details>
+                    <details class="product-price-fields"><summary>가격 정보 · 선택</summary><p class="product-help">관리용으로 보관하며 홈페이지 카드에는 표시하지 않습니다.</p><div class="price-group"><div style="min-width:0;flex:1"><label for="p-price-normal">정상가</label><input type="text" id="p-price-normal" inputmode="numeric" placeholder="선택" oninput="formatNumber(this)"></div><div style="min-width:0;flex:1"><label for="p-price-sale">판매가</label><input type="text" id="p-price-sale" inputmode="numeric" placeholder="선택" oninput="formatNumber(this)"></div></div></details>
+                    <div class="check-row"><input type="checkbox" id="p-visible" checked><label for="p-visible">홈페이지에 표시</label></div>
+                    <div class="product-save-bar"><p id="product-editor-status" class="product-status" role="status" aria-live="polite" hidden></p><div class="product-form-actions"><button id="p-btn" type="button" onclick="saveProduct()">새 제품 등록</button><button type="button" onclick="cancelProductEdit()" class="reset-btn">취소</button></div></div>
+                </section>
             </div>
-
 
             <div id="tab-campaign" class="form-group active">
                 <h3>✨ NOW / 특별 판매 링크</h3>
@@ -162,7 +181,7 @@
 
             <div id="tab-video" class="form-group">
                 <h3>🎬 영상 등록</h3>
-                <p class="notice">기존 영상 데이터를 관리하는 메뉴입니다. 현재 홈페이지의 영상 영역에는 자동 반영되지 않습니다.</p>
+                <p class="notice">회사 소개와 자체 광고 영상을 위한 관리 공간입니다. 기존 영상 데이터는 보관되며, 홈페이지 영상 영역은 추후 연결할 예정입니다.</p>
                 <input type="text" id="v-link" placeholder="유튜브 링크">
                 <input type="text" id="v-title" placeholder="제목">
                 <button onclick="uploadVideo()">영상 추가</button>
@@ -191,6 +210,7 @@
         let sdkReady = false, operationBusy = false, currentUid = null;
         let subscriptions = [], lastCampaign = {}, campaignDirty = false, campaignReady = false;
         let productsState = [], productReady = false, productPreviewUrls = [], productFormDirty = false;
+        let productPendingKey = null, productSavedKey = null;
         const $ = id => document.getElementById(id);
 
         function notice(message, kind = '') {
@@ -349,7 +369,7 @@
             try {
                 await auth.signOut();
                 $('password').value = '';
-                resetProductForm(); resetMusicForm();
+                resetProductForm(); showProductList(); productStatus(''); resetMusicForm();
                 $('v-link').value = ''; $('v-title').value = '';
                 fillCampaign({}); campaignDirty = false; lastCampaign = {};
                 ['product-list','music-list-admin','video-list-admin'].forEach(id => $(id).replaceChildren());
@@ -358,9 +378,45 @@
         }
         $('login-form').addEventListener('submit', event => { event.preventDefault(); adminLogin(); });
 
+        function productStatus(message, kind = '') {
+            ['product-editor-status','product-list-status'].forEach(id => {
+                $(id).textContent = message; $(id).className = 'product-status' + (kind ? ' ' + kind : ''); $(id).hidden = !message;
+            });
+        }
+        function productValidation(message) { productStatus(message, 'error'); return false; }
+        async function runProductOperation(label, task, successMessage) {
+            if (!ensureSession()) return false;
+            setLoading(true, label + ' 중...');
+            document.querySelectorAll('#product-editor input, #product-editor textarea').forEach(element => element.disabled = true);
+            productStatus(label + ' 중입니다. 서버에서 완료를 확인하고 있습니다.');
+            const watchdog = setTimeout(() => productStatus('서버 응답을 기다리고 있습니다. 완료가 확인될 때까지 이 화면을 유지해주세요. 다시 누르지 않아도 됩니다.'), 20000);
+            try {
+                await task();
+                productStatus(successMessage, 'success');
+                return true;
+            } catch (error) {
+                productStatus(label + '을 완료하지 못했습니다. 입력 내용은 유지됩니다. ' + readableError(error), 'error');
+                return false;
+            } finally {
+                clearTimeout(watchdog); setLoading(false);
+                document.querySelectorAll('#product-editor input, #product-editor textarea').forEach(element => element.disabled = false);
+            }
+        }
+        function showProductList() { $('product-editor').hidden = true; $('product-list-view').hidden = false; }
+        function openProductEditor() { productStatus(''); $('product-list-view').hidden = true; $('product-editor').hidden = false; window.scrollTo(0, 0); $('p-name').focus(); }
+        function startProductAdd() { if (operationBusy) return; resetProductForm(); openProductEditor(); }
+        function cancelProductEdit() {
+            if (operationBusy) return;
+            if (productFormDirty && !confirm('작성 중인 내용을 취소하고 제품 목록으로 돌아갈까요?')) return;
+            resetProductForm(); productStatus(''); showProductList(); $('product-add').focus();
+        }
+        function focusSavedProduct() {
+            const card = document.getElementById('product-card-' + productSavedKey);
+            if (card) { card.tabIndex = -1; card.focus({preventScroll:true}); if (card.scrollIntoView) card.scrollIntoView({behavior:'smooth', block:'center'}); }
+        }
         async function saveProduct() {
             if (!ensureSession()) return;
-            if (!productReady) return validation('제품 목록을 불러온 후 다시 저장해주세요.');
+            if (!productReady) return productValidation('제품 목록을 불러온 후 다시 저장해주세요.');
             const key = $('p-key').value;
             const files = [...$('p-files').files];
             const name = $('p-name').value.trim();
@@ -369,44 +425,50 @@
             const visible = $('p-visible').checked;
             const orderInput = $('p-order').value.trim();
             const sortOrder = Number(orderInput);
-            if (!name) return validation('제품명을 입력해주세요.');
-            if (key && !validKey(key)) return validation('제품 정보를 다시 불러와주세요.');
-            if (link === null) return validation('구매 링크는 http:// 또는 https://로 시작하는 올바른 주소여야 합니다.');
-            if (visible && !link) return validation('홈페이지에 표시하려면 구매 링크를 입력해주세요.');
-            if (!orderInput || !Number.isInteger(sortOrder) || sortOrder < 0 || sortOrder > 999999) return validation('진열 순서는 0부터 999999 사이의 정수로 입력해주세요.');
-            if (files.length > 3) return validation('제품 이미지는 최대 3장까지 등록할 수 있습니다.');
-            if (files.some(file => file.type && !file.type.startsWith('image/'))) return validation('제품 이미지는 이미지 파일로 선택해주세요.');
+            if (!name) return productValidation('제품명을 입력해주세요.');
+            if (key && !validKey(key)) return productValidation('제품 정보를 다시 불러와주세요.');
+            if (link === null) return productValidation('구매 링크는 http:// 또는 https://로 시작하는 올바른 주소여야 합니다.');
+            if (visible && !link) return productValidation('홈페이지에 표시하려면 구매 링크를 입력해주세요.');
+            if (!orderInput || !Number.isInteger(sortOrder) || sortOrder < 0 || sortOrder > 999999) return productValidation('진열 순서는 0부터 999999 사이의 정수로 입력해주세요.');
+            if (files.length > 3) return productValidation('제품 이미지는 최대 3장까지 등록할 수 있습니다.');
+            if (files.some(file => file.type && !file.type.startsWith('image/'))) return productValidation('제품 이미지는 이미지 파일로 선택해주세요.');
             const imageInputs = $('p-image-urls').value.split(/\r?\n/).map(value => value.trim()).filter(Boolean);
             const imageUrls = imageInputs.map(value => safeWebUrl(value));
-            if (!files.length && imageInputs.length > 3) return validation('제품 이미지 주소는 최대 3개까지 입력할 수 있습니다.');
-            if (!files.length && imageUrls.some(value => !value)) return validation('이미지 주소는 http:// 또는 https://로 시작하는 올바른 주소여야 합니다.');
-            if (visible && !files.length && !imageUrls.length) return validation('홈페이지에 표시하려면 이미지를 최소 1장 등록해주세요.');
+            if (!files.length && imageInputs.length > 3) return productValidation('제품 이미지 주소는 최대 3개까지 입력할 수 있습니다.');
+            if (!files.length && imageUrls.some(value => !value)) return productValidation('이미지 주소는 http:// 또는 https://로 시작하는 올바른 주소여야 합니다.');
+            if (visible && !files.length && !imageUrls.length) return productValidation('홈페이지에 표시하려면 이미지를 최소 1장 등록해주세요.');
             const data = {name, label: $('p-label').value.trim(), priceNormal: $('p-price-normal').value.trim(), priceSale, link, desc: $('p-desc').value.trim(), sortOrder, homepageVisible: visible, date: new Date().toISOString()};
-            const success = await runOperation('제품 저장', async () => {
+            let savedKey = key || productPendingKey;
+            const success = await runProductOperation('제품 저장', async () => {
                 const images = [];
                 if (files.length) {
                     for (let i = 0; i < files.length; i++) {
+                        productStatus('사진 업로드 중 · ' + (i + 1) + '/' + files.length);
                         const ref = storage.ref('products/' + Date.now() + '_' + i);
                         await ref.put(files[i]);
                         images.push(await ref.getDownloadURL());
                     }
                 } else images.push(...imageUrls);
                 data.images = images;
-                if (key) await db.ref('products/' + key).update(data);
-                else await db.ref('products').push(data);
+                productStatus('제품 저장 중... 서버에서 완료를 확인하고 있습니다.');
+                if (!savedKey) { savedKey = db.ref('products').push().key; productPendingKey = savedKey; }
+                await db.ref('products/' + savedKey).update(data);
             }, visible ? '제품이 저장되어 홈페이지에 반영되었습니다.' : '제품이 숨김 상태로 저장되었습니다.');
-            if (success) resetProductForm();
+            if (success) { productSavedKey = savedKey; resetProductForm(); showProductList(); renderProductList(); focusSavedProduct(); }
         }
         function resetProductForm() {
             ['p-key','p-files','p-name','p-label','p-price-normal','p-price-sale','p-link','p-desc','p-old-imgs','p-image-urls'].forEach(id => $(id).value = '');
             $('p-order').value = Math.min(999999, Math.max(0, ...productsState.map(value => Number(value.sortOrder) || 0)) + 10);
             $('p-visible').checked = true;
-            $('p-btn').textContent = '제품 저장';
-            $('product-form-title').textContent = '제품 추가';
+            $('p-btn').textContent = '새 제품 등록';
+            $('product-form-title').textContent = '새 제품 추가';
+            productPendingKey = null;
+            document.querySelectorAll('#product-editor details').forEach(element => element.open = false);
             productFormDirty = false;
             previewProductImages();
         }
         function editProduct(key, value) {
+            if (operationBusy) return;
             resetProductForm();
             $('p-key').value = key;
             $('p-name').value = value.name || '';
@@ -423,7 +485,7 @@
             $('product-form-title').textContent = '제품 수정';
             productFormDirty = true;
             previewProductImages();
-            showTab('product'); window.scrollTo(0, 0);
+            showTab('product'); openProductEditor();
         }
         function productImageUrl(value) {
             if (typeof value !== 'string' || !value.trim()) return '';
@@ -454,22 +516,31 @@
             if (!product || !validKey(key)) return validation('제품 목록을 다시 불러와주세요.');
             if (visible && (!String(product.name || '').trim() || !safeWebUrl(product.link) || !Array.isArray(product.images) || !product.images.some(productImageUrl))) {
                 editProduct(key, product);
-                return validation('공개 전에 제품명·구매 링크·이미지를 확인하고 저장해주세요.');
+                return productValidation('공개 전에 제품명·구매 링크·이미지를 확인하고 저장해주세요.');
             }
-            await runOperation(visible ? '제품 공개' : '제품 숨김', () => db.ref('products/' + key).update({homepageVisible: visible, date: new Date().toISOString()}), visible ? '제품이 홈페이지에 표시됩니다.' : '제품을 홈페이지에서 숨겼습니다. 목록에서 다시 공개할 수 있습니다.');
+            await runProductOperation(visible ? '제품 공개' : '제품 숨김', () => db.ref('products/' + key).update({homepageVisible: visible, date: new Date().toISOString()}), visible ? '제품이 홈페이지에 표시됩니다.' : '제품을 홈페이지에서 숨겼습니다. 목록에서 다시 공개할 수 있습니다.');
         }
         async function moveProduct(key, direction) {
             if (!ensureSession() || !productReady || ![-1, 1].includes(direction)) return;
-            const index = productsState.findIndex(value => value.key === key);
+            const activeProducts = productsState.filter(value => value.trashed !== true);
+            const index = activeProducts.findIndex(value => value.key === key);
             const next = index + direction;
-            if (index < 0 || next < 0 || next >= productsState.length) return;
-            const reordered = [...productsState];
+            if (index < 0 || next < 0 || next >= activeProducts.length) return;
+            const reordered = [...activeProducts];
             [reordered[index], reordered[next]] = [reordered[next], reordered[index]];
             const updates = {};
             reordered.forEach((product, position) => { if (validKey(product.key)) updates[product.key + '/sortOrder'] = (position + 1) * 10; });
-            await runOperation('진열 순서 저장', () => db.ref('products').update(updates), '진열 순서가 홈페이지에 반영되었습니다.');
+            await runProductOperation('진열 순서 저장', () => db.ref('products').update(updates), '진열 순서가 홈페이지에 반영되었습니다.');
         }
-        $('p-files').addEventListener('change', previewProductImages);
+        async function setProductTrash(key, trashed) {
+            if (!ensureSession() || !productReady || !validKey(key)) return;
+            const product = productsState.find(value => value.key === key);
+            if (!product) return;
+            if (trashed && !confirm('“' + (product.name || '제품') + '”을 휴지통으로 옮길까요? 홈페이지에서 내려가며 나중에 복원할 수 있습니다.')) return;
+            await runProductOperation(trashed ? '휴지통으로 이동' : '제품 복원', () => db.ref('products/' + key).update({trashed, date: new Date().toISOString()}), trashed ? '휴지통으로 옮겼습니다. 아래 휴지통에서 복원할 수 있습니다.' : '제품을 복원했습니다. 이전 공개 설정이 유지됩니다.');
+        }
+        window.addEventListener('pagehide', () => { productPreviewUrls.forEach(value => URL.revokeObjectURL(value)); productPreviewUrls = []; });
+        $('p-files').addEventListener('change', () => { productFormDirty = true; previewProductImages(); if ($('p-files').files.length > 3) productValidation('제품 사진은 최대 3장까지 선택해주세요.'); });
         $('p-image-urls').addEventListener('input', previewProductImages);
         document.querySelectorAll('#tab-product input, #tab-product textarea').forEach(input => input.addEventListener('input', () => { productFormDirty = true; }));
         async function saveMusic() {
@@ -645,12 +716,19 @@
             productReady = false;
             if (!window.SkinCatalog || typeof window.SkinCatalog.merge !== 'function') throw new Error('Product catalog unavailable');
             productsState = window.SkinCatalog.merge(snapshot.val());
+            renderProductList();
+            productReady = true;
+        }
+        function renderProductList() {
             const container = $('product-list');
-            container.replaceChildren();
-            const visibleCount = productsState.filter(product => product.homepageVisible === true).length;
-            $('product-count').textContent = '공개 ' + visibleCount + ' · 전체 ' + productsState.length;
+            const trashContainer = $('product-trash-list');
+            container.replaceChildren(); trashContainer.replaceChildren();
+            const activeProducts = productsState.filter(product => product.trashed !== true);
+            $('product-trash-count').textContent = productsState.length - activeProducts.length;
+            const visibleCount = activeProducts.filter(product => product.homepageVisible === true).length;
+            $('product-count').textContent = '공개 ' + visibleCount + ' · 전체 ' + activeProducts.length;
             productsState.forEach((product, index) => {
-                const card = document.createElement('div'); card.className = 'product-admin-card';
+                const card = document.createElement('div'); card.className = 'product-admin-card' + (product.key === productSavedKey ? ' saved' : ''); card.id = 'product-card-' + product.key;
                 const imageUrl = (Array.isArray(product.images) ? product.images : []).map(productImageUrl).find(Boolean);
                 let thumbnail;
                 if (imageUrl) {
@@ -662,26 +740,31 @@
                 const info = document.createElement('div'); info.className = 'product-admin-info';
                 const name = document.createElement('p'); name.className = 'product-admin-name'; name.textContent = String(product.name || '이름 없는 제품');
                 const meta = document.createElement('div'); meta.className = 'product-admin-meta';
-                const status = document.createElement('span'); status.className = 'product-admin-badge' + (product.homepageVisible === true ? ' visible' : ''); status.textContent = product.homepageVisible === true ? '공개 중' : '숨김';
-                const order = document.createElement('span'); order.textContent = '순서 ' + (Number.isFinite(Number(product.sortOrder)) ? product.sortOrder : '미지정');
-                meta.append(status, order); info.append(name, meta);
+                const status = document.createElement('span'); status.className = 'product-admin-badge' + (product.homepageVisible === true ? ' visible' : ''); status.textContent = product.trashed === true ? '휴지통' : product.homepageVisible === true ? '공개 중' : '숨김';
+                const order = document.createElement('span'); order.textContent = product.trashed === true ? '보관 중' : (activeProducts.indexOf(product) + 1) + '번째';
+                meta.append(status, order);
+                if (product.key === productSavedKey) { const saved = document.createElement('span'); saved.className = 'product-saved-label'; saved.textContent = '✓ 저장 완료'; meta.appendChild(saved); }
+                info.append(name, meta);
                 const actions = document.createElement('div'); actions.className = 'product-admin-actions';
                 const makeButton = (text, label, className, onClick, blocked = false) => {
                     const button = document.createElement('button'); button.type = 'button'; button.className = className; button.textContent = text; button.setAttribute('aria-label', label);
                     button.dataset.productBlocked = blocked ? 'true' : 'false'; button.disabled = operationBusy || blocked; button.addEventListener('click', onClick); return button;
                 };
                 const title = String(product.name || '제품');
-                actions.append(
+                if (product.trashed === true) {
+                    actions.append(makeButton('복원', title + ' 복원', 'product-edit', () => setProductTrash(product.key, false)));
+                } else actions.append(
                     makeButton('수정', title + ' 수정', 'product-edit', () => editProduct(product.key, product)),
                     makeButton(product.homepageVisible === true ? '숨기기' : '공개하기', title + (product.homepageVisible === true ? ' 숨기기' : ' 공개하기'), 'product-visibility', () => setProductVisibility(product.key, product.homepageVisible !== true)),
-                    makeButton('↑', title + ' 순서 위로', 'product-order product-order-up', () => moveProduct(product.key, -1), index === 0),
-                    makeButton('↓', title + ' 순서 아래로', 'product-order', () => moveProduct(product.key, 1), index === productsState.length - 1)
+                    makeButton('↑', title + ' 순서 위로', 'product-order product-order-up', () => moveProduct(product.key, -1), activeProducts.indexOf(product) === 0),
+                    makeButton('↓', title + ' 순서 아래로', 'product-order', () => moveProduct(product.key, 1), activeProducts.indexOf(product) === activeProducts.length - 1),
+                    makeButton('휴지통', title + ' 휴지통으로 이동', 'product-trash-button', () => setProductTrash(product.key, true))
                 );
-                card.append(thumbnail, info, actions); container.appendChild(card);
+                card.append(thumbnail, info, actions); (product.trashed === true ? trashContainer : container).appendChild(card);
             });
             productReady = true;
-            if (!productFormDirty && !$('p-key').value) $('p-order').value = Math.min(999999, Math.max(0, ...productsState.map(product => Number(product.sortOrder) || 0)) + 10);
-            if (!productsState.length) container.textContent = '등록된 제품이 없습니다.';
+            if (!activeProducts.length) container.textContent = '등록된 제품이 없습니다. 새 제품을 추가해주세요.';
+            if (activeProducts.length === productsState.length) trashContainer.textContent = '휴지통이 비어 있습니다.';
         }
         function loadData() {
             subscribe('campaign/current', snapshot => {
