@@ -1,944 +1,515 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
-    <meta name="naver-site-verification" content="13df39e715bf1e375b0b74fc50862545a6fff01b" />
+<meta name="app-version" content="8.11-deploy-reviewed">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f6f2e9">
+<title>Skin Anointing</title>
+<meta name="application-version" content="8.10">
+<style>
+:root{--ink:#201814;--muted:#736b64;--paper:#f7f3eb;--paper2:#eee7db;--line:rgba(32,24,20,.14);--gold:#a48345;--dark:#1f211a;--shadow:0 24px 70px rgba(64,48,32,.14);}
+*{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;background:var(--paper);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR","Malgun Gothic",Arial,sans-serif;overflow-x:hidden} a{color:inherit;text-decoration:none} button{font:inherit} img{display:block;max-width:100%}
+.container{width:min(1180px,calc(100% - 40px));margin:0 auto}
+.header{position:sticky;top:0;z-index:30;height:76px;background:rgba(247,243,235,.9);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+.header-in{height:100%;display:flex;align-items:center;justify-content:space-between;gap:18px} .brand{width:178px;flex:none} .brand img{width:100%;height:auto}
+.nav{display:flex;align-items:center;gap:26px;font-weight:700;font-size:14px;letter-spacing:-.02em} .nav a{padding:14px 0;position:relative} .nav a:after{content:"";position:absolute;left:0;right:100%;bottom:8px;height:1px;background:var(--ink);transition:.25s} .nav a:hover:after{right:0}
+.hero-wrap{padding:18px 0 0} .hero{position:relative;min-height:680px;border-radius:34px;overflow:hidden;box-shadow:var(--shadow);background-image:linear-gradient(90deg,rgba(248,244,236,.22),rgba(248,244,236,.02)),url('brand-9b3e92524e6089a1.png');background-size:cover;background-position:center}
+.hero-panel{position:absolute;left:44px;bottom:44px;width:min(520px,calc(100% - 88px));padding:34px 36px 32px;background:rgba(251,248,242,.90);border:1px solid rgba(255,255,255,.8);border-radius:28px;backdrop-filter:blur(14px);box-shadow:0 18px 60px rgba(59,43,27,.14)}
+.hero-logo{width:270px;margin-bottom:18px} .hero-kicker{font-size:12px;letter-spacing:.22em;font-weight:800;color:#746b60;margin-bottom:12px} .hero h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(38px,4.8vw,66px);font-weight:400;line-height:.98;letter-spacing:-.045em;margin:0 0 17px} .hero p{margin:0 0 26px;font-size:17px;line-height:1.7;color:#5f5750;max-width:430px;word-break:keep-all} .primary{display:inline-flex;align-items:center;justify-content:space-between;gap:34px;min-width:220px;padding:16px 20px;border-radius:999px;background:var(--dark);color:white;font-size:15px;font-weight:800} .primary b{font-size:20px;font-weight:400}
+.scroll-hint{position:absolute;right:28px;bottom:30px;background:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.7);backdrop-filter:blur(12px);padding:11px 14px;border-radius:999px;font-size:12px;font-weight:800;letter-spacing:.05em}
+.section{padding:92px 0} .section-head{display:flex;justify-content:space-between;align-items:end;gap:30px;margin-bottom:34px} .eyebrow{font-size:12px;font-weight:900;letter-spacing:.22em;color:#81786f;margin:0 0 12px} .section h2{font-family:Georgia,"Times New Roman",serif;font-size:clamp(38px,5vw,64px);line-height:1;letter-spacing:-.04em;font-weight:400;margin:0} .section-lead{max-width:420px;color:var(--muted);font-size:15px;line-height:1.75;margin:0;word-break:keep-all}
+.products{display:grid;grid-template-columns:repeat(3,1fr);gap:18px} .product-card{background:#fff;border:1px solid rgba(40,28,18,.08);border-radius:26px;overflow:hidden;transition:transform .28s ease,box-shadow .28s ease;box-shadow:0 9px 32px rgba(68,50,34,.06)} .product-card:hover{transform:translateY(-5px);box-shadow:0 20px 50px rgba(68,50,34,.12)}
+.product-media{position:relative;aspect-ratio:1/1.06;background:linear-gradient(145deg,#e7dfd1,#f7f1e7);overflow:hidden} .product-media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2} .product-fallback{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:24px;z-index:1} .product-fallback span{font-size:10px;letter-spacing:.18em;font-weight:900;color:#786f67} .product-fallback strong{font-family:Georgia,serif;font-size:24px;margin-top:4px} .store-chip{position:absolute;z-index:3;right:14px;top:14px;background:rgba(248,247,241,.88);backdrop-filter:blur(10px);padding:9px 11px;border-radius:999px;font-size:9px;font-weight:900;letter-spacing:.09em}
+.product-copy{display:flex;justify-content:space-between;gap:16px;align-items:flex-end;padding:19px 20px 21px} .product-copy p{margin:0 0 5px;font-size:9px;letter-spacing:.15em;font-weight:900;color:#8c837a} .product-copy h3{font-size:18px;letter-spacing:-.035em;margin:0} .product-copy>span{font-size:11px;color:#7d746c;text-align:right;line-height:1.45}
+.media-band{background:var(--dark);color:#f7f3ea;padding:92px 0} .media-band .eyebrow{color:#b8b2a7} .media-band h2{color:white} .media-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:18px;margin-top:34px} .media-card{position:relative;min-height:420px;border-radius:30px;overflow:hidden;border:1px solid rgba(255,255,255,.11)} .video-card{background:radial-gradient(circle at 80% 15%,rgba(207,183,127,.34),transparent 38%),linear-gradient(145deg,#282a21,#11120f)} .video-inner{height:100%;min-height:420px;display:flex;flex-direction:column;justify-content:space-between;padding:34px} .play-orb{width:76px;height:76px;border:1px solid rgba(255,255,255,.46);border-radius:50%;display:grid;place-items:center;font-size:26px;background:rgba(255,255,255,.08);backdrop-filter:blur(8px)} .media-label{font-size:10px;letter-spacing:.2em;font-weight:900;color:#c5bdae} .video-inner h3,.music-text h3{font-family:Georgia,serif;font-weight:400;font-size:clamp(35px,4vw,54px);line-height:1;margin:10px 0 12px} .video-inner p,.music-text p{color:#c4beb4;line-height:1.7;margin:0;max-width:480px} .video-link{display:inline-flex;gap:10px;align-items:center;margin-top:20px;font-weight:800;font-size:14px}
+.music-card{background:#2a231e} .music-art{position:absolute;inset:0;background:url('brand-3adc5e4ee40af6eb.jpg') center/cover;filter:saturate(.78) brightness(.62)} .music-art:after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(20,17,14,.9) 10%,rgba(20,17,14,.1) 75%)} .music-text{position:absolute;inset:auto 26px 25px;z-index:2} .player{display:flex;align-items:center;gap:12px;margin-top:18px} .play-btn{width:50px;height:50px;border-radius:50%;border:1px solid rgba(255,255,255,.55);background:rgba(255,255,255,.08);color:white;display:grid;place-items:center;cursor:pointer;font-size:18px} .now{font-size:12px;color:#d2cbc1}
+.story{display:grid;grid-template-columns:.92fr 1.08fr;gap:22px;align-items:stretch} .story-photo{min-height:610px;border-radius:30px;overflow:hidden;background:#e9e4da} .story-photo img{width:100%;height:100%;object-fit:cover} .story-copy{border-radius:30px;background:#e7dfd1;padding:54px;display:flex;flex-direction:column;justify-content:space-between} .story-quote{font-family:Georgia,"Times New Roman",serif;font-size:clamp(36px,5vw,68px);line-height:1.02;letter-spacing:-.04em;margin:0} .story-quote strong{display:block;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR","Malgun Gothic",sans-serif;font-size:clamp(22px,3vw,34px);line-height:1.35;letter-spacing:-.04em;margin-top:26px} .story-copy p{font-size:15px;line-height:1.85;color:#635c54;margin:32px 0 0;max-width:600px;word-break:keep-all}
+.connect{padding:78px 0 38px} .connect-box{border-top:1px solid var(--line)} .connect-row{display:grid;grid-template-columns:150px 1fr auto;gap:22px;align-items:center;padding:23px 0;border-bottom:1px solid var(--line)} .connect-row strong{font-size:17px} .connect-row span{font-size:14px;color:#7a726a} .connect-row b{font-size:22px;font-weight:400} .footer{display:flex;justify-content:space-between;align-items:end;gap:30px;padding:44px 0 50px;color:#746c64;font-size:12px} .footer-logo{width:180px;opacity:.72}
+.reveal{opacity:0;transform:translateY(18px);transition:.65s ease} .reveal.show{opacity:1;transform:none}
+@media(max-width:820px){
+  .container{width:min(100% - 28px,680px)} .header{height:66px} .brand{width:142px} .nav{gap:16px;font-size:13px} .nav a:nth-child(2){display:none}
+  .hero-wrap{padding-top:10px} .hero{min-height:calc(100svh - 88px);border-radius:26px;background-position:67% center} .hero-panel{left:14px;right:14px;bottom:14px;width:auto;padding:24px 23px 22px;border-radius:22px} .hero-logo{width:205px;margin-bottom:12px} .hero-kicker{font-size:10px;margin-bottom:8px} .hero h1{font-size:41px;max-width:330px} .hero p{font-size:14px;line-height:1.68;margin-bottom:19px;max-width:330px} .primary{min-width:190px;padding:14px 17px;font-size:14px} .scroll-hint{display:none}
+  .section{padding:68px 0} .section-head{display:block;margin-bottom:26px} .section h2{font-size:42px} .section-lead{margin-top:14px;font-size:14px}
+  .products{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px} .product-card{border-radius:19px} .product-media{aspect-ratio:1/1.11} .product-copy{display:block;padding:14px 14px 16px} .product-copy h3{font-size:16px} .product-copy>span{display:block;text-align:left;margin-top:7px;font-size:10px} .store-chip{right:9px;top:9px;padding:7px 8px;font-size:8px}
+  .media-band{padding:68px 0} .media-grid{grid-template-columns:1fr;gap:12px;margin-top:26px} .media-card,.video-inner{min-height:350px} .video-inner{padding:25px} .play-orb{width:62px;height:62px} .music-card{min-height:390px}
+  .story{grid-template-columns:1fr;gap:12px} .story-photo{min-height:420px} .story-copy{padding:29px 24px 30px} .story-quote{font-size:42px} .story-quote strong{font-size:25px;margin-top:18px} .story-copy p{font-size:14px;margin-top:24px}
+  .connect{padding-top:62px} .connect-row{grid-template-columns:90px 1fr auto;gap:12px;padding:20px 0} .connect-row strong{font-size:15px} .connect-row span{font-size:12px} .footer{display:block;padding-bottom:34px} .footer-logo{margin-bottom:22px;width:160px}
+}
+@media(max-width:390px){.container{width:calc(100% - 20px)} .nav{gap:12px;font-size:12px} .brand{width:132px} .hero h1{font-size:37px} .hero-panel{padding:22px 20px} .hero-logo{width:185px} .product-copy h3{font-size:15px} .product-copy p{font-size:8px}}
+@media(min-width:821px) and (max-width:1100px){.products{grid-template-columns:repeat(2,1fr)} .hero{min-height:640px} .story-copy{padding:42px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important} .reveal{opacity:1;transform:none}}
 
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="SKIN ANOINTING">
-    <meta property="og:description" content="피부에 바르는 성스러운 의식">
-    <meta property="og:image" content="https://www.skinanointing.com/logo.jpg">
-    <meta property="og:url" content="https://www.skinanointing.com">
+/* V8.1 compact music player */
+.mini-music{position:sticky;top:76px;z-index:29;height:46px;background:rgba(31,33,26,.97);color:#f7f3ea;border-bottom:1px solid rgba(255,255,255,.08);backdrop-filter:blur(16px)}
+.mini-music-in{height:100%;display:grid;grid-template-columns:auto 32px minmax(90px,1fr) 42px;align-items:center;gap:12px}
+.mini-music-title{min-width:190px;display:flex;align-items:center;gap:10px;white-space:nowrap;overflow:hidden}.mini-music-title>span:last-child{display:flex;align-items:baseline;gap:8px;min-width:0}.mini-music-title b{font-size:10px;letter-spacing:.16em;font-weight:900}.mini-music-title small{font-size:11px;color:#c5bdae;overflow:hidden;text-overflow:ellipsis}
+.eq{width:16px;height:16px;display:flex;align-items:flex-end;justify-content:center;gap:2px;flex:none}.eq i{display:block;width:2px;background:#d7c294;border-radius:9px;animation:eq 1s ease-in-out infinite}.eq i:nth-child(1){height:6px;animation-delay:-.35s}.eq i:nth-child(2){height:12px;animation-delay:-.1s}.eq i:nth-child(3){height:8px;animation-delay:-.55s}.mini-music.paused .eq i{animation-play-state:paused;height:4px}
+@keyframes eq{0%,100%{transform:scaleY(.45)}50%{transform:scaleY(1)}}
+.mini-play{width:30px;height:30px;border:1px solid rgba(255,255,255,.26);border-radius:50%;background:rgba(255,255,255,.06);color:white;display:grid;place-items:center;padding:0;cursor:pointer;font-size:11px;line-height:1}.mini-play:hover{background:rgba(255,255,255,.13)}
+.mini-seek{height:16px;display:flex;align-items:center;cursor:pointer;position:relative}.mini-seek:before{content:"";position:absolute;left:0;right:0;height:2px;background:rgba(255,255,255,.18);border-radius:9px}.mini-seek span{height:2px;width:0;background:#d7c294;border-radius:9px;position:relative;z-index:1;pointer-events:none}.mini-time{font-variant-numeric:tabular-nums;font-size:10px;color:#aaa397;text-align:right}
+.media-grid{grid-template-columns:1fr}.video-card{min-height:390px}.video-inner{min-height:390px}.music-card{display:none!important}
+@media(max-width:820px){.mini-music{top:66px;height:42px}.mini-music-in{grid-template-columns:minmax(0,1fr) 30px minmax(60px,.65fr);gap:9px}.mini-music-title{min-width:0}.mini-music-title>span:last-child{display:block;line-height:1.05}.mini-music-title b{display:block;font-size:9px;letter-spacing:.12em;overflow:hidden;text-overflow:ellipsis}.mini-music-title small{display:block;font-size:9px;margin-top:3px}.mini-time{display:none}.eq{width:13px}.mini-play{width:28px;height:28px}.media-card,.video-inner{min-height:330px}}
+@media(max-width:390px){.mini-music-in{gap:7px}.mini-music-title small{display:none}.mini-music-title b{font-size:8.5px}.mini-seek{min-width:55px}}
 
-    <title>SKIN ANOINTING</title>
-    
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-    
-    <style>
-        /* =========================================
-           1. 기본 스타일 (줄바꿈 복구됨)
-           ========================================= */
-        * { 
-            box-sizing: border-box; 
-        }
-        
-        html { 
-            scroll-behavior: smooth; 
-        }
 
-        html, body {
-            margin: 0; 
-            padding: 0;
-            width: 100%;
-        }
-        
-        body { 
-            overflow-x: hidden; 
-            font-family: 'Times New Roman', serif; 
-            color: #1a1a1a; 
-            background-color: #F2E8D5; 
-            line-height: 1.6; 
-            padding-top: 60px; 
-            text-align: center; 
-            max-width: 100vw; 
-        }
-        
-        ::-webkit-scrollbar { 
-            display: none; 
-        }
-        
-        a { 
-            text-decoration: none; 
-            color: inherit; 
-        }
+.story-scene{
+  position:relative;
+  min-height:720px;
+  border-radius:34px;
+  overflow:hidden;
+  box-shadow:var(--shadow);
+  background-size:cover;
+  background-position:center center;
+  display:flex;
+  align-items:flex-end;
+}
+.story-scene::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,rgba(0,0,0,0) 52%,rgba(0,0,0,.16) 100%);
+  pointer-events:none;
+}
+.story-scene-copy{
+  position:relative;
+  z-index:1;
+  width:min(600px,58%);
+  padding:58px 52px 54px;
+  color:#fffaf3;
+  text-shadow:0 2px 20px rgba(0,0,0,.18);
+}
+.story-scene-copy .eyebrow{color:#e8d9b8;margin:0 0 14px}
+.story-scene-copy h2{
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(50px,6.5vw,82px);
+  line-height:.96;
+  font-weight:500;
+  letter-spacing:-.045em;
+  margin:0 0 28px;
+}
+.story-scene-copy h3{
+  font-size:clamp(24px,2.7vw,38px);
+  line-height:1.28;
+  letter-spacing:-.035em;
+  margin:0 0 20px;
+  font-weight:800;
+}
+.story-scene-copy>p:last-child{
+  margin:0;
+  max-width:44ch;
+  font-size:17px;
+  line-height:1.85;
+  color:rgba(255,250,243,.92);
+  word-break:keep-all;
+}
+@media (max-width:900px){
+  .story-scene{min-height:700px;background-position:62% center}
+  .story-scene-copy{width:70%;padding:48px 34px 42px}
+  .story-scene-copy h2{font-size:58px}
+}
+@media (max-width:600px){
+  .story-scene{
+    min-height:720px;
+    border-radius:28px;
+    background-position:66% center;
+    align-items:flex-end;
+  }
+  .story-scene-copy{width:100%;padding:34px 24px 30px;text-shadow:0 2px 14px rgba(0,0,0,.22)}
+  .story-scene-copy h2{font-size:clamp(42px,12vw,58px);margin-bottom:20px}
+  .story-scene-copy h3{font-size:clamp(21px,6vw,27px);margin-bottom:14px}
+  .story-scene-copy>p:last-child{font-size:15.5px;line-height:1.78;max-width:100%}
+}
 
-        img, video { 
-            max-width: 100%; 
-            height: auto; 
-            display: block; 
-            margin: 0 auto !important; 
-        }
+.story-scene{background:#e9e2d6!important;isolation:isolate}
+.story-bg-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:68% center;z-index:0}
+.story-scene::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(20,18,15,.74) 0%,rgba(20,18,15,.58) 34%,rgba(20,18,15,.16) 62%,rgba(20,18,15,0) 100%);pointer-events:none}
+.story-scene::after{z-index:1}
+.story-scene-copy{z-index:2!important}
+@media(max-width:600px){.story-bg-img{object-position:70% center}.story-scene::before{background:linear-gradient(180deg,rgba(20,18,15,.02) 0%,rgba(20,18,15,.10) 28%,rgba(20,18,15,.52) 56%,rgba(20,18,15,.88) 100%)}}
 
-        .fade-in { 
-            animation: fadeInPage 0.6s ease-out forwards; 
-        }
-        
-        @keyframes fadeInPage { 
-            from { opacity: 0; transform: translateY(10px); } 
-            to { opacity: 1; transform: translateY(0); } 
-        }
+/* v8.8 editorial refinement */
+.media-band{background:#181b16;padding:78px 0}
+.media-band .section-head{align-items:end}
+.media-band .media-lead{color:#bdb6ab}
+.media-grid{grid-template-columns:1fr;margin-top:30px}
+.media-card,.video-inner{min-height:360px}
+.video-card{background:radial-gradient(circle at 80% 12%,rgba(190,154,91,.30),transparent 32%),linear-gradient(135deg,#2b2b22 0%,#151712 62%,#10110e 100%)}
+.video-card:before{content:"";position:absolute;inset:20px;border:1px solid rgba(219,196,151,.16);border-radius:22px;pointer-events:none}
+.video-inner{position:relative;z-index:1;padding:42px;flex-direction:row;align-items:flex-end;gap:36px}
+.video-inner>div:first-child{max-width:650px}
+.video-inner>div:last-child{margin-left:auto;min-width:210px}
+.media-label{color:#d7c49b}
+.video-inner h3{font-size:clamp(44px,5.2vw,72px);margin:12px 0 16px}
+.video-inner p{font-size:16px;line-height:1.75;max-width:520px}
+.video-link{font-size:15px}
+.hero-kicker{color:#766d5f}
+@media(max-width:820px){
+  .media-band{padding:64px 0}
+  .video-inner{min-height:390px;padding:28px;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between}
+  .video-inner>div:last-child{margin-left:0;min-width:0}
+  .video-inner h3{font-size:46px}
+  .media-band .section-lead{margin-top:14px;color:#bdb6ab}
+  #products .section-head h2{font-size:38px;line-height:1.06}
+}
+@media(max-width:390px){#products .section-head h2{font-size:34px}.video-inner h3{font-size:40px}}
 
-        /* =========================================
-           2. 인트로
-           ========================================= */
-        #intro-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #F2E8D5; z-index: 9999;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            transition: opacity 1.5s ease-out;
-        }
-        
-        .intro-logo-img {
-            width: 90%; max-width: 650px;
-            animation: logoEntrance 3s ease-out forwards, breathe 4s infinite alternate 3s;
-            opacity: 0;
-            -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 95%);
-            mask-image: radial-gradient(circle, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 95%);
-        }
-        
-        @keyframes logoEntrance { 
-            0% { opacity: 0; transform: translateY(30px) scale(0.8); } 
-            100% { opacity: 1; transform: translateY(0) scale(1); } 
-        }
-        
-        @keyframes breathe { 
-            from { transform: scale(1); } 
-            to { transform: scale(1.05); } 
-        }
 
-        .enter-btn {
-            margin-top: 60px; padding: 15px 50px; 
-            border: 2px solid #5e4b35; color: #5e4b35; 
-            background: transparent; font-family: 'Times New Roman'; 
-            font-size: 16px; letter-spacing: 4px; font-weight: bold;
-            cursor: pointer; transition: 0.3s;
-            opacity: 0; animation: fadeInBtn 2s forwards 1.5s;
-        }
-        
-        @keyframes fadeInBtn { 
-            from { opacity: 0; } 
-            to { opacity: 1; } 
-        }
+/* V8.9 copy tuning */
+@media (max-width:700px){
+  .connect-row{align-items:flex-start;gap:14px}
+  .connect-row span{font-size:14px;line-height:1.45;max-width:58%;word-break:keep-all}
+}
 
-        /* =========================================
-           3. 상단 플레이어
-           ========================================= */
-        .top-player-bar {
-            position: fixed; top: 0; 
-            left: 0; right: 0; margin: 0 auto; 
-            width: 100%; height: 60px;
-            background: rgba(20, 15, 10, 0.75); 
-            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            z-index: 3000;
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0 20px;
-        }
-        
-        .marquee-container {
-            flex: 1; overflow: hidden; white-space: nowrap; position: relative;
-            margin-right: 20px; height: 100%; display: flex; align-items: center;
-            mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-            -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-        }
-        
-        .player-info { 
-            display: inline-block;
-            font-size: 14px; color: #f2e8d5; font-weight: normal; letter-spacing: 1px;
-            padding-left: 100%; animation: marquee 12s linear infinite;
-        }
-        
-        @keyframes marquee { 
-            0% { transform: translateX(0); } 
-            100% { transform: translateX(-100%); } 
-        }
+/* V8.10 NOW campaign */
+.now-float{position:fixed;right:18px;bottom:max(22px,env(safe-area-inset-bottom));z-index:70;border:0;border-radius:999px;background:#201f18;color:#fff;padding:12px 17px 12px 13px;display:flex;align-items:center;gap:9px;box-shadow:0 14px 38px rgba(28,23,17,.22);cursor:pointer;font-weight:800;letter-spacing:.08em;font-size:12px;transition:.2s ease}
+.now-float:hover{transform:translateY(-2px)}.now-dot{width:9px;height:9px;border-radius:50%;background:#777;box-shadow:0 0 0 5px rgba(255,255,255,.05)}.now-float.is-live .now-dot{background:#d5ba75;box-shadow:0 0 0 5px rgba(213,186,117,.13)}
+.now-backdrop{position:fixed;inset:0;background:rgba(18,16,14,.42);backdrop-filter:blur(8px);z-index:79;opacity:0;pointer-events:none;transition:.22s ease}.now-backdrop.open{opacity:1;pointer-events:auto}
+.now-sheet{position:fixed;right:18px;bottom:max(76px,calc(env(safe-area-inset-bottom) + 70px));z-index:80;width:min(390px,calc(100% - 36px));background:#f7f3eb;border:1px solid rgba(32,24,20,.12);border-radius:26px;box-shadow:0 28px 80px rgba(32,24,20,.3);padding:24px;opacity:0;transform:translateY(16px) scale(.98);pointer-events:none;transition:.24s ease;color:#201814}
+.now-sheet.open{opacity:1;transform:none;pointer-events:auto}.now-sheet[hidden],.now-backdrop[hidden]{display:none}.now-sheet{max-height:calc(100dvh - 110px);overflow-y:auto}.now-sheet-top{display:flex;align-items:center;justify-content:space-between;gap:12px}.now-badge{font-size:10px;font-weight:900;letter-spacing:.16em;color:#8a713d}.now-close{border:0;background:transparent;font-size:24px;line-height:1;cursor:pointer;color:#70665d;padding:4px}.now-sheet :focus-visible,.now-float:focus-visible{outline:2px solid #8a713d;outline-offset:4px}
+.now-sheet h3{font-family:Georgia,"Times New Roman",serif;font-size:30px;line-height:1.08;letter-spacing:-.035em;margin:18px 0 10px}.now-sheet p{margin:0;color:#6f675f;font-size:14px;line-height:1.65;word-break:keep-all}.now-period{display:block;margin-top:13px;font-size:11px;color:#948b81}.now-cta{margin-top:20px;width:100%;border:0;border-radius:999px;background:#202119;color:#fff;padding:15px 18px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:space-between}.now-cta[hidden]{display:none}.now-empty{padding-top:8px}
+@media(max-width:820px){.now-float{right:13px;bottom:max(15px,env(safe-area-inset-bottom));padding:11px 15px 11px 12px;font-size:11px}.now-sheet{right:12px;bottom:max(68px,calc(env(safe-area-inset-bottom) + 62px));width:calc(100% - 24px);border-radius:24px;padding:22px}.now-sheet h3{font-size:27px}}
+</style>
 
-        .player-controls { display: flex; gap: 25px; align-items: center; }
-        
-        .ctrl-btn { 
-            cursor: pointer; color: #ccc; font-size: 18px; 
-            transition: all 0.2s; display: flex; align-items: center; justify-content: center; 
-        }
-        .ctrl-btn:active { transform: scale(0.85); color: #fff; }
-        
-        .loop-btn { font-size: 14px; opacity: 0.5; }
-        .loop-btn.active { opacity: 1; color: #d4a066; }
-        
-        #p-btn { font-size: 22px; color: #f2e8d5; }
-
-        #back-toast {
-            visibility: hidden; min-width: 250px; background-color: rgba(0, 0, 0, 0.85);
-            color: #fff; text-align: center; border-radius: 50px; padding: 14px 20px;
-            position: fixed; z-index: 9999; left: 50%; bottom: 30px;
-            transform: translateX(-50%); font-size: 14px; font-weight: bold;
-            opacity: 0; transition: opacity 0.3s; pointer-events: none;
-        }
-        #back-toast.show { visibility: visible; opacity: 1; }
-
-        /* =========================================
-           4. 로고 영역 & 메뉴바
-           ========================================= */
-        .logo-section {
-            width: 100%; height: 340px; 
-            display: flex; justify-content: center; align-items: center;
-            background-color: #F2E8D5; 
-        }
-        
-        .logo-img { 
-            height: 240px; width: auto; object-fit: contain; cursor: pointer; 
-            margin-bottom: 40px; 
-            -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 95%);
-            mask-image: radial-gradient(circle, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 95%);
-            transform: scale(1.1);
-        }
-
-        nav { 
-            position: -webkit-sticky; position: sticky;
-            top: 60px; z-index: 2000;
-            display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
-            gap: 30px; width: 100%; padding: 15px 20px; 
-            background: rgba(242, 232, 213, 0.96); backdrop-filter: blur(5px);
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
-        }
-        
-        nav .menu-items { display: flex; gap: 25px; }
-        
-        nav span.main-menu { 
-            font-size: 14px; font-weight: bold; color: #555; cursor: pointer; 
-            letter-spacing: 1px; white-space: nowrap; 
-            transition: color 0.3s; position: relative;
-        }
-        
-        nav span.main-menu.current-menu { color: #8b5e3c; }
-        
-        nav span.main-menu.current-menu::after {
-            content: ''; position: absolute; bottom: -5px; left: 0; 
-            width: 100%; height: 2px; background: #8b5e3c;
-        }
-        
-        nav .sns-group { display: flex; gap: 10px; }
-        
-        .sns-btn {
-            display: flex; align-items: center; gap: 5px;
-            font-size: 12px; color: #555; text-decoration: none;
-            padding: 5px 12px; border: 1px solid #ccc; border-radius: 20px;
-            background: rgba(255,255,255,0.6); transition: 0.2s;
-        }
-        
-        .sns-icon { width: 14px; height: 14px; fill: currentColor; }
-
-        @media (max-width: 600px) {
-            .logo-section { height: 320px; }
-            .logo-img { height: 240px !important; margin-bottom: 30px; }
-            nav { gap: 15px; flex-direction: column; padding: 10px; } 
-            nav .menu-items { gap: 20px; }
-        }
-
-        /* CEO 섹션 */
-        .ceo-section-wrapper {
-            position: relative;
-            width: 100%; max-width: 300px; height: 300px;
-            margin: 0 auto 20px auto;
-            -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
-            mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
-        }
-        
-        .ceo-img-slide {
-            position: absolute; top: 0; left: 0;
-            width: 100%; height: 100%;
-            object-fit: cover;
-            border-radius: 150px 150px 0 0; 
-            opacity: 0; 
-            transition: opacity 2s ease-in-out; 
-            filter: grayscale(20%);
-        }
-        .ceo-img-slide.active-slide { opacity: 1; z-index: 1; }
-
-        /* 페이지 공통 */
-        .page { 
-            display: none; padding-bottom: 80px; width: 100%; min-height: 60vh; 
-        }
-        .active { display: block; }
-        .hero { padding: 60px 20px; text-align: center; } 
-        
-        .product-grid { 
-            display: grid; grid-template-columns: repeat(2, 1fr); 
-            gap: 15px; padding: 15px; max-width: 1000px; margin: 0 auto; width: 100%; 
-        }
-        
-        .product-card { text-align: center; cursor: pointer; }
-        
-        .product-img { 
-            width: 100%; aspect-ratio: 1/1; object-fit: cover; 
-            background: #eee; border-radius: 4px; margin-bottom: 5px; 
-        }
-        
-        .p-name { font-weight: bold; font-size: 16px; } 
-        .p-price { font-size: 14px; color: #666; }
-        
-        .like-box { 
-            display: flex; justify-content: center; align-items: center; 
-            gap: 5px; margin-top: 5px; font-size: 13px; color: #888; cursor: pointer; 
-        }
-        
-        .heart-icon { font-size: 18px; color: #ccc; transition: 0.2s; }
-        .heart-icon.liked { color: #e74c3c; transform: scale(1.2); }
-
-        /* 뮤직 라운지 */
-        .music-lounge-bg { 
-            position: relative; min-height: 60vh; width: 100%; 
-            background: #333; color: #fff; display: flex; 
-            justify-content: center; align-items: center; overflow: hidden; padding: 40px 20px;
-        }
-        .music-lounge-bg::before { 
-            content:""; position:absolute; top:0; left:0; width:100%; height:100%; 
-            background: url('music.jpg') center/cover; 
-            animation: bgMove 20s infinite alternate; opacity: 0.8; 
-        }
-        @keyframes bgMove { from { transform: scale(1); } to { transform: scale(1.1); } }
-        
-        .lounge-container { 
-            position: relative; z-index: 2; display: flex; 
-            justify-content: space-between; align-items: center; 
-            width: 100%; max-width: 900px; gap: 40px; 
-        }
-        
-        .lounge-left { flex: 1; text-align: left; display: flex; flex-direction: column; justify-content: center; }
-        .lounge-right { flex: 1; display: flex; justify-content: flex-end; align-items: center; }
-        
-        .lounge-text-main { font-size: 28px; font-weight: bold; margin-bottom: 10px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
-        .lounge-text-sub { font-size: 14px; font-style: italic; color: #ddd; margin-bottom: 20px; letter-spacing: 1px; }
-        .lounge-credit { font-size: 12px; border: 1px solid #fff; padding: 5px 15px; border-radius: 20px; display: inline-block; background: rgba(0,0,0,0.3); align-self: flex-start; }
-        
-        .visualizer { display: flex; gap: 6px; height: 30px; align-items: flex-end; margin-bottom: 20px; justify-content: flex-start; z-index: 2; }
-        .bar { width: 5px; background: #fff; animation: eq 1s infinite; }
-        .bar:nth-child(1) { animation-delay: 0.1s; } .bar:nth-child(2) { animation-delay: 0.3s; } .bar:nth-child(3) { animation-delay: 0.5s; } .bar:nth-child(4) { animation-delay: 0.2s; } .bar:nth-child(5) { animation-delay: 0.4s; }
-        @keyframes eq { 0%, 100% { height: 5px; opacity:0.6; } 50% { height: 30px; opacity:1; } }
-
-        #lyrics-box {
-            width: 100%; max-width: 400px; height: 300px; overflow-y: auto;
-            background: rgba(0, 0, 0, 0.4); color: rgba(255, 255, 255, 0.9);
-            padding: 20px; border-radius: 8px; font-size: 15px; line-height: 2.2;
-            white-space: pre-wrap; text-align: left;
-            border-left: 3px solid rgba(255,255,255,0.4); display: none;
-            -ms-overflow-style: none; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.3) transparent;
-        }
-        #lyrics-box::-webkit-scrollbar { width: 6px; }
-        #lyrics-box::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.3); border-radius: 3px; }
-
-        @media (max-width: 768px) {
-            .lounge-container { flex-direction: column; text-align: center; gap: 30px; }
-            .lounge-left { text-align: center; align-items: center; width: 100%; }
-            .visualizer { justify-content: center; }
-            .lounge-credit { align-self: center; }
-            .lounge-right { width: 100%; justify-content: center; }
-            #lyrics-box { height: 200px; text-align: center; border-left: none; border-top: 3px solid rgba(255,255,255,0.4); }
-        }
-
-        .music-list-container { max-width: 600px; margin: 0 auto; padding: 20px; width: 100%; }
-        .track { padding: 15px; border-bottom: 1px solid #d4c5b0; display: flex; justify-content: space-between; cursor: pointer; align-items: center; }
-        .track-info { display:flex; gap:10px; align-items:center; flex-grow:1; }
-        .track.active-track { color: #8b5e3c; font-weight: bold; }
-        
-        .video-grid { display: flex; flex-direction: column; align-items: center; gap: 40px; padding: 20px; width: 100%; }
-        .video-card { width: 100%; max-width: 500px; text-align: center; }
-        
-        /* 모달 */
-        #product-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 4000; overflow-y: auto; }
-        .modal-close-btn { position: absolute; top: 20px; right: 20px; width: 50px; height: 50px; line-height: 50px; text-align: center; background: rgba(0,0,0,0.6); color: #fff; border-radius: 50%; font-size: 28px; cursor: pointer; z-index: 4001; }
-        #modal-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; background: #eee; }
-        .modal-content { padding: 30px 20px; text-align: center; }
-        .modal-title { font-size: 26px; margin-bottom: 10px; font-weight: bold; }
-        .modal-price { font-size: 28px; color: #8b5e3c; font-weight: bold; margin-bottom: 20px; }
-        .modal-desc { text-align: left; background: #f9f9f9; padding: 25px; border-radius: 8px; font-size: 20px; line-height: 2.0; color: #222; white-space: pre-wrap; }
-        .modal-buy-btn { display: block; width: 100%; padding: 20px; margin-top: 30px; background: #1a1a1a; color: #fff; text-align: center; text-decoration: none; font-size: 20px; font-weight: bold; }
-        .img-dots { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
-        .dot-btn { width: 40px; height: 40px; background: #fff; border: 1px solid #ccc; border-radius: 4px; font-weight: bold; cursor: pointer; font-size:16px; }
-        .dot-btn.active { background: #333; color: #fff; border-color: #333; }
-
-        /* ★ [디자인] 관리자 로그인 팝업 스타일 */
-        #admin-login-overlay {
-            display: none; /* 평소엔 숨김 */
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.7); /* 어두운 배경 */
-            z-index: 99999;
-            justify-content: center; align-items: center;
-        }
-        
-        .admin-login-box {
-            background: #fff; padding: 30px; width: 90%; max-width: 400px;
-            border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            text-align: center;
-        }
-        
-        .admin-login-box h3 { margin-top: 0; margin-bottom: 20px; color: #8b5e3c; }
-        
-        .admin-input {
-            width: 100%; padding: 12px; margin-bottom: 10px;
-            border: 1px solid #ccc; border-radius: 4px; font-size: 16px;
-        }
-        
-        .admin-btn {
-            width: 100%; padding: 12px; background: #8b5e3c; color: #fff;
-            border: none; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px;
-        }
-        
-        .admin-close {
-            margin-top: 15px; color: #999; cursor: pointer; text-decoration: underline; font-size: 14px;
-        }
-
-        /* 푸터 & 쫀득이 로고 */
-        footer { 
-            background: #2a2218; color: #999; 
-            padding: 40px 20px; margin-top: 50px; 
-            position: relative; width: 100%;
-            display: flex; flex-direction: column; 
-            justify-content: center; align-items: center; 
-            gap: 20px; 
-        }
-        
-        .footer-content {
-            display: flex; justify-content: center; align-items: center; gap: 30px;
-        }
-        
-        .footer-text { text-align: left; font-size: 13px; color: #bbb; }
-        
-        .visit-stats {
-            font-family: 'Times New Roman', serif;
-            font-size: 12px; color: #777; letter-spacing: 1px;
-            margin-top: 10px;
-        }
-
-        .admin-trigger { width: 60px; height: 60px; position: absolute; bottom: 0; right: 0; }
-
-        .footer-logo-unit {
-            width: 120px; height: 120px; 
-            background-color: transparent; 
-            flex-shrink: 0; position: relative; perspective: 500px;
-        }
-        
-        #jelly-logo-footer {
-            width: 100%; height: 100%; object-fit: contain;
-            display: block; will-change: transform; cursor: grab;
-            user-select: none; -webkit-user-drag: none;
-        }
-        #jelly-logo-footer:active { cursor: grabbing; }
-
-    </style>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 </head>
 <body>
-
-    <div id="intro-screen">
-        <img src="logo.gif" class="intro-logo-img" alt="LOGO">
-        <button class="enter-btn" onclick="enterSite()">ENTER THE RITUAL</button>
+<header class="header"><div class="container header-in">
+  <a class="brand" href="#top" aria-label="Skin Anointing 홈"><img src="brand-0cad4807e2132296.png" alt="Skin Anointing"></a>
+  <nav class="nav" aria-label="주요 메뉴"><a href="#products">제품</a><a href="#story">브랜드</a><a href="#media">콘텐츠</a></nav>
+</div></header>
+<div class="mini-music" id="miniMusic" aria-label="Skin Anointing 음악 플레이어">
+  <div class="container mini-music-in">
+    <div class="mini-music-title">
+      <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span><b>SKIN ANOINTING MUSIC</b><small id="miniStatus">Original Sound</small></span>
     </div>
+    <button class="mini-play" id="miniPlayBtn" type="button" aria-label="음악 재생 또는 일시정지">Ⅱ</button>
+    <div class="mini-seek" id="miniSeek" role="slider" aria-label="음악 재생 위치" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="miniProgress"></span></div>
+    <span class="mini-time" id="miniTime">0:00</span>
+  </div>
+  <audio id="audio" preload="metadata" loop src="brand-f6d18113f0a45db2.mp3"></audio>
+</div>
+<main id="top">
+  <div class="container hero-wrap">
+    <section class="hero" aria-label="Skin Anointing 브랜드 소개">
+      <div class="hero-panel">
+        <img class="hero-logo" src="brand-0cad4807e2132296.png" alt="Skin Anointing">
+        <div class="hero-kicker">18 YEARS · SKIN RITUAL</div>
+        <h1>가장 소중한 당신에게,<br>온전한 케어를 붓다.</h1>
+        <p>18년의 피부 관리 경험을 바탕으로, 피부·바디·두피를 위한 일상의 리추얼을 제안합니다.</p>
 
-    <div id="admin-login-overlay">
-        <div class="admin-login-box">
-            <h3>ADMIN LOGIN</h3>
-            <input type="text" id="admin-id-input" class="admin-input" placeholder="Admin ID">
-            <input type="password" id="admin-pw-input" class="admin-input" placeholder="Password">
-            <button class="admin-btn" onclick="checkAdminLogin()">LOGIN</button>
-            <div class="admin-close" onclick="closeAdminLogin()">Cancel</div>
-        </div>
+        <a class="primary" href="#products"><span>리추얼 라인업 보기</span><b>↓</b></a>
+      </div>
+      <div class="scroll-hint">DISCOVER ↓</div>
+    </section>
+  </div>
+
+  <section class="section" id="products"><div class="container">
+    <div class="section-head reveal"><div><p class="eyebrow">OUR PRODUCTS</p><h2>당신의 일상에 쉼을 더하는<br>리추얼 라인업.</h2></div><p class="section-lead">피부·바디·두피, 오늘 필요한 케어를 만나보세요.</p></div>
+    <div class="products"><a class="product-card reveal" href="https://mkt.shopping.naver.com/link/6abf73a4d899ea4b1b9c07ed" target="_blank" rel="noopener" aria-label="가온 아로마 스마트스토어에서 보기">
+  <div class="product-media">
+    <div class="product-fallback"><span>FACE & BODY OIL</span><strong>가온 아로마</strong></div>
+    <img src="https://shop-phinf.pstatic.net/20261002_155/1790931514516n8R6J_JPEG/10925072548142710_1224351384.jpg" alt="가온 아로마" loading="lazy" onerror="this.remove()">
+    <span class="store-chip">NAVER STORE ↗</span>
+  </div>
+  <div class="product-copy">
+    <div><p>FACE & BODY OIL</p><h3>가온 아로마</h3></div>
+    <span>100ml · Face & Body Care</span>
+  </div>
+</a>
+<a class="product-card reveal" href="https://mkt.shopping.naver.com/link/6829808d46ee00714bd1c941" target="_blank" rel="noopener" aria-label="바이옴 클렌징 세럼 스마트스토어에서 보기">
+  <div class="product-media">
+    <div class="product-fallback"><span>CLEANSING SERUM</span><strong>바이옴 클렌징 세럼</strong></div>
+    <img src="https://shop-phinf.pstatic.net/20260717_16/1784247462110fd52z_PNG/4290432937109319_1132649221.png" alt="바이옴 클렌징 세럼" loading="lazy" onerror="this.remove()">
+    <span class="store-chip">NAVER STORE ↗</span>
+  </div>
+  <div class="product-copy">
+    <div><p>CLEANSING SERUM</p><h3>바이옴 클렌징 세럼</h3></div>
+    <span>200ml · Cleansing Care</span>
+  </div>
+</a>
+<a class="product-card reveal" href="https://mkt.shopping.naver.com/link/6829807fefd7a65d5547d1a5" target="_blank" rel="noopener" aria-label="항당겔 스마트스토어에서 보기">
+  <div class="product-media">
+    <div class="product-fallback"><span>RELAXING SKIN PACK</span><strong>항당겔</strong></div>
+    <img src="https://shop-phinf.pstatic.net/20260629_254/1782687507156FqfnG_PNG/116820342256335010_691975064.png" alt="항당겔" loading="lazy" onerror="this.remove()">
+    <span class="store-chip">NAVER STORE ↗</span>
+  </div>
+  <div class="product-copy">
+    <div><p>RELAXING SKIN PACK</p><h3>항당겔</h3></div>
+    <span>500ml · Skin Pack</span>
+  </div>
+</a>
+<a class="product-card reveal" href="https://mkt.shopping.naver.com/link/691a75d5a1cbbe7452e4b2cb" target="_blank" rel="noopener" aria-label="석류탱글 스마트스토어에서 보기">
+  <div class="product-media">
+    <div class="product-fallback"><span>POMEGRANATE CARE</span><strong>석류탱글</strong></div>
+    <img src="https://shop-phinf.pstatic.net/20260129_246/1769643360404bnRm7_JPEG/42630213480465380_1620318322.jpg" alt="석류탱글" loading="lazy" onerror="this.remove()">
+    <span class="store-chip">NAVER STORE ↗</span>
+  </div>
+  <div class="product-copy">
+    <div><p>POMEGRANATE CARE</p><h3>석류탱글</h3></div>
+    <span>30ml · Daily Skin Care</span>
+  </div>
+</a>
+<a class="product-card reveal" href="https://mkt.shopping.naver.com/link/693f638abe63905e26b001a7" target="_blank" rel="noopener" aria-label="스칼프 솔루션 스마트스토어에서 보기">
+  <div class="product-media">
+    <div class="product-fallback"><span>SCALP SOLUTION</span><strong>스칼프 솔루션</strong></div>
+    <img src="https://shop-phinf.pstatic.net/20260910_191/1789014236962034ke_JPEG/31966994191114774_650984267.jpg" alt="스칼프 솔루션" loading="lazy" onerror="this.remove()">
+    <span class="store-chip">NAVER STORE ↗</span>
+  </div>
+  <div class="product-copy">
+    <div><p>SCALP SOLUTION</p><h3>스칼프 솔루션</h3></div>
+    <span>150ml · Scalp Care</span>
+  </div>
+</a>
+<a class="product-card reveal" href="https://mkt.shopping.naver.com/link/682980df2f0ac57821773eb7" target="_blank" rel="noopener" aria-label="선크림 스마트스토어에서 보기">
+  <div class="product-media">
+    <div class="product-fallback"><span>SUN CARE</span><strong>선크림</strong></div>
+    <img src="https://shop-phinf.pstatic.net/20241012_30/1728716441174nS9Co_JPEG/8291805034102213_331207072.jpg" alt="선크림" loading="lazy" onerror="this.remove()">
+    <span class="store-chip">NAVER STORE ↗</span>
+  </div>
+  <div class="product-copy">
+    <div><p>SUN CARE</p><h3>선크림</h3></div>
+    <span>Daily UV Care</span>
+  </div>
+</a></div>
+  </div></section>
+
+  <section class="media-band" id="media"><div class="container">
+    <div class="section-head reveal"><div><p class="eyebrow">EXPERT'S GUIDE</p><h2>화려한 연출보다,<br>제대로 쓰는 방법을.</h2></div><p class="section-lead media-lead">홈케어를 더 잘 활용하는 방법과 실제 사용 노하우를 전합니다.</p></div>
+    <div class="media-grid">
+      <a class="media-card video-card reveal" href="https://youtu.be/X4ejjXrhhuI" target="_blank" rel="noopener">
+        <div class="video-inner"><div><span class="media-label">HOME RITUAL GUIDE · YOUTUBE</span><h3>Expert's Guide.</h3><p>피부와 바디를 돌보는 실제 홈케어 노하우를 영상으로 만나보세요.</p></div><div><div class="play-orb">▶</div><span class="video-link">사용 가이드 영상 보기 ↗</span></div></div>
+      </a>
+
     </div>
+  </div></section>
 
-    <div id="back-toast">한 번 더 누르면 종료됩니다.</div>
-
-    <audio id="bgm" loop onended="handleEnd()"><source src="bgm1.mp3" type="audio/mp3"></audio>
-
-    <div class="top-player-bar">
-        <div class="marquee-container">
-            <div class="player-info" id="m-title">Ready</div>
-        </div>
-        <div class="player-controls">
-            <span class="ctrl-btn loop-btn" id="loop-btn" onclick="toggleLoop()">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v3z"/></svg>
-            </span>
-            <span class="ctrl-btn" onclick="prevTrack()">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
-            </span>
-            <span class="ctrl-btn" id="p-btn" onclick="togglePlay()">
-                <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-            </span>
-            <span class="ctrl-btn" onclick="nextTrack()">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
-            </span>
-        </div>
+  <section class="section" id="story"><div class="container">
+  <div class="story-scene reveal">
+      <img class="story-bg-img" src="brand-eaef8b8d2b9bcb20.png" alt="Skin Anointing story background">
+    <div class="story-scene-copy">
+      <p class="eyebrow">OUR STORY</p>
+      <h2>The ritual<br>of anointing.</h2>
+      <h3>피부를 대하는 태도에서<br>스킨어노인팅은 시작됩니다.</h3>
+      <p>무엇을 더 많이 바르는가보다, 매일 부담 없이 이어갈 수 있는가를 생각합니다. 원료와 사용감, 실제 생활 속 쓰임까지 오래 곁에 둘 수 있는 케어를 하나의 리추얼로 담아냅니다.</p>
     </div>
+  </div>
+</div></section>
 
-    <div class="logo-section" onclick="goPage('home')">
-        <img src="logo.jpg" class="logo-img" alt="MAIN LOGO">
+  <section class="connect"><div class="container"><p class="eyebrow">STAY CONNECTED</p><h2 style="font-family:Georgia,serif;font-size:clamp(38px,5vw,62px);font-weight:400;letter-spacing:-.04em;margin:0 0 28px">Continue with us.</h2>
+    <div class="connect-box">
+      <a class="connect-row" href="https://www.instagram.com/skinanointing_ceo/" target="_blank" rel="noopener"><strong>Instagram</strong><span>18년 차 전문가의 스킨 리추얼 철학</span><b>↗</b></a>
+      <a class="connect-row" href="https://youtu.be/X4ejjXrhhuI" target="_blank" rel="noopener"><strong>YouTube</strong><span>담백한 에스테틱 실전 홈케어 코칭</span><b>↗</b></a>
+      <a class="connect-row" href="https://pf.kakao.com/_BlAxfb" target="_blank" rel="noopener"><strong>Kakao</strong><span>프라이빗 1:1 맞춤 상담</span><b>↗</b></a>
     </div>
+    <footer class="footer"><div><img class="footer-logo" src="brand-0cad4807e2132296.png" alt="Skin Anointing"><div>SKIN ANOINTING · OFFICIAL BRAND SITE</div></div><div>Products · Story · Media · Connect</div></footer>
+  </div></section>
+</main>
 
-    <nav>
-        <div class="menu-items">
-            <span class="main-menu" id="menu-home" onclick="goPage('home')">Home</span>
-            <span class="main-menu" id="menu-products" onclick="goPage('products')">Products</span>
-            <span class="main-menu" id="menu-music" onclick="goPage('music')">Music</span>
-            <span class="main-menu" id="menu-video" onclick="goPage('video')">Video</span>
-        </div>
-        <div class="sns-group">
-            <a class="sns-btn" href="https://instagram.com/skinanointing_ceo" target="_blank">
-                <svg class="sns-icon" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-                Instagram
-            </a>
-            <a class="sns-btn" href="http://pf.kakao.com/_BlAxfb" target="_blank">
-                <svg class="sns-icon" viewBox="0 0 24 24"><path d="M12 3c-5.523 0-10 3.582-10 8 0 2.875 1.905 5.419 4.815 6.864-.21.777-1.353 4.938-1.408 5.304-.087.575.487.754.858.503.542-.366 5.875-3.957 6.688-4.523.344.048.696.074 1.047.074 5.523 0 10-3.582 10-8s-4.477-8-10-8z"/></svg>
-                Kakao CH
-            </a>
-        </div>
-    </nav>
+<button class="now-float" id="nowFloat" type="button" aria-label="현재 진행 중인 혜택 확인" aria-haspopup="dialog" aria-expanded="false" aria-controls="nowSheet"><span class="now-dot"></span><span>NOW</span></button>
+<div class="now-backdrop" id="nowBackdrop" aria-hidden="true" hidden></div>
+<section class="now-sheet" id="nowSheet" role="dialog" aria-modal="true" aria-labelledby="nowTitle" aria-describedby="nowText" tabindex="-1" hidden inert>
+  <div class="now-sheet-top"><span class="now-badge" id="nowBadge">CURRENT</span><button class="now-close" id="nowClose" type="button" aria-label="닫기">×</button></div>
+  <div id="nowContent" aria-live="polite" aria-atomic="true" aria-busy="true">
+    <h3 id="nowTitle">지금 만나볼 수 있는 혜택</h3>
+    <p id="nowText">현재 진행 중인 특별 혜택을 확인하고 있습니다.</p>
+    <span class="now-period" id="nowPeriod"></span>
+    <button class="now-cta" id="nowCta" type="button" hidden><span id="nowCtaText">지금 만나보기</span><span>↗</span></button>
+  </div>
+</section>
+<script>
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('show')}),{threshold:.08});document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+const audio=document.getElementById('audio');
+audio.volume=.14;
+const mini=document.getElementById('miniMusic');
+const btn=document.getElementById('miniPlayBtn');
+const statusEl=document.getElementById('miniStatus');
+const seek=document.getElementById('miniSeek');
+const progress=document.getElementById('miniProgress');
+const timeEl=document.getElementById('miniTime');
+let userPaused=false;
+function fmt(t){if(!Number.isFinite(t))return '0:00';const m=Math.floor(t/60),sec=Math.floor(t%60);return m+':'+String(sec).padStart(2,'0')}
+function syncPlayer(){const playing=!audio.paused;btn.textContent=playing?'Ⅱ':'▶';mini.classList.toggle('paused',!playing);statusEl.textContent=playing?'Original Sound · Playing':'Original Sound';const p=audio.duration?audio.currentTime/audio.duration*100:0;progress.style.width=p+'%';seek.setAttribute('aria-valuenow',Math.round(p));timeEl.textContent=fmt(audio.currentTime)}
+async function tryPlay(){if(userPaused)return;try{audio.volume=.14;await audio.play();syncPlayer();return true}catch(e){mini.classList.add('paused');btn.textContent='▶';statusEl.textContent='Original Sound · Tap screen to play';return false}}
+btn.addEventListener('click',async()=>{if(audio.paused){userPaused=false;await tryPlay()}else{userPaused=true;audio.pause();syncPlayer()}});
+seek.addEventListener('click',e=>{if(!audio.duration)return;const r=seek.getBoundingClientRect();audio.currentTime=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*audio.duration;syncPlayer()});
+audio.addEventListener('timeupdate',syncPlayer);audio.addEventListener('play',syncPlayer);audio.addEventListener('pause',syncPlayer);audio.addEventListener('loadedmetadata',syncPlayer);
+const startOnFirstTouch=async(e)=>{
+  if(e.target && e.target.closest && e.target.closest('#miniMusic')) return;
+  if(audio.paused&&!userPaused){
+    const ok=await tryPlay();
+    if(ok){
+      document.removeEventListener('pointerdown',startOnFirstTouch,true);
+      document.removeEventListener('touchstart',startOnFirstTouch,true);
+      document.removeEventListener('click',startOnFirstTouch,true);
+    }
+  }
+};
+document.addEventListener('pointerdown',startOnFirstTouch,true);
+document.addEventListener('touchstart',startOnFirstTouch,true);
+document.addEventListener('click',startOnFirstTouch,true);
+syncPlayer();
 
-    <div id="home" class="page active">
-        <div class="hero"><h1>The Ritual of Anointing</h1><p>"피부에 바르는 성스러운 의식"</p></div>
-        
-        <div style="text-align:center;">
-            <video id="main-video" width="85%" style="max-width:600px; border-radius:4px;" controls playsinline>
-                <source src="skin1.mp4">
-            </video>
-        </div>
-        
-        <div style="text-align:center; padding:60px 20px;">
-            <div class="ceo-section-wrapper">
-                <img src="ceo1.jpg" class="ceo-img-slide active-slide" onerror="this.remove()">
-                <img src="ceo2.jpg" class="ceo-img-slide" onerror="this.remove()">
-                <img src="ceo3.jpg" class="ceo-img-slide" onerror="this.remove()">
-                <img src="ceo4.jpg" class="ceo-img-slide" onerror="this.remove()">
-                <img src="ceo5.jpg" class="ceo-img-slide" onerror="this.remove()">
-                <img src="ceo6.jpg" class="ceo-img-slide" onerror="this.remove()">
-                <img src="ceo7.jpg" class="ceo-img-slide" onerror="this.remove()">
-                <img src="ceo8.jpg" class="ceo-img-slide" onerror="this.remove()">
-                <img src="ceo9.jpg" class="ceo-img-slide" onerror="this.remove()">
-                <img src="ceo10.jpg" class="ceo-img-slide" onerror="this.remove()">
-            </div>
-            <h3>CEO MESSAGE</h3>
-            <p>"진정성 있는 원료가 가장 아름다운 피부를 만듭니다."</p>
-        </div>
-    </div>
 
-    <div id="products" class="page">
-        <div style="text-align:center; padding:40px;"><h2>OUR COLLECTION</h2></div>
-        <div id="product-grid" class="product-grid"></div>
-    </div>
-
-    <div id="music" class="page">
-        <div class="music-lounge-bg">
-            <div class="music-overlay"></div>
-            <div class="lounge-container">
-                <div class="lounge-left">
-                    <div id="visualizer" class="visualizer"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
-                    <div class="lounge-text-main">Music Lounge</div>
-                    <div class="lounge-text-sub">"A Gift of Rest for Your Weary Daily Life"</div>
-                    <div class="lounge-credit">Original Sound Created by <strong>hong see</strong></div>
-                </div>
-                <div class="lounge-right">
-                    <div id="lyrics-box"></div>
-                </div>
-            </div>
-        </div>
-        <div id="music-list" class="music-list-container"></div>
-    </div>
-
-    <div id="video" class="page">
-        <div style="text-align:center; padding:40px;"><h2>MEDIA GALLERY</h2></div>
-        <div id="video-grid" class="video-grid"></div>
-    </div>
-
-    <div id="product-modal">
-        <div class="modal-close-btn" onclick="closeModal()">✕</div>
-        <img id="modal-img" src="">
-        <div class="modal-content">
-            <div id="modal-dots" class="img-dots"></div>
-            <div id="modal-title" class="modal-title"></div>
-            <div id="modal-price" class="modal-price"></div>
-            <div id="modal-desc" class="modal-desc"></div>
-            <a id="modal-link" href="#" target="_blank" class="modal-buy-btn" onclick="countProductClick()">구매하러 가기</a>
-        </div>
-    </div>
-
-    <footer>
-        <div class="footer-content">
-            <div class="footer-logo-unit">
-                <img src="logo.png" id="jelly-logo-footer" alt="Skin Anointing">
-            </div>
-            <div class="footer-text">
-                <p>Representative: Seunghwa Seo</p>
-                <p>Copyright © 2024 SKIN ANOINTING.</p>
-            </div>
-        </div>
-        
-        <div class="visit-stats" id="visit-stat">
-            Total: 0 · Today: 0
-        </div>
-
-        <div class="admin-trigger" onclick="goAdmin()"></div>
-    </footer>
-
-    <script>
-        (function() {
-            const logoFoot = document.getElementById('jelly-logo-footer');
-            if(!logoFoot) return;
-            
-            let isDraggingFoot = false;
-            let currentXF = 0, currentYF = 0;
-            let targetXF = 0, targetYF = 0;
-            let velocityXF = 0, velocityYF = 0;
-            const stiffnessF = 0.08, frictionF = 0.75; 
-            let startXF = 0, startYF = 0;
-
-            function animateFoot() {
-                const forceX = (targetXF - currentXF) * stiffnessF;
-                const forceY = (targetYF - currentYF) * stiffnessF;
-                velocityXF += forceX; velocityXF *= frictionF;
-                velocityYF += forceY; velocityYF *= frictionF;
-                currentXF += velocityXF; currentYF += velocityYF;
-
-                const stretch = Math.max(Math.abs(velocityXF), Math.abs(velocityYF)) * 0.02;
-                const scale = 1 + stretch * 0.15;
-                const skewX = -velocityXF * 1.2; 
-                const skewY = velocityYF * 1.2;
-
-                logoFoot.style.transform = `translate3d(${currentXF}px, ${currentYF}px, 0) skew(${skewX}deg, ${skewY}deg) scale(${scale}, ${1/scale}) rotateZ(${velocityXF * 0.5}deg)`;
-                requestAnimationFrame(animateFoot);
-            }
-            requestAnimationFrame(animateFoot);
-
-            const startDragFoot = (x, y) => { isDraggingFoot = true; startXF = x; startYF = y; };
-            logoFoot.addEventListener('mousedown', e => startDragFoot(e.clientX, e.clientY));
-            logoFoot.addEventListener('touchstart', e => { const touch = e.touches[0]; startDragFoot(touch.clientX, touch.clientY); }, { passive: false });
-
-            const onDragFoot = (x, y) => {
-                if (!isDraggingFoot) return;
-                targetXF = (x - startXF) * 0.5; 
-                targetYF = (y - startYF) * 0.5;
-            };
-            window.addEventListener('mousemove', e => onDragFoot(e.clientX, e.clientY));
-            window.addEventListener('touchmove', e => { if(isDraggingFoot) { onDragFoot(e.touches[0].clientX, e.touches[0].clientY); } }, { passive: false });
-
-            const stopDragFoot = () => { isDraggingFoot = false; targetXF = 0; targetYF = 0; };
-            window.addEventListener('mouseup', stopDragFoot);
-            window.addEventListener('touchend', stopDragFoot);
-        })();
-    </script>
-
-    <script>
-        const cfg = {
-            apiKey: "AIzaSyDUoJtrTbXdYaq1MG_QXipkGPC0frKTFHk",
-            authDomain: "skin-anointing.firebaseapp.com",
-            projectId: "skin-anointing",
-            storageBucket: "skin-anointing.firebasestorage.app",
-            messagingSenderId: "284785258260",
-            appId: "1:284785258260:web:68910599076adad3305c01",
-            measurementId: "G-R0K0HQ59YM",
-            databaseURL: "https://skin-anointing-default-rtdb.firebaseio.com"
-        };
-
-        var bgm=document.getElementById("bgm"), list=[], cur=-1, loop=false, modalImgs=[], currentProductKey = null;
-        var isExitReady = false, exitTimer = null;
-        const pages = ['home', 'products', 'music', 'video'];
-        let currentPageIdx = 0;
-        
-        let isBgmStarted = false;
-
-        function enterSite() {
-            document.getElementById('intro-screen').style.opacity = 0;
-            setTimeout(() => document.getElementById('intro-screen').style.display='none', 1000);
-
-            const mv = document.getElementById('main-video');
-            if(mv) {
-                mv.muted = false; 
-                mv.volume = 0.6; 
-                mv.play().catch(e => console.log(e));
-                mv.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-            
-            countVisit();
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-             const mv = document.getElementById('main-video');
-             if(mv) {
-                 let mvIdx = 1;
-
-                 mv.addEventListener('ended', () => {
-                    if(mvIdx === 1 && !isBgmStarted) {
-                        playBgmWithFadeIn();
-                        isBgmStarted = true;
-                    }
-
-                    mvIdx++;
-                    mv.src = `skin${mvIdx}.mp4`;
-                    mv.muted = true;
-                    mv.play().catch(() => {
-                        mvIdx = 1; mv.src = 'skin1.mp4'; mv.muted=true; mv.play();
-                    });
-                 });
-
-                 mv.addEventListener('error', () => {
-                     mvIdx = 1; mv.src = 'skin1.mp4'; mv.muted=true; mv.play();
-                 }, true);
-             }
-        });
-
-        function playBgmWithFadeIn() {
-            if(!bgm) return;
-            bgm.volume = 0; 
-            bgm.play().then(() => {
-                updateBtn(true);
-                let fadeInterval = setInterval(() => {
-                    if(bgm.volume < 0.5) {
-                        bgm.volume = Math.min(bgm.volume + 0.02, 0.5);
-                    } else {
-                        clearInterval(fadeInterval);
-                    }
-                }, 200);
-            }).catch(e => console.log(e));
-        }
-
-        function countVisit() {
-            try {
-                const db = firebase.database();
-                const today = new Date().toISOString().slice(0,10); 
-                
-                db.ref('stats_visits').transaction(data => {
-                    if(!data) data = { total: 0, daily: {} };
-                    
-                    data.total = (data.total || 0) + 1;
-                    
-                    if(!data.daily) data.daily = {};
-                    if(!data.daily[today]) data.daily[today] = 0;
-                    data.daily[today] += 1;
-                    
-                    return data;
-                });
-            } catch(e) {}
-        }
-
-        function countProductClick() {
-            if(currentProductKey) {
-                try {
-                    firebase.database().ref('stats_product_clicks/' + currentProductKey).transaction(c => (c || 0) + 1);
-                } catch(e){}
-            }
-        }
-
-        window.onload = function() {
-            history.pushState(null, null, location.href);
-            bgm.volume = 0.5;
-            updateMenuHighlight('home');
-
-            setInterval(() => {
-                const slides = document.querySelectorAll('.ceo-img-slide');
-                if(slides.length < 2) return; 
-                let activeIdx = -1;
-                slides.forEach((slide, i) => {
-                    if(slide.classList.contains('active-slide')) activeIdx = i;
-                    slide.classList.remove('active-slide');
-                });
-                let nextIdx = (activeIdx + 1) % slides.length;
-                slides[nextIdx].classList.add('active-slide');
-            }, 4000); 
-
-            try {
-                firebase.initializeApp(cfg);
-                const db = firebase.database();
-                
-                const todayStr = new Date().toISOString().slice(0,10);
-                db.ref('stats_visits').on('value', s => {
-                    const val = s.val();
-                    if(val) {
-                        const t = val.total || 0;
-                        const d = (val.daily && val.daily[todayStr]) ? val.daily[todayStr] : 0;
-                        document.getElementById('visit-stat').innerText = `Total: ${t} · Today: ${d}`;
-                    }
-                });
-
-                db.ref('products').on('value', s => {
-                    const d = document.getElementById('product-grid'); d.innerHTML="";
-                    if(s.val()) Object.entries(s.val()).forEach(([k, p]) => {
-                        const imgs = p.images || [p.imageUrl];
-                        const jsonImgs = JSON.stringify(imgs).replace(/"/g, '&quot;');
-                        const safeDesc = (p.desc||"").replace(/"/g, '&quot;');
-                        let price = p.priceNormal ? `<span style="text-decoration:line-through; color:#999; margin-right:5px;">${p.priceNormal}</span> <b>${p.priceSale}</b>` : `<b>${p.priceSale}</b>`;
-                        db.ref('likes/prod_'+k).on('value', ls => {
-                            const c = ls.val() || 0;
-                            const el = document.getElementById('like-prod-'+k); if(el) el.innerText = c;
-                        });
-                        d.innerHTML += `<div class="product-card"><div onclick="openModal('${k}', '${p.name}', '${p.priceSale}', '${p.priceNormal||""}', \`${safeDesc}\`, '${p.link}', ${jsonImgs})"><img src="${imgs[0]}" class="product-img"><div class="p-name">${p.name}</div><div class="p-price">${price}</div></div><div class="like-box" onclick="handleLike('prod_${k}')"><span class="heart-icon" id="heart-prod_${k}">♥</span><span id="like-prod-${k}">0</span></div></div>`;
-                    });
-                });
-                db.ref('music').on('value', s => {
-                    const d = document.getElementById('music-list'); d.innerHTML=""; list=[];
-                    let i=0;
-                    if(s.val()) Object.entries(s.val()).forEach(([k, m]) => {
-                        list.push(m);
-                        db.ref('likes/music_'+k).on('value', ls => { const c = ls.val() || 0; const el = document.getElementById('like-music-'+k); if(el) el.innerText = c; });
-                        d.innerHTML += `<div class="track" id="tr-${i}"><div class="track-info" onclick="play(${i}, '${k}')"><span>${(i+1).toString().padStart(2,'0')}</span> &nbsp; <span>${m.title}</span></div><div class="like-box" onclick="handleLike('music_${k}')"><span class="heart-icon" id="heart-music_${k}">♥</span><span id="like-music-${k}">0</span></div></div>`;
-                        i++;
-                    });
-                });
-                db.ref('videos').on('value', s => {
-                    const d = document.getElementById('video-grid'); d.innerHTML="";
-                    if(s.val()) Object.values(s.val()).forEach(v => {
-                        d.innerHTML += `<div class="video-card"><img src="${v.thumbnail}" style="width:100%; border-radius:8px;" onclick="window.open('${v.link}')"><div style="margin-top:5px;">${v.title}</div></div>`;
-                    });
-                });
-            } catch(e) {}
-            
-            initSwipe();
-        };
-
-        function initSwipe() {
-            let touchStartX = 0, touchEndX = 0, touchStartY = 0, touchEndY = 0;
-            const minSwipeDistance = 50;
-            document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; touchStartY = e.changedTouches[0].screenY; }, {passive: true});
-            document.addEventListener('touchend', e => {
-                touchEndX = e.changedTouches[0].screenX; touchEndY = e.changedTouches[0].screenY;
-                handleSwipeGesture();
-            }, {passive: true});
-            function handleSwipeGesture() {
-                if(document.getElementById('product-modal').style.display === 'block') return;
-                const xDiff = touchStartX - touchEndX; const yDiff = touchStartY - touchEndY;
-                if (Math.abs(xDiff) < Math.abs(yDiff)) return; 
-                if (Math.abs(xDiff) > minSwipeDistance) { if (xDiff > 0) goNextPage(); else goPrevPage(); }
-            }
-        }
-        function goNextPage() { if (currentPageIdx < pages.length - 1) goPage(pages[currentPageIdx + 1]); }
-        function goPrevPage() { if (currentPageIdx > 0) goPage(pages[currentPageIdx - 1]); }
-        function updateMenuHighlight(id) {
-            document.querySelectorAll('.main-menu').forEach(el => el.classList.remove('current-menu'));
-            const menuEl = document.getElementById('menu-' + id); if(menuEl) menuEl.classList.add('current-menu');
-        }
-        function goPage(id) {
-            currentPageIdx = pages.indexOf(id); updateMenuHighlight(id);
-            document.querySelectorAll('.page').forEach(p => { p.classList.remove('active'); p.classList.remove('fade-in'); });
-            const target = document.getElementById(id); target.classList.add('active');
-            setTimeout(() => { target.classList.add('fade-in'); }, 10); window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-        window.onpopstate = function(event) {
-            const modal = document.getElementById('product-modal');
-            if(modal.style.display === "block") { closeModal(); history.pushState(null, null, location.href); return; }
-            if(isExitReady) { } else {
-                history.pushState(null, null, location.href); showToast(); isExitReady = true;
-                if(exitTimer) clearTimeout(exitTimer);
-                exitTimer = setTimeout(() => { isExitReady = false; document.getElementById("back-toast").classList.remove("show"); }, 2000);
-            }
-        };
-        function showToast() { document.getElementById("back-toast").classList.add("show"); }
-        function handleLike(id) {
-            const storageKey = 'liked_' + id; if (localStorage.getItem(storageKey)) { alert('이미 공감하셨습니다.'); return; }
-            document.getElementById('heart-'+id).classList.add('liked'); localStorage.setItem(storageKey, 'true');
-            firebase.database().ref('likes/' + id).transaction(c => (c || 0) + 1);
-        }
-
-        function openModal(key, name, sale, norm, desc, link, imgs) {
-            history.pushState({modal:true}, null, "#modal"); modalImgs = imgs; currentProductKey = key;
-            document.getElementById('modal-img').src = imgs[0];
-            if(imgs.length > 1) { imgs.forEach((imgUrl, index) => { if(index > 0) { const preloadImg = new Image(); preloadImg.src = imgUrl; } }); }
-            document.getElementById('modal-title').innerText = name;
-            let pHtml = norm ? `<span style="text-decoration:line-through; color:#ccc; font-size:18px;">${norm}</span> ${sale}` : sale;
-            document.getElementById('modal-price').innerHTML = pHtml;
-            document.getElementById('modal-desc').innerText = desc;
-            const btn = document.getElementById('modal-link');
-            if(link) { btn.style.display="block"; btn.href=link; } else btn.style.display="none";
-            let dotHtml = "";
-            if(imgs.length > 1) { imgs.forEach((_, i) => dotHtml += `<button class="dot-btn ${i==0?'active':''}" onclick="setModalImg(${i}, this)">${i+1}</button>`); }
-            document.getElementById('modal-dots').innerHTML = dotHtml;
-            document.getElementById('product-modal').style.display = "block";
-            document.body.style.overflow = "hidden";
-        }
-
-        function setModalImg(i, el) {
-            document.getElementById('modal-img').src = modalImgs[i];
-            document.querySelectorAll('.dot-btn').forEach(b => b.classList.remove('active')); el.classList.add('active');
-        }
-
-        function closeModal() {
-            document.getElementById('product-modal').style.display = "none";
-            document.body.style.overflowY = "auto";
-            document.body.style.overflowX = "hidden";
-            currentProductKey = null;
-            if(location.hash === "#modal") history.back();
-        }
-
-        function toggleLoop() {
-            loop = !loop; bgm.loop = loop;
-            const btn = document.getElementById('loop-btn');
-            if(loop) { btn.classList.add('active'); } else { btn.classList.remove('active'); }
-        }
-        function togglePlay() {
-            if(!bgm) return;
-            if(bgm.paused) { bgm.play(); updateBtn(true); } else { bgm.pause(); updateBtn(false); }
-        }
-        function updateBtn(p) {
-            const pBtn = document.getElementById('p-btn');
-            if(p) {
-                pBtn.innerHTML = '<svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
-                document.getElementById('visualizer').style.opacity = 1;
-            } else {
-                pBtn.innerHTML = '<svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
-                document.getElementById('visualizer').style.opacity = 0;
-            }
-        }
-        
-        function play(i, musicKey) {
-            if(!list[i]) return; cur = i; bgm.src = list[i].fileUrl; bgm.play();
-            if(musicKey) {
-                try {
-                    firebase.database().ref('stats_music_plays/' + musicKey).transaction(c => (c || 0) + 1);
-                } catch(e){}
-            }
-            document.getElementById('m-title').innerText = list[i].title;
-            updateBtn(true);
-            document.querySelectorAll('.track').forEach(t=>t.classList.remove('active-track'));
-            document.getElementById('tr-'+i).classList.add('active-track');
-            const lyricsBox = document.getElementById('lyrics-box');
-            if (list[i].lyrics && list[i].lyrics.trim() !== "") {
-                lyricsBox.innerText = list[i].lyrics; lyricsBox.style.display = "block"; lyricsBox.scrollTop = 0; 
-            } else { lyricsBox.style.display = "none"; }
-        }
-        function nextTrack() { if(cur < list.length-1) play(cur+1); else play(0); }
-        function prevTrack() { if(cur > 0) play(cur-1); else play(list.length-1); }
-        function handleEnd() { if(!loop) nextTrack(); }
-
-        // ★ [핵심] 로그인 로직 수정: 5번 터치 -> 코드2025 -> 팝업창(ID/PW) -> Firebase 검사
-        let cnt = 0, tm;
-        function goAdmin() {
-            cnt++; 
-            if(cnt == 5) { 
-                // 1단계: 접근 코드 2025 확인
-                if(prompt("접근 코드를 입력하세요.") == "2025") {
-                    // 2단계: 로그인 팝업창 띄우기
-                    document.getElementById('admin-login-overlay').style.display = 'flex';
-                }
-                cnt = 0; 
-            }
-            clearTimeout(tm); 
-            tm = setTimeout(() => cnt = 0, 1000);
-        }
-
-        // 로그인 확인 함수 (Firebase Auth)
-        function checkAdminLogin() {
-            const id = document.getElementById('admin-id-input').value;
-            const pw = document.getElementById('admin-pw-input').value;
-
-            // ★ 진짜 보안: 구글 서버에 아이디/비번 확인 요청 (소스코드에 비번 없음!)
-            firebase.auth().signInWithEmailAndPassword(id, pw)
-                .then((userCredential) => {
-                    // 로그인 성공 시
-                    sessionStorage.setItem("skin_admin_token", "true");
-                    alert("관리자 모드로 접속합니다.");
-                    location.href = "admin.html";
-                })
-                .catch((error) => {
-                    // 로그인 실패 시
-                    alert("아이디 또는 비밀번호가 일치하지 않습니다.");
-                    console.error(error);
-                });
-        }
-
-        // 로그인 창 닫기
-        function closeAdminLogin() {
-            document.getElementById('admin-login-overlay').style.display = 'none';
-            document.getElementById('admin-id-input').value = "";
-            document.getElementById('admin-pw-input').value = "";
-        }
-    </script>
-</body>
-</html>
+// V8.10 NOW campaign: Firebase Realtime Database read-only public view
+const publicFirebaseConfig={
+  apiKey:"AIzaSyDUoJtrTbXdYaq1MG_QXipkGPC0frKTFHk",
+  authDomain:"skin-anointing.firebaseapp.com",
+  projectId:"skin-anointing",
+  storageBucket:"skin-anointing.firebasestorage.app",
+  messagingSenderId:"284785258260",
+  appId:"1:284785258260:web:68910599076adad3305c01",
+  databaseURL:"https://skin-anointing-default-rtdb.firebaseio.com"
+};
+const nowFloat=document.getElementById('nowFloat');
+const nowSheet=document.getElementById('nowSheet');
+const nowBackdrop=document.getElementById('nowBackdrop');
+const nowClose=document.getElementById('nowClose');
+const nowBadge=document.getElementById('nowBadge');
+const nowTitle=document.getElementById('nowTitle');
+const nowText=document.getElementById('nowText');
+const nowPeriod=document.getElementById('nowPeriod');
+const nowCta=document.getElementById('nowCta');
+const nowCtaText=document.getElementById('nowCtaText');
+const nowContent=document.getElementById('nowContent');
+let campaignState=null;
+let campaignLoadState='loading';
+let campaignRef=null;
+let campaignCallback=null;
+let campaignLoadTimer=null;
+let campaignBoundaryTimer=null;
+let campaignRequest=0;
+let previouslyFocused=null;
+let previousBodyOverflow='';
+const inertBackground=new Map();
+function safeCampaignLink(value){
+  if(typeof value!=='string'||!value.trim()) return '';
+  try{
+    const url=new URL(value.trim());
+    return ['https:','http:'].includes(url.protocol)&&!url.username&&!url.password?url.href:'';
+  }catch(e){return '';}
+}
+function campaignTime(value){
+  if(value===null||value===undefined||value==='') return null;
+  if(typeof value!=='number'&&typeof value!=='string') return NaN;
+  const time=Number(value);
+  return Number.isFinite(time)&&time>0?time:NaN;
+}
+function campaignIsLive(c){
+  if(!c||c.enabled!==true||!safeCampaignLink(c.link)) return false;
+  const start=campaignTime(c.startAt),end=campaignTime(c.endAt);
+  if(Number.isNaN(start)||Number.isNaN(end)) return false;
+  if(start!==null&&end!==null&&end<=start) return false;
+  const t=Date.now();
+  if(start!==null&&t<start) return false;
+  if(end!==null&&t>=end) return false;
+  return true;
+}
+function kDate(ms){if(!ms)return '';try{return new Intl.DateTimeFormat('ko-KR',{timeZone:'Asia/Seoul',month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}).format(new Date(Number(ms)));}catch(e){return ''}}
+function scheduleCampaignBoundary(){
+  clearTimeout(campaignBoundaryTimer);
+  if(campaignLoadState!=='ready'||!campaignState||campaignState.enabled!==true) return;
+  const now=Date.now();
+  const future=[campaignTime(campaignState.startAt),campaignTime(campaignState.endAt)].filter(t=>Number.isFinite(t)&&t>now);
+  if(future.length) campaignBoundaryTimer=setTimeout(renderCampaign,Math.min(2147483647,Math.max(1,Math.min(...future)-now+25)));
+}
+function renderCampaign(){
+  const c=campaignState; const live=campaignLoadState==='ready'&&campaignIsLive(c);
+  const ctaHadFocus=document.activeElement===nowCta;
+  nowFloat.classList.toggle('is-live',live);
+  nowContent.setAttribute('aria-busy',String(campaignLoadState==='loading'));
+  nowPeriod.textContent=''; nowCta.hidden=true;
+  if(campaignLoadState==='loading'){
+    nowBadge.textContent='CURRENT';
+    nowTitle.textContent='혜택을 확인하고 있습니다.';
+    nowText.textContent='잠시만 기다려 주세요.';
+  }else if(campaignLoadState==='error'){
+    nowBadge.textContent='CURRENT';
+    nowTitle.textContent='혜택 정보를 불러오지 못했습니다.';
+    nowText.textContent='잠시 후 NOW를 다시 눌러 확인해 주세요.';
+  }else if(live){
+    nowBadge.textContent=c.badge||'NOW OPEN';
+    nowTitle.textContent=c.title||'지금 만나보세요';
+    nowText.textContent=c.text||'현재 진행 중인 특별 혜택이 있습니다.';
+    const a=kDate(c.startAt),b=kDate(c.endAt); nowPeriod.textContent=(a||b)?[a,b].filter(Boolean).join(' — '):'';
+    nowCta.hidden=false; nowCtaText.textContent=c.buttonText||'지금 만나보기';
+  }else{
+    nowBadge.textContent='CURRENT';
+    nowTitle.textContent='현재 진행 중인 특별 혜택이 없습니다.';
+    nowText.textContent='새로운 소식이 준비되면 이곳에서 가장 먼저 안내해드릴게요.';
+    nowPeriod.textContent=''; nowCta.hidden=true;
+  }
+  if(ctaHadFocus&&nowCta.hidden&&!nowSheet.hidden) nowClose.focus();
+  scheduleCampaignBoundary();
+}
+function loadCampaign(){
+  const request=++campaignRequest;
+  clearTimeout(campaignLoadTimer);
+  if(campaignRef&&campaignCallback) campaignRef.off('value',campaignCallback);
+  campaignLoadState='loading';renderCampaign();
+  const fail=error=>{
+    if(request!==campaignRequest) return;
+    clearTimeout(campaignLoadTimer);
+    campaignLoadState='error';renderCampaign();
+    if(error) console.warn('Campaign load unavailable',error.code||error.message||'connection error');
+  };
+  campaignLoadTimer=setTimeout(()=>fail(),12000);
+  try{
+    if(typeof firebase==='undefined') throw new Error('Firebase SDK unavailable');
+    if(!firebase.apps.length) firebase.initializeApp(publicFirebaseConfig);
+    campaignRef=firebase.database().ref('campaign/current');
+    campaignCallback=snap=>{
+      if(request!==campaignRequest) return;
+      clearTimeout(campaignLoadTimer);
+      campaignState=snap.val()||null;
+      campaignLoadState='ready';renderCampaign();
+    };
+    campaignRef.on('value',campaignCallback,fail);
+  }catch(e){fail(e);}
+}
+function openNow(){
+  if(!nowSheet.hidden) return;
+  if(campaignLoadState==='error') loadCampaign();
+  else renderCampaign();
+  previouslyFocused=document.activeElement;
+  nowSheet.hidden=false;nowSheet.inert=false;nowBackdrop.hidden=false;
+  nowSheet.classList.add('open');nowBackdrop.classList.add('open');
+  nowFloat.setAttribute('aria-expanded','true');
+  Array.from(document.body.children).forEach(el=>{
+    if(el===nowSheet||el===nowBackdrop||el.tagName==='SCRIPT') return;
+    inertBackground.set(el,el.inert);el.inert=true;
+  });
+  previousBodyOverflow=document.body.style.overflow;
+  document.body.style.overflow='hidden';
+  nowClose.focus();
+}
+function closeNow(){
+  if(nowSheet.hidden) return;
+  nowSheet.classList.remove('open');nowBackdrop.classList.remove('open');
+  nowSheet.inert=true;nowSheet.hidden=true;nowBackdrop.hidden=true;
+  nowFloat.setAttribute('aria-expanded','false');
+  inertBackground.forEach((wasInert,el)=>{el.inert=wasInert;});inertBackground.clear();
+  document.body.style.overflow=previousBodyOverflow;
+  const target=previouslyFocused&&previouslyFocused.isConnected?previouslyFocused:nowFloat;
+  target.focus();
+}
+nowFloat.addEventListener('click',openNow);nowClose.addEventListener('click',closeNow);nowBackdrop.addEventListener('click',closeNow);
+document.addEventListener('keydown',e=>{
+  if(nowSheet.hidden) return;
+  if(e.key==='Escape'){e.preventDefault();closeNow();return;}
+  if(e.key!=='Tab') return;
+  const buttons=Array.from(nowSheet.querySelectorAll('button:not([hidden]):not([disabled])'));
+  const first=buttons[0]||nowSheet,last=buttons[buttons.length-1]||nowSheet;
+  if(e.shiftKey&&(document.activeElement===first||!nowSheet.contains(document.activeElement))){e.preventDefault();last.focus();}
+  else if(!e.shiftKey&&(document.activeElement===last||!nowSheet.contains(document.activeElement))){e.preventDefault();first.focus();}
+});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden) renderCampaign();});
+nowCta.addEventListener('click',()=>{
+  if(campaignLoadState!=='ready'||!campaignIsLive(campaignState)){renderCampaign();return;}
+  window.open(safeCampaignLink(campaignState.link),'_blank','noopener,noreferrer');
+});
+loadCampaign();
+</script>
+</body></html>

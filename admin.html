@@ -3,453 +3,567 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SKIN ANOINTING - ADMIN</title>
-    
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-    
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <script>
-        const authCfg = { 
-            apiKey: "AIzaSyDUoJtrTbXdYaq1MG_QXipkGPC0frKTFHk", 
-            authDomain: "skin-anointing.firebaseapp.com", 
-            projectId: "skin-anointing",
-            storageBucket: "skin-anointing.firebasestorage.app"
-        };
-        
-        if (!firebase.apps.length) firebase.initializeApp(authCfg);
-        
-        const db = firebase.database();
-        const storage = firebase.storage();
-        const auth = firebase.auth();
-
-        // 로그인 체크
-        auth.onAuthStateChanged((user) => {
-            const sessionToken = sessionStorage.getItem("skin_admin_token");
-            if (!user && sessionToken !== "true") {
-                alert("접근 권한이 없습니다. 메인에서 로그인해주세요.");
-                location.href = "index.html";
-            }
-        });
-    </script>
+    <title>ADMIN MASTER - SKIN ANOINTING</title>
 
     <style>
-        body { font-family: 'Times New Roman', serif; background-color: #f4f4f4; margin: 0; padding: 20px; }
-        .admin-container { max-width: 900px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        h1 { text-align: center; color: #333; margin-bottom: 30px; letter-spacing: 2px; }
-        
-        .tabs { display: flex; border-bottom: 2px solid #ddd; margin-bottom: 20px; }
-        .tab { flex: 1; text-align: center; padding: 15px; cursor: pointer; font-weight: bold; color: #777; transition: 0.3s; background:#f9f9f9; }
-        .tab:hover { background: #eee; }
-        .tab.active { border-bottom: 3px solid #8b5e3c; color: #8b5e3c; background:#fff; }
-        
-        .panel { display: none; animation: fadeIn 0.5s; }
-        .panel.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        body { font-family: sans-serif; padding: 10px; background: #f4f4f4; margin: 0; }
+        .container { max-width: 600px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 8px; }
 
-        .form-box { background: #fafafa; padding: 25px; border-radius: 8px; border: 1px solid #eee; margin-bottom: 30px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 14px; color: #555; }
-        input, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
-        
-        /* 사진 미리보기 스타일 */
-        .img-preview-container { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; padding: 10px; background: #fff; border: 1px solid #ddd; min-height: 80px; }
-        .img-preview-item { position: relative; width: 70px; height: 70px; border: 1px solid #ccc; overflow: hidden; }
-        .img-preview-item img { width: 100%; height: 100%; object-fit: cover; }
-        .btn-remove-img { position: absolute; top: 0; right: 0; background: red; color: white; width: 20px; height: 20px; text-align: center; cursor: pointer; font-size: 12px; }
+        input, textarea { width: 100%; padding: 12px; margin: 5px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; padding: 14px; background: #1a1a1a; color: #fff; border: none; cursor: pointer; margin-top: 10px; font-weight: bold; }
 
-        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
-        button.submit-btn { flex: 2; padding: 15px; background: #8b5e3c; color: #fff; border: none; cursor: pointer; font-size: 16px; font-weight: bold; border-radius: 4px; }
-        button.submit-btn:disabled { background: #ccc; cursor: not-allowed; } 
-        button.cancel-btn { flex: 1; padding: 15px; background: #999; color: #fff; border: none; cursor: pointer; border-radius: 4px; display: none; }
+        /* 버튼 스타일 세분화 */
+        button.del-btn { background: #d9534f; width: auto; padding: 5px 10px; font-size: 12px; margin-left: 5px; }
+        button.edit-btn { background: #555; width: auto; padding: 5px 10px; font-size: 12px; }
+        button.reset-btn { background: #999; margin-top: 5px; }
 
-        .item-list { margin-top: 10px; border-top: 2px solid #333; }
-        .item { display: flex; justify-content: space-between; align-items: center; padding: 15px 10px; border-bottom: 1px solid #eee; background: #fff; }
-        .item img { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; margin-right: 15px; }
-        .item-info { display: flex; align-items: center; flex: 1; }
-        .btn-del { background: #e74c3c; color: #fff; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px; margin-left: 5px; }
-        .btn-edit { background: #3498db; color: #fff; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px; }
+        .tab-menu { display: flex; flex-wrap:wrap; gap: 5px; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .tab-btn { flex: 1 1 20%; padding: 10px; background: #fff; border: 1px solid #ddd; cursor: pointer; font-weight: bold; color: #777; }
+        .tab-btn.active { background: #1a1a1a; color: #fff; border: none; }
 
-        /* ★ [복구됨] 통계 스타일 */
-        .stat-box { margin-bottom: 40px; background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .stat-header { font-size: 18px; font-weight: bold; border-left: 4px solid #8b5e3c; padding-left: 10px; margin-bottom: 15px; color: #333; }
-        .chart-wrapper { width: 100%; height: 300px; background: #fff; border: 1px solid #eee; padding: 10px; }
-        .rank-table { width: 100%; border-collapse: collapse; font-size: 14px; background: #fff; }
-        .rank-table th { background: #eee; text-align: left; padding: 12px; border-bottom: 2px solid #ddd; color: #555; }
-        .rank-table td { border-bottom: 1px solid #eee; padding: 12px; color: #333; }
-        .rank-num { font-weight: bold; color: #8b5e3c; width: 50px; text-align: center; }
+        .form-group { display: none; }
+        .form-group.active { display: block; }
+
+        /* 목록 스타일 */
+        .item-list {
+            margin-top: 30px; border-top: 2px solid #333; padding-top: 10px;
+            max-height: 500px; overflow-y: auto;
+        }
+        .item-row {
+            display: flex; justify-content: space-between; align-items: center;
+            background: #f9f9f9; padding: 15px; margin-bottom: 8px;
+            border: 1px solid #eee; border-radius: 4px;
+        }
+        .item-info { flex-grow: 1; font-weight: bold; font-size: 14px; margin-right: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+
+        .loading { color: orange; text-align: center; display: none; margin-top: 10px; font-weight: bold; }
+        .price-group { display: flex; gap: 5px; }
+        button:disabled { opacity: .55; cursor: wait; }
+        .notice { padding: 13px; margin-bottom: 16px; border-radius: 6px; background: #eef2f5; color: #26343b; font-size: 14px; line-height: 1.7; overflow-wrap: anywhere; }
+        .notice.error { background: #fff0ef; color: #972a22; }
+        .notice.success { background: #edf4ec; color: #315c2b; }
+        .notice[hidden] { display: none; }
+        #retry-connection { background: #655b4c; margin: 0 0 15px; }
+        #campaign-status { overflow-wrap: anywhere; }
+        input:focus-visible, textarea:focus-visible, button:focus-visible { outline: 2px solid #687c45; outline-offset: 3px; }
+
+        .campaign-status{padding:14px;border-radius:8px;background:#f5f1e8;margin:10px 0 16px;font-size:13px;line-height:1.6}.campaign-status.live{background:#1f211a;color:#fff}.check-row{display:flex;align-items:center;gap:10px;padding:10px 0}.check-row input{width:22px;height:22px;margin:0}.campaign-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.campaign-actions button{margin-top:8px}.secondary-btn{background:#8a8176}label{display:block;margin-top:10px;font-size:13px;font-weight:700;color:#555}
     </style>
 </head>
 <body>
+    <div class="container">
+        <div id="connection-status" class="notice" role="status" aria-live="polite">관리자 연결을 확인하고 있습니다...</div>
+        <button id="retry-connection" type="button" onclick="location.reload()" hidden>연결 다시 확인</button>
+        <div id="login-section" style="text-align:center;">
+            <h2>관리자 로그인</h2>
+            <form id="login-form">
+                <input type="email" id="email" placeholder="아이디 (이메일)" aria-label="관리자 이메일" autocomplete="username" required>
+                <input type="password" id="password" placeholder="비밀번호" aria-label="비밀번호" autocomplete="current-password" required>
+                <button id="login-button" type="submit" disabled>연결 확인 중...</button>
+            </form>
+        </div>
 
-<div class="admin-container">
-    <h1>ADMIN DASHBOARD</h1>
+        <div id="admin-section" style="display:none;">
+            <div style="text-align:center; margin-bottom:20px;"><b>관리자 모드 · V8.10</b></div>
 
-    <div class="tabs">
-        <div class="tab active" onclick="showPanel('stats')">📊 통계</div>
-        <div class="tab" onclick="showPanel('products')">🛍️ 상품</div>
-        <div class="tab" onclick="showPanel('music')">🎵 음악</div>
-        <div class="tab" onclick="showPanel('video')">🎬 비디오</div>
+            <div class="tab-menu">
+                <button class="tab-btn" onclick="showTab('product')">제품</button>
+                <button class="tab-btn active" onclick="showTab('campaign')">NOW</button>
+                <button class="tab-btn" onclick="showTab('music')">음악</button>
+                <button class="tab-btn" onclick="showTab('video')">영상</button>
+            </div>
+
+            <div id="tab-product" class="form-group">
+                <h3>🛍️ 제품 등록/수정</h3>
+                <p class="notice">기존 제품 데이터를 관리하는 메뉴입니다. 현재 홈페이지의 제품 구성에는 자동 반영되지 않습니다.</p>
+                <input type="hidden" id="p-key"> <input type="hidden" id="p-old-imgs">
+                <label>이미지 (최대 3장)</label>
+                <input type="file" id="p-files" accept="image/*" multiple>
+                <input type="text" id="p-name" placeholder="제품명">
+                <div class="price-group">
+                    <input type="text" id="p-price-normal" placeholder="정상가 (선택)" oninput="formatNumber(this)">
+                    <input type="text" id="p-price-sale" placeholder="판매가 (필수)" oninput="formatNumber(this)">
+                </div>
+                <input type="text" id="p-link" placeholder="구매 링크">
+                <textarea id="p-desc" rows="5" placeholder="설명"></textarea>
+
+                <button id="p-btn" onclick="saveProduct()">제품 업로드</button>
+                <button onclick="resetProductForm()" class="reset-btn">초기화</button>
+
+                <div class="item-list"><h4>등록된 제품</h4><div id="product-list"></div></div>
+            </div>
+
+
+            <div id="tab-campaign" class="form-group active">
+                <h3>✨ NOW / 특별 판매 링크</h3>
+                <div id="campaign-status" class="campaign-status">상태를 불러오는 중...</div>
+                <div class="check-row"><input type="checkbox" id="c-enabled"><label for="c-enabled" style="margin:0">홈페이지 NOW 활성화</label></div>
+                <label>상단 배지</label><input type="text" id="c-badge" placeholder="예: NOW OPEN">
+                <label>제목</label><input type="text" id="c-title" placeholder="예: 이번 주 특별 혜택">
+                <label>짧은 안내 문구</label><textarea id="c-text" rows="3" placeholder="고객에게 보여줄 짧은 문구"></textarea>
+                <label>전용 링크</label><input type="url" id="c-link" placeholder="https://...">
+                <label>버튼 문구</label><input type="text" id="c-button" placeholder="예: 지금 만나보기">
+                <label for="c-start">시작일 · 시간 (선택, 한국 시간)</label><input type="datetime-local" id="c-start">
+                <label for="c-end">종료일 · 시간 (선택, 한국 시간)</label><input type="datetime-local" id="c-end">
+                <div class="campaign-actions">
+                    <button onclick="saveCampaign()">NOW 저장</button>
+                    <button class="secondary-btn" onclick="disableCampaign()">즉시 종료</button>
+                </div>
+                <p style="font-size:12px;color:#777;line-height:1.6">저장하면 홈페이지에 즉시 반영됩니다. 링크가 없거나 OFF 상태면 고객에게 진행 중인 특별 혜택이 없다고 표시됩니다.</p>
+            </div>
+
+            <div id="tab-music" class="form-group">
+                <h3>🎵 음악 등록/수정</h3>
+                <p class="notice">기존 음악 데이터를 관리하는 메뉴입니다. 현재 홈페이지의 배경음악에는 자동 반영되지 않습니다.</p>
+                <input type="hidden" id="m-key">
+                <input type="hidden" id="m-old-url">
+
+                <label>음악 파일 (수정 시, 파일 변경 안 하려면 비워두세요)</label>
+                <input type="file" id="m-file" accept="audio/*">
+                <input type="text" id="m-title" placeholder="곡 제목 (Title)">
+                <textarea id="m-lyrics" placeholder="가사 입력 (Lyrics) - 줄바꿈 가능" rows="6"></textarea>
+
+                <button id="m-btn" onclick="saveMusic()">음악 등록</button>
+                <button onclick="resetMusicForm()" class="reset-btn">초기화</button>
+
+                <div class="item-list"><h4>등록된 음악</h4><div id="music-list-admin"></div></div>
+            </div>
+
+            <div id="tab-video" class="form-group">
+                <h3>🎬 영상 등록</h3>
+                <p class="notice">기존 영상 데이터를 관리하는 메뉴입니다. 현재 홈페이지의 영상 영역에는 자동 반영되지 않습니다.</p>
+                <input type="text" id="v-link" placeholder="유튜브 링크">
+                <input type="text" id="v-title" placeholder="제목">
+                <button onclick="uploadVideo()">영상 추가</button>
+                <div class="item-list"><h4>등록된 영상</h4><div id="video-list-admin"></div></div>
+            </div>
+
+            <div id="loading-msg" class="loading">처리 중... 잠시만 기다려주세요.</div>
+            <button onclick="adminLogout()" style="background:#555; margin-top:30px;">로그아웃</button>
+        </div>
     </div>
 
-    <div id="stats" class="panel active">
-        <div class="stat-box">
-            <div class="stat-header">📉 주간 방문자 (Weekly Visitors)</div>
-            <div class="chart-wrapper">
-                <canvas id="visitChart"></canvas>
-            </div>
-        </div>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDUoJtrTbXdYaq1MG_QXipkGPC0frKTFHk",
+            authDomain: "skin-anointing.firebaseapp.com",
+            projectId: "skin-anointing",
+            storageBucket: "skin-anointing.firebasestorage.app",
+            messagingSenderId: "284785258260",
+            appId: "1:284785258260:web:68910599076adad3305c01",
+            measurementId: "G-R0K0HQ59YM",
+            databaseURL: "https://skin-anointing-default-rtdb.firebaseio.com"
+        };
 
-        <div class="stat-box">
-            <div class="stat-header">🛍️ 상품 구매 클릭 순위</div>
-            <table class="rank-table" id="product-rank-table">
-                <tr><td colspan="3">데이터 로딩 중...</td></tr>
-            </table>
-        </div>
+        let auth = null, db = null, storage = null;
+        let sdkReady = false, operationBusy = false, currentUid = null;
+        let subscriptions = [], lastCampaign = {}, campaignDirty = false, campaignReady = false;
+        const $ = id => document.getElementById(id);
 
-        <div class="stat-box">
-            <div class="stat-header">🎵 음악 재생 순위</div>
-            <table class="rank-table" id="music-rank-table">
-                <tr><td colspan="3">데이터 로딩 중...</td></tr>
-            </table>
-        </div>
-    </div>
-
-    <div id="products" class="panel">
-        <div class="form-box">
-            <h3 id="p-form-title">상품 등록</h3>
-            <input type="hidden" id="p-key">
-            
-            <div class="form-group"><label>상품명</label><input type="text" id="p-name"></div>
-            <div class="form-group"><label>할인가</label><input type="text" id="p-price" placeholder="예: 25,000" onkeyup="inputNumberFormat(this)"></div>
-            <div class="form-group"><label>정상가</label><input type="text" id="p-norm" placeholder="예: 35,000" onkeyup="inputNumberFormat(this)"></div>
-            <div class="form-group"><label>링크</label><input type="text" id="p-link"></div>
-            <div class="form-group"><label>설명</label><textarea id="p-desc" rows="3"></textarea></div>
-            
-            <div class="form-group">
-                <label>이미지 추가 (한 장씩 선택해도 누적됩니다)</label>
-                <input type="file" id="p-imgs-input" multiple onchange="handleAddImages(this)">
-                <div class="img-preview-container" id="p-preview-box"></div>
-            </div>
-            
-            <div class="btn-group">
-                <button class="cancel-btn" id="p-cancel" onclick="resetForm('product')">취소</button>
-                <button class="submit-btn" id="p-submit" onclick="saveProduct()">상품 등록</button>
-            </div>
-        </div>
-        <div id="p-list" class="item-list"></div>
-    </div>
-
-    <div id="music" class="panel">
-        <div class="form-box">
-            <h3 id="m-form-title">음악 등록</h3>
-            <input type="hidden" id="m-key">
-            <input type="hidden" id="m-old-file">
-            <div class="form-group"><label>제목</label><input type="text" id="m-title"></div>
-            <div class="form-group"><label>가사</label><textarea id="m-lyrics" rows="5"></textarea></div>
-            <div class="form-group"><label>MP3 파일</label><input type="file" id="m-file"></div>
-            <div class="btn-group">
-                <button class="cancel-btn" id="m-cancel" onclick="resetForm('music')">취소</button>
-                <button class="submit-btn" id="m-submit" onclick="saveMusic()">음악 등록</button>
-            </div>
-        </div>
-        <div id="m-list" class="item-list"></div>
-    </div>
-
-    <div id="video" class="panel">
-        <div class="form-box">
-            <h3 id="v-form-title">비디오 등록</h3>
-            <input type="hidden" id="v-key">
-            <input type="hidden" id="v-old-thumb">
-            <div class="form-group"><label>제목</label><input type="text" id="v-title"></div>
-            <div class="form-group"><label>링크</label><input type="text" id="v-link"></div>
-            <div class="form-group"><label>썸네일</label><input type="text" id="v-thumb"></div>
-            <div class="btn-group">
-                <button class="cancel-btn" id="v-cancel" onclick="resetForm('video')">취소</button>
-                <button class="submit-btn" id="v-submit" onclick="saveVideo()">비디오 등록</button>
-            </div>
-        </div>
-        <div id="v-list" class="item-list"></div>
-    </div>
-</div>
-
-<script>
-    // ==========================================
-    // 유틸리티 함수 (콤마, 이미지 관리, 탭)
-    // ==========================================
-    function inputNumberFormat(obj) { obj.value = comma(uncomma(obj.value)); }
-    function comma(str) { str = String(str); return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,'); }
-    function uncomma(str) { str = String(str); return str.replace(/[^\d]+/g, ''); }
-
-    let currentProductFiles = [];
-    function handleAddImages(input) {
-        const files = Array.from(input.files);
-        if(files.length === 0) return;
-        currentProductFiles = currentProductFiles.concat(files);
-        renderPreview();
-        input.value = ""; 
-    }
-    function renderPreview() {
-        const box = document.getElementById('p-preview-box');
-        box.innerHTML = "";
-        currentProductFiles.forEach((file, idx) => {
-            const div = document.createElement('div');
-            div.className = 'img-preview-item';
-            let src = (typeof file === 'string') ? file : URL.createObjectURL(file);
-            div.innerHTML = `<img src="${src}"><div class="btn-remove-img" onclick="removeImage(${idx})">X</div>`;
-            box.appendChild(div);
-        });
-    }
-    function removeImage(idx) {
-        currentProductFiles.splice(idx, 1);
-        renderPreview();
-    }
-
-    function showPanel(id) {
-        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        event.target.classList.add('active');
-        if(id==='stats') loadStats(); // 탭 누르면 통계 로드
-    }
-
-    // ==========================================
-    // 상품 저장 (로딩 표시 + 이미지 누적 업로드)
-    // ==========================================
-    function saveProduct() {
-        const btn = document.getElementById('p-submit');
-        const key = document.getElementById('p-key').value;
-        const name = document.getElementById('p-name').value;
-        const price = document.getElementById('p-price').value;
-        
-        if(!name || !price) return alert("상품명과 가격은 필수입니다.");
-        if(currentProductFiles.length === 0) return alert("이미지를 등록해주세요.");
-
-        btn.disabled = true;
-        btn.innerText = key ? "수정 중..." : "등록 중... (사진 업로드)";
-
-        const uploadPromises = currentProductFiles.map(item => {
-            if(typeof item === 'string') return Promise.resolve(item);
-            else {
-                const ref = storage.ref('products/' + Date.now() + '_' + item.name);
-                return ref.put(item).then(s => s.ref.getDownloadURL());
+        function notice(message, kind = '') {
+            const el = $('connection-status');
+            el.textContent = message;
+            el.className = 'notice' + (kind ? ' ' + kind : '');
+            el.hidden = !message;
+        }
+        function readableError(error) {
+            const code = String(error && error.code || '').toLowerCase();
+            if (code.includes('invalid-email')) return '이메일 형식이 올바르지 않습니다.';
+            if (['wrong-password','user-not-found','invalid-credential','invalid-login-credentials'].some(c => code.includes(c))) return '이메일 또는 비밀번호를 확인해주세요.';
+            if (code.includes('too-many-requests')) return '로그인 시도가 많아 잠시 제한되었습니다. 잠시 후 다시 시도해주세요.';
+            if (code.includes('user-disabled')) return '사용이 중지된 계정입니다. Firebase 관리자에게 확인해주세요.';
+            if (code.includes('network') || code.includes('sdk-load')) return '서버에 연결하지 못했습니다. 인터넷 연결과 브라우저의 차단 설정을 확인한 후 다시 시도해주세요.';
+            if (code.includes('unauthorized-domain')) return '현재 도메인이 Firebase 로그인 허용 목록에 없습니다. 운영 도메인 설정을 확인해주세요.';
+            if (code.includes('operation-not-allowed')) return 'Firebase에서 이메일/비밀번호 로그인이 활성화되지 않았습니다.';
+            if (code.includes('permission') || code.includes('unauthorized')) return '이 계정에 해당 데이터를 읽거나 저장할 권한이 없습니다. Firebase 보안 규칙을 확인해주세요.';
+            if (code.includes('unauthenticated')) return '로그인이 만료되었습니다. 다시 로그인해주세요.';
+            if (code.includes('quota-exceeded')) return '파일 저장소의 사용 한도를 초과했습니다.';
+            if (code.includes('retry-limit-exceeded')) return '파일 업로드 연결이 오래 지연되었습니다. 인터넷 연결을 확인해주세요.';
+            if (code.includes('bucket-not-found')) return 'Firebase 파일 저장소 설정을 확인해주세요.';
+            return '처리하지 못했습니다. 연결 및 Firebase 설정을 확인해주세요.' + (code ? ' [' + code + ']' : '');
+        }
+        function validation(message) { notice(message, 'error'); return false; }
+        function formatNumber(el) { el.value = el.value.replace(/[^0-9]/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+        function setLoading(b, message = '처리 중... 잠시만 기다려주세요.') {
+            operationBusy = b;
+            $('loading-msg').style.display = b ? 'block' : 'none';
+            $('loading-msg').textContent = message;
+            document.querySelectorAll('button').forEach(button => {
+                if (button.id !== 'retry-connection') button.disabled = b;
+            });
+            $('login-button').disabled = b || !sdkReady;
+        }
+        function ensureSession() {
+            if (!sdkReady || !auth || !auth.currentUser) return validation('먼저 관리자 계정으로 로그인해주세요.');
+            if (operationBusy) return false;
+            return true;
+        }
+        function safeWebUrl(value, optional = false) {
+            const input = String(value || '').trim();
+            if (!input && optional) return '';
+            try {
+                const url = new URL(input);
+                if (!['https:', 'http:'].includes(url.protocol) || !url.hostname || url.username || url.password) return null;
+                return url.href;
+            } catch (_) { return null; }
+        }
+        function validKey(key) { return typeof key === 'string' && !!key && !/[.#$\[\]\/]/.test(key); }
+        async function runOperation(label, task, successMessage) {
+            if (!ensureSession()) return false;
+            setLoading(true, label + ' 중...');
+            notice(label + ' 중입니다. 완료 메시지가 표시될 때까지 기다려주세요.');
+            const watchdog = setTimeout(() => {
+                notice('서버 응답이 지연되고 있습니다. 아직 완료가 확인되지 않았습니다. 중복 저장하지 말고 연결을 확인해주세요.', 'error');
+                $('retry-connection').hidden = false;
+            }, 20000);
+            try {
+                await task();
+                notice(successMessage, 'success');
+                $('retry-connection').hidden = true;
+                return true;
+            } catch (error) {
+                notice(label + ' 실패: ' + readableError(error), 'error');
+                return false;
+            } finally {
+                clearTimeout(watchdog);
+                setLoading(false);
             }
-        });
+        }
 
-        Promise.all(uploadPromises).then(urls => {
-            const data = {
-                name: name,
-                priceSale: price,
-                priceNormal: document.getElementById('p-norm').value,
-                link: document.getElementById('p-link').value,
-                desc: document.getElementById('p-desc').value,
-                images: urls
+        function loadSdkFile(name) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                let settled = false;
+                const complete = error => {
+                    if (settled) return;
+                    settled = true;
+                    clearTimeout(timer);
+                    script.onload = script.onerror = null;
+                    if (error) { script.remove(); reject(Object.assign(new Error('SDK load failed'), {code: 'sdk-load-failed'})); }
+                    else resolve();
+                };
+                const timer = setTimeout(() => complete(true), 15000);
+                script.src = 'https://www.gstatic.com/firebasejs/9.6.1/firebase-' + name + '-compat.js';
+                script.onload = () => complete(false);
+                script.onerror = () => complete(true);
+                document.head.appendChild(script);
+            });
+        }
+        async function initializeAdmin() {
+            try {
+                await loadSdkFile('app');
+                await Promise.all(['auth', 'database', 'storage'].map(loadSdkFile));
+                if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+                auth = firebase.auth();
+                db = firebase.database();
+                storage = firebase.storage();
+                sdkReady = true;
+                $('login-button').textContent = '접속하기';
+                $('login-button').disabled = false;
+                notice(location.protocol === 'file:' ? '다운로드한 파일을 직접 여셨습니다. 운영 홈페이지의 /admin/ 주소에서 로그인해주세요.' : '관리자 이메일과 비밀번호로 로그인해주세요.');
+                auth.onAuthStateChanged(user => {
+                    $('login-section').style.display = user ? 'none' : 'block';
+                    $('admin-section').style.display = user ? 'block' : 'none';
+                    if (user && currentUid !== user.uid) {
+                        stopSubscriptions();
+                        currentUid = user.uid;
+                        campaignDirty = false;
+                        campaignReady = false;
+                        lastCampaign = {};
+                        showTab('campaign');
+                        notice('로그인되었습니다. 저장된 데이터를 불러오고 있습니다.', 'success');
+                        loadData();
+                    } else if (!user) {
+                        currentUid = null;
+                        campaignReady = false;
+                        stopSubscriptions();
+                    }
+                }, error => notice('로그인 상태 확인 실패: ' + readableError(error), 'error'));
+            } catch (error) {
+                sdkReady = false;
+                $('login-button').textContent = '연결할 수 없습니다';
+                $('login-button').disabled = true;
+                $('retry-connection').hidden = false;
+                notice('관리자 초기화 실패: ' + readableError(error), 'error');
+            }
+        }
+        async function adminLogin() {
+            if (!sdkReady || operationBusy) return;
+            const email = $('email').value.trim();
+            const password = $('password').value;
+            if (!email || !password) return validation('이메일과 비밀번호를 입력해주세요.');
+            setLoading(true);
+            $('login-button').textContent = '로그인 중...';
+            notice('로그인 정보를 확인하고 있습니다...');
+            const watchdog = setTimeout(() => {
+                notice('로그인 서버의 응답이 지연되고 있습니다. 인터넷 연결을 확인하거나 연결 다시 확인을 눌러주세요.', 'error');
+                $('retry-connection').hidden = false;
+            }, 20000);
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                $('password').value = '';
+                $('retry-connection').hidden = true;
+            } catch (error) {
+                notice('로그인 실패: ' + readableError(error), 'error');
+            } finally {
+                clearTimeout(watchdog);
+                setLoading(false);
+                $('login-button').textContent = '접속하기';
+            }
+        }
+        async function adminLogout() {
+            if (!auth || operationBusy) return;
+            try {
+                await auth.signOut();
+                $('password').value = '';
+                resetProductForm(); resetMusicForm();
+                $('v-link').value = ''; $('v-title').value = '';
+                fillCampaign({}); campaignDirty = false; lastCampaign = {};
+                ['product-list','music-list-admin','video-list-admin'].forEach(id => $(id).replaceChildren());
+                notice('로그아웃되었습니다.');
+            } catch (error) { notice('로그아웃 실패: ' + readableError(error), 'error'); }
+        }
+        $('login-form').addEventListener('submit', event => { event.preventDefault(); adminLogin(); });
+
+        async function saveProduct() {
+            if (!ensureSession()) return;
+            const key = $('p-key').value;
+            const files = [...$('p-files').files];
+            const name = $('p-name').value.trim();
+            const priceSale = $('p-price-sale').value.trim();
+            const link = safeWebUrl($('p-link').value, true);
+            if (!name || !priceSale) return validation('제품명과 판매가는 필수입니다.');
+            if (key && !validKey(key)) return validation('제품 정보를 다시 불러와주세요.');
+            if (link === null) return validation('구매 링크는 http:// 또는 https://로 시작하는 올바른 주소여야 합니다.');
+            if (files.length > 3) return validation('제품 이미지는 최대 3장까지 등록할 수 있습니다.');
+            if (files.some(file => file.type && !file.type.startsWith('image/'))) return validation('제품 이미지는 이미지 파일로 선택해주세요.');
+            let existingImages = [];
+            try { existingImages = JSON.parse($('p-old-imgs').value || '[]'); } catch (_) { return validation('기존 제품 이미지를 다시 불러와주세요.'); }
+            if (!files.length && (!Array.isArray(existingImages) || !existingImages.length)) return validation('이미지를 최소 1장 등록해주세요.');
+            const data = {name, priceNormal: $('p-price-normal').value.trim(), priceSale, link, desc: $('p-desc').value, date: new Date().toISOString()};
+            const success = await runOperation('제품 저장', async () => {
+                const images = [];
+                if (files.length) {
+                    for (let i = 0; i < files.length; i++) {
+                        const ref = storage.ref('products/' + Date.now() + '_' + i);
+                        await ref.put(files[i]);
+                        images.push(await ref.getDownloadURL());
+                    }
+                } else images.push(...existingImages);
+                data.images = images;
+                if (key) await db.ref('products/' + key).update(data);
+                else await db.ref('products').push(data);
+            }, '제품이 저장되었습니다.');
+            if (success) resetProductForm();
+        }
+        function resetProductForm() {
+            ['p-key','p-files','p-name','p-price-normal','p-price-sale','p-link','p-desc','p-old-imgs'].forEach(id => $(id).value = '');
+            $('p-btn').textContent = '제품 업로드';
+        }
+        function editProduct(key, value) {
+            resetProductForm();
+            $('p-key').value = key;
+            $('p-name').value = value.name || '';
+            $('p-price-normal').value = value.priceNormal || '';
+            $('p-price-sale').value = value.priceSale || '';
+            $('p-link').value = value.link || '';
+            $('p-desc').value = value.desc || '';
+            $('p-old-imgs').value = JSON.stringify(Array.isArray(value.images) ? value.images : []);
+            $('p-btn').textContent = '수정하기 (저장)';
+            showTab('product'); window.scrollTo(0, 0);
+        }
+        async function saveMusic() {
+            if (!ensureSession()) return;
+            const key = $('m-key').value;
+            const file = $('m-file').files[0];
+            const title = $('m-title').value.trim();
+            const lyrics = $('m-lyrics').value;
+            const oldUrl = $('m-old-url').value;
+            if (!title) return validation('곡 제목은 필수입니다.');
+            if (key && !validKey(key)) return validation('음악 정보를 다시 불러와주세요.');
+            if (!file && !oldUrl) return validation('음악 파일을 선택해주세요.');
+            const success = await runOperation('음악 저장', async () => {
+                let downloadUrl = oldUrl;
+                if (file) {
+                    const ref = storage.ref('music/' + Date.now() + '_' + file.name);
+                    const snapshot = await ref.put(file);
+                    downloadUrl = await snapshot.ref.getDownloadURL();
+                }
+                const data = {title, fileUrl: downloadUrl, lyrics, date: Date.now()};
+                if (key) await db.ref('music/' + key).update(data);
+                else await db.ref('music').push(data);
+            }, '음악 정보가 저장되었습니다.');
+            if (success) resetMusicForm();
+        }
+        function resetMusicForm() {
+            ['m-key','m-old-url','m-file','m-title','m-lyrics'].forEach(id => $(id).value = '');
+            $('m-btn').textContent = '음악 등록';
+        }
+        function editMusic(key, value) {
+            resetMusicForm();
+            $('m-key').value = key;
+            $('m-title').value = value.title || '';
+            $('m-old-url').value = value.fileUrl || '';
+            $('m-lyrics').value = value.lyrics || '';
+            $('m-btn').textContent = '음악 수정하기';
+            showTab('music'); window.scrollTo(0, 0);
+        }
+        function youtubeId(input) {
+            const safe = safeWebUrl(input);
+            if (!safe) return '';
+            const url = new URL(safe);
+            const host = url.hostname.toLowerCase();
+            let id = '';
+            if (host === 'youtu.be' || host === 'www.youtu.be') id = url.pathname.split('/')[1];
+            else if (['youtube.com','www.youtube.com','m.youtube.com','music.youtube.com'].includes(host)) {
+                const parts = url.pathname.split('/').filter(Boolean);
+                id = url.pathname === '/watch' ? url.searchParams.get('v') : ['shorts','embed','live'].includes(parts[0]) ? parts[1] : '';
+            }
+            return /^[\w-]{11}$/.test(id || '') ? id : '';
+        }
+        async function uploadVideo() {
+            if (!ensureSession()) return;
+            const link = $('v-link').value.trim();
+            const title = $('v-title').value.trim();
+            const id = youtubeId(link);
+            if (!id) return validation('올바른 유튜브 영상 주소를 입력해주세요.');
+            if (!title) return validation('영상 제목을 입력해주세요.');
+            const success = await runOperation('영상 저장', () => db.ref('videos').push({title, link: 'https://www.youtube.com/watch?v=' + id, thumbnail: 'https://img.youtube.com/vi/' + id + '/0.jpg'}), '영상이 저장되었습니다.');
+            if (success) { $('v-link').value = ''; $('v-title').value = ''; }
+        }
+
+        // 한국 시간으로 입력하고 UTC epoch로 저장하여 운영자 기기의 시간대와 무관하게 동작합니다.
+        function toLocalInput(ms) {
+            if (ms === null || ms === undefined || ms === '' || !Number.isFinite(Number(ms))) return '';
+            const date = new Date(Number(ms));
+            if (!Number.isFinite(date.getTime())) return '';
+            const parts = Object.fromEntries(new Intl.DateTimeFormat('en-CA', {timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23'}).formatToParts(date).map(part => [part.type, part.value]));
+            return `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}`;
+        }
+        function parseCampaignDate(input) {
+            if (!input) return null;
+            if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(input)) return NaN;
+            const value = Date.parse(input + ':00+09:00');
+            return Number.isFinite(value) && toLocalInput(value) === input ? value : NaN;
+        }
+        function getCampaignLive(value) {
+            if (!value || value.enabled !== true || !safeWebUrl(value.link)) return false;
+            const now = Date.now();
+            if (value.startAt != null && value.startAt !== '' && (!Number.isFinite(Number(value.startAt)) || now < Number(value.startAt))) return false;
+            if (value.endAt != null && value.endAt !== '' && (!Number.isFinite(Number(value.endAt)) || now >= Number(value.endAt))) return false;
+            return true;
+        }
+        function showCampaignStatus(value) {
+            const el = $('campaign-status');
+            const live = getCampaignLive(value);
+            el.className = 'campaign-status' + (live ? ' live' : '');
+            if (live) el.textContent = '저장된 설정: 진행 중 · ' + (value.title || '특별 혜택') + ' · ' + value.link;
+            else if (value.enabled && value.startAt && Date.now() < Number(value.startAt)) el.textContent = '저장된 설정: 오픈 예정 · ' + toLocalInput(value.startAt).replace('T', ' ') + ' (한국 시간)';
+            else if (value.enabled && value.endAt && Date.now() >= Number(value.endAt)) el.textContent = '저장된 설정: 기간 종료 · 고객에게 진행 중인 특별 혜택이 없다고 표시됩니다.';
+            else el.textContent = '저장된 설정: OFF · 고객에게 진행 중인 특별 혜택이 없다고 표시됩니다.';
+        }
+        function fillCampaign(value) {
+            $('c-enabled').checked = value.enabled === true;
+            $('c-badge').value = value.badge || 'NOW OPEN';
+            $('c-title').value = value.title || '';
+            $('c-text').value = value.text || '';
+            $('c-link').value = value.link || '';
+            $('c-button').value = value.buttonText || '지금 만나보기';
+            $('c-start').value = toLocalInput(value.startAt);
+            $('c-end').value = toLocalInput(value.endAt);
+        }
+        async function saveCampaign() {
+            if (!ensureSession()) return;
+            const link = safeWebUrl($('c-link').value, true);
+            const startAt = parseCampaignDate($('c-start').value);
+            const endAt = parseCampaignDate($('c-end').value);
+            if (link === null) return validation('전용 링크는 http:// 또는 https://로 시작하는 올바른 주소여야 합니다.');
+            if ($('c-enabled').checked && !link) return validation('활성화하려면 전용 링크를 입력해주세요.');
+            if (Number.isNaN(startAt) || Number.isNaN(endAt)) return validation('시작일과 종료일을 올바르게 입력해주세요.');
+            if (startAt !== null && endAt !== null && endAt <= startAt) return validation('종료 시간은 시작 시간보다 뒤여야 합니다.');
+            const data = {enabled: $('c-enabled').checked, badge: $('c-badge').value.trim() || 'NOW OPEN', title: $('c-title').value.trim(), text: $('c-text').value.trim(), link, buttonText: $('c-button').value.trim() || '지금 만나보기', startAt, endAt, updatedAt: firebase.database.ServerValue.TIMESTAMP};
+            const success = await runOperation('NOW 저장', () => db.ref('campaign/current').set(data), 'NOW 설정 저장이 완료되었습니다. 홈페이지에서 표시 상태를 확인할 수 있습니다.');
+            if (success) { campaignDirty = false; lastCampaign = data; showCampaignStatus(data); }
+        }
+        async function disableCampaign() {
+            if (!ensureSession() || !confirm('현재 특별 판매를 종료할까요?')) return;
+            const success = await runOperation('NOW 종료', () => db.ref('campaign/current').update({enabled: false, updatedAt: firebase.database.ServerValue.TIMESTAMP}), 'NOW 특별 판매가 종료되었습니다.');
+            if (success) { campaignDirty = false; lastCampaign = {...lastCampaign, enabled: false}; fillCampaign(lastCampaign); showCampaignStatus(lastCampaign); }
+        }
+        document.querySelectorAll('#tab-campaign input, #tab-campaign textarea').forEach(input => input.addEventListener('input', () => { campaignDirty = true; }));
+        setInterval(() => { if (auth && auth.currentUser && campaignReady) showCampaignStatus(lastCampaign); }, 30000);
+
+        function stopSubscriptions() {
+            subscriptions.forEach(({ref, callback, timer}) => { clearTimeout(timer); ref.off('value', callback); });
+            subscriptions = [];
+        }
+        function subscribe(path, callback, target) {
+            const ref = db.ref(path);
+            $(target).textContent = '저장된 정보를 불러오는 중...';
+            const timer = setTimeout(() => {
+                $(target).textContent = '서버 연결이 지연되고 있습니다. 인터넷 연결을 확인해주세요.';
+            }, 20000);
+            const onValue = snapshot => {
+                clearTimeout(timer);
+                try { callback(snapshot); }
+                catch (_) { $(target).textContent = '데이터 형식을 확인해주세요. 일부 항목을 표시할 수 없습니다.'; }
             };
-
-            if(key) db.ref('products/' + key).update(data);
-            else db.ref('products').push(data);
-
-            alert("완료되었습니다!");
-            resetForm('product');
-        }).catch(err => {
-            alert("오류 발생: " + err.message);
-        }).finally(() => {
-            btn.disabled = false;
-            btn.innerText = key ? "수정 완료" : "상품 등록";
-        });
-    }
-
-    function editProduct(key) {
-        db.ref('products/' + key).once('value', s => {
-            const v = s.val();
-            document.getElementById('p-key').value = key;
-            document.getElementById('p-name').value = v.name;
-            document.getElementById('p-price').value = v.priceSale;
-            document.getElementById('p-norm').value = v.priceNormal;
-            document.getElementById('p-link').value = v.link;
-            document.getElementById('p-desc').value = v.desc;
-            currentProductFiles = v.images || [];
-            renderPreview();
-            
-            document.getElementById('p-form-title').innerText = "상품 수정";
-            document.getElementById('p-submit').innerText = "수정 완료";
-            document.getElementById('p-cancel').style.display = "block";
-            window.scrollTo(0,0);
-        });
-    }
-
-    // ==========================================
-    // 음악 및 비디오 저장 (간략화)
-    // ==========================================
-    function saveMusic() {
-        const btn = document.getElementById('m-submit');
-        const key = document.getElementById('m-key').value;
-        const title = document.getElementById('m-title').value;
-        const file = document.getElementById('m-file').files[0];
-        const oldFile = document.getElementById('m-old-file').value;
-
-        if(!title) return alert("곡 제목 필수");
-        
-        btn.disabled = true;
-        btn.innerText = "처리 중...";
-
-        let p;
-        if(file) p = storage.ref('music/' + Date.now() + '_' + file.name).put(file).then(s => s.ref.getDownloadURL());
-        else {
-            if(key && oldFile) p = Promise.resolve(oldFile);
-            else { btn.disabled = false; return alert("파일 선택 필요"); }
-        }
-
-        p.then(url => {
-            const data = { title: title, lyrics: document.getElementById('m-lyrics').value, fileUrl: url };
-            if(key) db.ref('music/' + key).update(data);
-            else db.ref('music').push(data);
-            alert("완료!");
-            resetForm('music');
-        }).catch(e => alert("에러: "+e.message)).finally(() => { btn.disabled=false; btn.innerText="음악 등록"; });
-    }
-
-    function editMusic(key) {
-        db.ref('music/'+key).once('value', s=> {
-            const v=s.val();
-            document.getElementById('m-key').value = key;
-            document.getElementById('m-title').value = v.title;
-            document.getElementById('m-lyrics').value = v.lyrics;
-            document.getElementById('m-old-file').value = v.fileUrl;
-            document.getElementById('m-submit').innerText = "수정 완료";
-            document.getElementById('m-cancel').style.display = "block";
-        });
-    }
-
-    function saveVideo() {
-        const btn = document.getElementById('v-submit');
-        const key = document.getElementById('v-key').value;
-        const title = document.getElementById('v-title').value;
-        const link = document.getElementById('v-link').value;
-        let thumb = document.getElementById('v-thumb').value;
-        
-        if(!title || !link) return alert("제목/링크 필수");
-        
-        if(!thumb) {
-            try { const vid = link.split('v=')[1].split('&')[0]; thumb = `https://img.youtube.com/vi/${vid}/0.jpg`; }
-            catch(e) { thumb = 'logo.jpg'; }
-        }
-
-        const data = { title, link, thumbnail: thumb };
-        if(key) db.ref('videos/'+key).update(data);
-        else db.ref('videos').push(data);
-        alert("완료!");
-        resetForm('video');
-    }
-
-    function editVideo(key) {
-        db.ref('videos/'+key).once('value', s => {
-            const v = s.val();
-            document.getElementById('v-key').value = key;
-            document.getElementById('v-title').value = v.title;
-            document.getElementById('v-link').value = v.link;
-            document.getElementById('v-thumb').value = v.thumbnail;
-            document.getElementById('v-submit').innerText = "수정 완료";
-            document.getElementById('v-cancel').style.display = "block";
-        });
-    }
-
-    // ==========================================
-    // 리셋 및 삭제, 리스트 로드
-    // ==========================================
-    function resetForm(type) {
-        if(type==='product') {
-            document.getElementById('p-key').value = "";
-            document.getElementById('p-name').value = "";
-            document.getElementById('p-price').value = "";
-            document.getElementById('p-norm').value = "";
-            document.getElementById('p-link').value = "";
-            document.getElementById('p-desc').value = "";
-            document.getElementById('p-imgs-input').value = "";
-            currentProductFiles = [];
-            renderPreview();
-            document.getElementById('p-form-title').innerText = "상품 등록";
-            document.getElementById('p-submit').innerText = "상품 등록";
-            document.getElementById('p-cancel').style.display = "none";
-        } else if(type==='music') {
-            document.getElementById('m-key').value = "";
-            document.getElementById('m-title').value = "";
-            document.getElementById('m-lyrics').value = "";
-            document.getElementById('m-file').value = "";
-            document.getElementById('m-submit').innerText = "음악 등록";
-            document.getElementById('m-cancel').style.display = "none";
-        } else {
-            document.getElementById('v-key').value = "";
-            document.getElementById('v-title').value = "";
-            document.getElementById('v-link').value = "";
-            document.getElementById('v-thumb').value = "";
-            document.getElementById('v-submit').innerText = "비디오 등록";
-            document.getElementById('v-cancel').style.display = "none";
-        }
-    }
-
-    function del(path, key) { if(confirm("삭제하시겠습니까?")) db.ref(path+'/'+key).remove(); }
-
-    function loadLists() {
-        db.ref('products').on('value', s => {
-            const d=document.getElementById('p-list'); d.innerHTML="";
-            if(s.val()) Object.entries(s.val()).forEach(([k,v]) => {
-                const img = v.images ? v.images[0] : 'logo.jpg';
-                d.innerHTML += `<div class="item"><div class="item-info"><img src="${img}"><div class="item-text"><div class="item-title">${v.name}</div><div class="item-sub">${v.priceSale}</div></div></div><div class="btn-action-group"><button class="btn-edit" onclick="editProduct('${k}')">수정</button><button class="btn-del" onclick="del('products','${k}')">삭제</button></div></div>`;
+            ref.on('value', onValue, error => {
+                clearTimeout(timer);
+                if (path === 'campaign/current') campaignReady = false;
+                $(target).textContent = '불러오기 실패: ' + readableError(error);
+                notice('데이터 연결 오류: ' + readableError(error), 'error');
             });
-        });
-        db.ref('music').on('value', s => {
-            const d=document.getElementById('m-list'); d.innerHTML="";
-            if(s.val()) Object.entries(s.val()).forEach(([k,v]) => {
-                d.innerHTML += `<div class="item"><div class="item-info"><div class="item-text"><div class="item-title">🎵 ${v.title}</div></div></div><div class="btn-action-group"><button class="btn-edit" onclick="editMusic('${k}')">수정</button><button class="btn-del" onclick="del('music','${k}')">삭제</button></div></div>`;
+            subscriptions.push({ref, callback: onValue, timer});
+        }
+        function renderList(target, snapshot, collection, field, edit) {
+            const container = $(target);
+            container.replaceChildren();
+            let count = 0;
+            snapshot.forEach(child => {
+                const value = child.val();
+                if (!value || typeof value !== 'object') return;
+                count++;
+                const row = document.createElement('div'); row.className = 'item-row';
+                const info = document.createElement('div'); info.className = 'item-info'; info.textContent = String(value[field] || '제목 없음');
+                const actions = document.createElement('div');
+                if (edit) {
+                    const button = document.createElement('button'); button.type = 'button'; button.className = 'edit-btn'; button.textContent = '수정'; button.disabled = operationBusy;
+                    button.addEventListener('click', () => edit(child.key, value)); actions.appendChild(button);
+                }
+                const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'del-btn'; remove.textContent = '삭제'; remove.disabled = operationBusy;
+                remove.addEventListener('click', () => del(collection, child.key)); actions.appendChild(remove);
+                row.append(info, actions); container.appendChild(row);
             });
-        });
-        db.ref('videos').on('value', s => {
-            const d=document.getElementById('v-list'); d.innerHTML="";
-            if(s.val()) Object.entries(s.val()).forEach(([k,v]) => {
-                d.innerHTML += `<div class="item"><div class="item-info"><img src="${v.thumbnail}"><div class="item-text"><div class="item-title">🎬 ${v.title}</div></div></div><div class="btn-action-group"><button class="btn-edit" onclick="editVideo('${k}')">수정</button><button class="btn-del" onclick="del('videos','${k}')">삭제</button></div></div>`;
-            });
-        });
-    }
-
-    // ==========================================
-    // 통계 로드 (랭킹 포함)
-    // ==========================================
-    let visitChartInstance = null;
-    function loadStats() {
-        // 그래프
-        db.ref('stats_visits/daily').limitToLast(7).once('value', s => {
-            const d=s.val()||{}; const l=Object.keys(d).sort(); const c=l.map(x=>d[x]);
-            if(visitChartInstance) visitChartInstance.destroy();
-            const ctx=document.getElementById('visitChart').getContext('2d');
-            visitChartInstance = new Chart(ctx, { type:'line', data:{labels:l, datasets:[{label:'방문자', data:c, borderColor:'#8b5e3c', fill:true}]} });
-        });
-        
-        // 상품 랭킹
-        Promise.all([db.ref('stats_product_clicks').once('value'), db.ref('products').once('value')]).then(([c, p]) => {
-            const clicks = c.val() || {}, prods = p.val() || {};
-            let arr = Object.keys(clicks).map(k => ({ name: prods[k]?prods[k].name:'삭제됨', count: clicks[k] })).sort((a,b)=>b.count-a.count);
-            const t = document.getElementById('product-rank-table'); t.innerHTML = `<tr><th>순위</th><th>이름</th><th>클릭</th></tr>`;
-            if(arr.length === 0) t.innerHTML += "<tr><td colspan='3' style='text-align:center'>데이터 없음</td></tr>";
-            else arr.forEach((i, idx) => t.innerHTML += `<tr><td class="rank-num">${idx+1}</td><td>${i.name}</td><td>${i.count}회</td></tr>`);
-        });
-
-        // 음악 랭킹
-        Promise.all([db.ref('stats_music_plays').once('value'), db.ref('music').once('value')]).then(([c, m]) => {
-            const plays = c.val() || {}, musics = m.val() || {};
-            let arr = Object.keys(plays).map(k => ({ title: musics[k]?musics[k].title:'삭제됨', count: plays[k] })).sort((a,b)=>b.count-a.count);
-            const t = document.getElementById('music-rank-table'); t.innerHTML = `<tr><th>순위</th><th>곡명</th><th>재생</th></tr>`;
-            if(arr.length === 0) t.innerHTML += "<tr><td colspan='3' style='text-align:center'>데이터 없음</td></tr>";
-            else arr.forEach((i, idx) => t.innerHTML += `<tr><td class="rank-num">${idx+1}</td><td>${i.title}</td><td>${i.count}회</td></tr>`);
-        });
-    }
-
-    // 초기 실행
-    loadLists();
-    loadStats(); // 처음 로드 시에도 통계 호출
-</script>
+            if (!count) container.textContent = '등록된 항목이 없습니다.';
+        }
+        function loadData() {
+            subscribe('campaign/current', snapshot => {
+                const value = snapshot.val();
+                lastCampaign = value && typeof value === 'object' ? value : {};
+                campaignReady = true;
+                if (!campaignDirty) fillCampaign(lastCampaign);
+                showCampaignStatus(lastCampaign);
+            }, 'campaign-status');
+            subscribe('products', snapshot => renderList('product-list', snapshot, 'products', 'name', editProduct), 'product-list');
+            subscribe('music', snapshot => renderList('music-list-admin', snapshot, 'music', 'title', editMusic), 'music-list-admin');
+            subscribe('videos', snapshot => renderList('video-list-admin', snapshot, 'videos', 'title', null), 'video-list-admin');
+        }
+        async function del(collection, key) {
+            if (!ensureSession()) return;
+            if (!['products','music','videos'].includes(collection) || !validKey(key)) return validation('삭제할 항목 정보를 확인해주세요.');
+            if (!confirm('정말 삭제하시겠습니까? (복구 불가)')) return;
+            await runOperation('항목 삭제', () => db.ref(collection + '/' + key).remove(), '항목이 삭제되었습니다.');
+        }
+        function showTab(tab) {
+            if (!['product','campaign','music','video'].includes(tab)) return;
+            document.querySelectorAll('.form-group').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            $('tab-' + tab).classList.add('active');
+            const button = [...document.querySelectorAll('.tab-btn')].find(el => el.getAttribute('onclick') === `showTab('${tab}')`);
+            if (button) button.classList.add('active');
+        }
+        initializeAdmin();
+    </script>
 </body>
 </html>

@@ -1,0 +1,40 @@
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
+/
+  Cache-Control: public, max-age=0, must-revalidate
+
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/admin
+  Cache-Control: no-store
+  X-Robots-Tag: noindex, nofollow
+  X-Frame-Options: DENY
+
+/admin/
+  Cache-Control: no-store
+  X-Robots-Tag: noindex, nofollow
+  X-Frame-Options: DENY
+
+/admin.html
+  Cache-Control: no-store
+  X-Robots-Tag: noindex, nofollow
+  X-Frame-Options: DENY
+
+/brand-0cad4807e2132296.png
+  Cache-Control: public, max-age=31536000, immutable
+
+/brand-3adc5e4ee40af6eb.jpg
+  Cache-Control: public, max-age=31536000, immutable
+
+/brand-9b3e92524e6089a1.png
+  Cache-Control: public, max-age=31536000, immutable
+
+/brand-eaef8b8d2b9bcb20.png
+  Cache-Control: public, max-age=31536000, immutable
+
+/brand-f6d18113f0a45db2.mp3
+  Cache-Control: public, max-age=31536000, immutable
+

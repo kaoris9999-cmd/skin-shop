@@ -1,0 +1,4 @@
+[build]
+  publish = "."
+
+# Static site: keep the existing root files and legacy asset URLs.
