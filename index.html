@@ -1,12 +1,12 @@
 <!doctype html>
 <html lang="ko">
 <head>
-<meta name="app-version" content="8.14-products">
+<meta name="app-version" content="8.15-playlist">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#f6f2e9">
 <title>Skin Anointing</title>
-<meta name="application-version" content="8.14-products">
+<meta name="application-version" content="8.15-playlist">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&amp;family=Noto+Serif+KR:wght@400&amp;display=swap" rel="stylesheet">
@@ -40,7 +40,7 @@ h1,h2,h3{text-wrap:balance}p{text-wrap:pretty}
 .nav a{min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;position:relative}
 .nav a:after{content:"";position:absolute;left:0;right:100%;bottom:4px;height:1px;background:var(--ink);transition:right .25s}
 .mini-music{position:sticky;top:var(--header-height);z-index:29;min-height:var(--player-height);background:rgba(31,33,26,.97);color:#f7f3ea;border-bottom:1px solid rgba(255,255,255,.08);backdrop-filter:blur(16px)}
-.mini-music-in{min-height:calc(var(--player-height) - 1px);display:grid;grid-template-columns:minmax(190px,auto) 44px minmax(80px,1fr) 42px;align-items:center;gap:14px}
+.mini-music-in{min-height:calc(var(--player-height) - 1px);display:grid;grid-template-columns:minmax(190px,360px) 44px minmax(80px,1fr) 42px;align-items:center;gap:14px}
 .mini-music-title{min-width:0;display:flex;align-items:center;gap:10px;white-space:nowrap;overflow:hidden}
 .mini-music-title>span:last-child{display:flex;align-items:baseline;gap:8px;min-width:0;overflow:hidden}
 .mini-music-title b{font-size:10px;letter-spacing:.14em;font-weight:600;overflow:hidden;text-overflow:ellipsis}
@@ -163,7 +163,7 @@ h1,h2,h3{text-wrap:balance}p{text-wrap:pretty}
 }
 @media(max-width:379px){
   :root{--gutter:16px}.brand{width:116px}.nav{gap:0}.header-in{gap:8px}
-  .mini-music-in{gap:8px;grid-template-columns:minmax(0,1fr) 44px minmax(56px,.55fr)}.mini-music-title{gap:6px}.mini-music-title b{font-size:9px;letter-spacing:.04em}.mini-music-title small{font-size:9px}.eq{width:12px}
+  .mini-music-in{gap:8px;grid-template-columns:minmax(0,1fr) 44px minmax(56px,.55fr)}.mini-music-title{gap:6px}.mini-music-title b{font-size:9px;letter-spacing:.04em}.mini-music-title small{font-size:10px}.eq{width:12px}
   .hero{padding-inline:10px;min-height:620px}.hero-panel{padding:24px 20px}.hero h1{font-size:26px}.hero-logo{max-width:90%}.primary{min-width:0;width:100%}
   .products{grid-template-columns:minmax(0,1fr);gap:18px}.product-copy{padding:20px}.product-copy h3{font-size:19px}.product-copy>span{font-size:12px}.store-chip{right:12px;top:12px;font-size:10px}
   .video-inner{padding:28px 23px}.video-inner>div:last-child{flex-wrap:wrap}.story-scene-copy{padding-inline:22px}
@@ -184,17 +184,17 @@ h1,h2,h3{text-wrap:balance}p{text-wrap:pretty}
   <a class="brand" href="#top" aria-label="Skin Anointing 홈"><img src="brand-0cad4807e2132296.png" alt="Skin Anointing"></a>
   <nav class="nav" aria-label="주요 메뉴"><a href="#products">제품</a><a href="#story">브랜드</a><a href="#media">콘텐츠</a></nav>
 </div></header>
-<div class="mini-music" id="miniMusic" aria-label="Skin Anointing 음악 플레이어">
+<div class="mini-music paused" id="miniMusic" aria-label="Skin Anointing 음악 플레이어">
   <div class="container mini-music-in">
     <div class="mini-music-title">
       <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
-      <span><b>SKIN ANOINTING MUSIC</b><small id="miniStatus">Original Sound</small></span>
+      <span><b>SKIN ANOINTING MUSIC</b><small id="miniStatus" aria-live="polite">불러오는 중</small></span>
     </div>
-    <button class="mini-play" id="miniPlayBtn" type="button" aria-label="음악 재생 또는 일시정지">Ⅱ</button>
+    <button class="mini-play" id="miniPlayBtn" type="button" aria-label="음악 재생" aria-pressed="false" disabled>▶</button>
     <div class="mini-seek" id="miniSeek" role="slider" tabindex="0" aria-label="음악 재생 위치" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="miniProgress"></span></div>
     <span class="mini-time" id="miniTime">0:00</span>
   </div>
-  <audio id="audio" preload="metadata" loop src="brand-f6d18113f0a45db2.mp3"></audio>
+  <audio id="audio" preload="none"></audio>
 </div>
 <main id="top">
   <div class="container hero-wrap">
@@ -315,42 +315,172 @@ h1,h2,h3{text-wrap:balance}p{text-wrap:pretty}
 </section>
 <script>
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('show')}),{threshold:.08});document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+// Registered music plays only after an explicit player action.
 const audio=document.getElementById('audio');
 audio.volume=.14;
+audio.loop=false;
+audio.autoplay=false;
 const mini=document.getElementById('miniMusic');
 const btn=document.getElementById('miniPlayBtn');
 const statusEl=document.getElementById('miniStatus');
 const seek=document.getElementById('miniSeek');
 const progress=document.getElementById('miniProgress');
 const timeEl=document.getElementById('miniTime');
-let userPaused=false;
-function fmt(t){if(!Number.isFinite(t))return '0:00';const m=Math.floor(t/60),sec=Math.floor(t%60);return m+':'+String(sec).padStart(2,'0')}
-function syncPlayer(){const playing=!audio.paused;btn.textContent=playing?'Ⅱ':'▶';mini.classList.toggle('paused',!playing);statusEl.textContent=playing?'Original Sound · Playing':'Original Sound';const p=audio.duration?audio.currentTime/audio.duration*100:0;progress.style.width=p+'%';seek.setAttribute('aria-valuenow',Math.round(p));timeEl.textContent=fmt(audio.currentTime)}
-async function tryPlay(){if(userPaused)return;try{audio.volume=.14;await audio.play();syncPlayer();return true}catch(e){mini.classList.add('paused');btn.textContent='▶';statusEl.textContent='Original Sound · Tap screen to play';return false}}
-btn.addEventListener('click',async()=>{if(audio.paused){userPaused=false;await tryPlay()}else{userPaused=true;audio.pause();syncPlayer()}});
-seek.addEventListener('click',e=>{if(!audio.duration)return;const r=seek.getBoundingClientRect();audio.currentTime=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*audio.duration;syncPlayer()});
-seek.addEventListener('keydown',e=>{
-  if(!['ArrowLeft','ArrowRight','ArrowDown','ArrowUp','Home','End'].includes(e.key))return;
-  e.preventDefault();
-  if(!Number.isFinite(audio.duration)||audio.duration<=0)return;
-  const next=e.key==='Home'?0:e.key==='End'?audio.duration:audio.currentTime+(['ArrowRight','ArrowUp'].includes(e.key)?5:-5);
-  audio.currentTime=Math.max(0,Math.min(audio.duration,next));syncPlayer();
-});
-audio.addEventListener('timeupdate',syncPlayer);audio.addEventListener('play',syncPlayer);audio.addEventListener('pause',syncPlayer);audio.addEventListener('loadedmetadata',syncPlayer);
-const startOnFirstTouch=async(e)=>{
-  if(e.target && e.target.closest && e.target.closest('#miniMusic')) return;
-  if(audio.paused&&!userPaused){
-    const ok=await tryPlay();
-    if(ok){
-      document.removeEventListener('pointerdown',startOnFirstTouch,true);
-      document.removeEventListener('touchstart',startOnFirstTouch,true);
-      document.removeEventListener('click',startOnFirstTouch,true);
-    }
+let playlist=[],trackIndex=0,musicLoadState='loading',playlistFinished=false;
+let musicRef=null,musicCallback=null,musicLoadTimer=null,musicRequest=0;
+let playRequest=0,playRequested=false,playPending=false,musicPlayError=false;
+let sourceTrackId='',resumeTime=0,lastDuration=0,pageActive=!document.hidden;
+function fmt(t){if(!Number.isFinite(t)||t<0)return '0:00';const m=Math.floor(t/60),sec=Math.floor(t%60);return m+':'+String(sec).padStart(2,'0')}
+function musicTrack(){return playlist[trackIndex]||null;}
+function musicVisible(){return pageActive&&!document.hidden;}
+function safeMusicUrl(value){
+  if(typeof value!=='string'||!value.trim())return '';
+  try{const url=new URL(value.trim());return ['https:','http:'].includes(url.protocol)&&!url.username&&!url.password?url.href:'';}catch(_){return '';}
+}
+function syncPlayer(){
+  const track=musicTrack(),playing=playRequested&&!audio.paused;
+  mini.classList.toggle('paused',!playing);
+  btn.textContent=playRequested?'Ⅱ':'▶';
+  btn.disabled=musicLoadState==='loading'||(musicLoadState==='ready'&&!track);
+  btn.setAttribute('aria-label',musicLoadState==='error'?'음악 목록 다시 불러오기':playRequested?'음악 일시정지':'음악 재생');
+  btn.setAttribute('aria-pressed',String(playRequested));
+  mini.setAttribute('aria-busy',String(musicLoadState==='loading'));
+  let title=musicLoadState==='loading'?'불러오는 중':musicLoadState==='error'?'연결 오류':track?(trackIndex+1)+'/'+playlist.length+' · '+track.title:'등록된 음악 없음';
+  if(musicPlayError)title='재생 오류 · '+(track?track.title:'');
+  if(statusEl.textContent!==title)statusEl.textContent=title;
+  statusEl.setAttribute('title',title);
+  const duration=sourceTrackId&&Number.isFinite(audio.duration)&&audio.duration>0?audio.duration:lastDuration;
+  const time=sourceTrackId&&Number.isFinite(audio.currentTime)?audio.currentTime:resumeTime;
+  const percent=duration>0?Math.max(0,Math.min(100,time/duration*100)):0;
+  progress.style.width=percent+'%';
+  seek.setAttribute('aria-valuenow',String(Math.round(percent)));
+  seek.setAttribute('aria-valuetext',fmt(time)+' / '+fmt(duration));
+  seek.setAttribute('aria-disabled',String(!sourceTrackId||!(duration>0)));
+  timeEl.textContent=fmt(time);
+}
+function clearMusicSession(){
+  if(typeof navigator==='undefined'||!navigator.mediaSession)return;
+  const session=navigator.mediaSession;
+  try{session.playbackState='none';session.metadata=null;}catch(_){}
+  ['play','pause','stop','seekbackward','seekforward','seekto','previoustrack','nexttrack'].forEach(action=>{try{session.setActionHandler(action,null);}catch(_){}});
+}
+function setMusicSession(){
+  if(typeof navigator==='undefined'||!navigator.mediaSession)return;
+  const session=navigator.mediaSession,track=musicTrack();
+  try{
+    if(track&&typeof MediaMetadata!=='undefined')session.metadata=new MediaMetadata({title:track.title,artist:'Skin Anointing'});
+    session.playbackState='playing';
+    session.setActionHandler('play',()=>{if(musicVisible())startMusic();});
+    session.setActionHandler('pause',()=>stopMusic(true));
+    session.setActionHandler('stop',()=>stopMusic(true));
+  }catch(_){}
+}
+function stopMusic(preservePosition=true){
+  ++playRequest;playRequested=false;playPending=false;
+  if(preservePosition&&sourceTrackId){
+    if(Number.isFinite(audio.currentTime))resumeTime=audio.currentTime;
+    if(Number.isFinite(audio.duration)&&audio.duration>0)lastDuration=audio.duration;
+  }else if(!preservePosition){resumeTime=0;lastDuration=0;}
+  const hadSource=!!sourceTrackId;
+  sourceTrackId='';
+  audio.pause();
+  audio.removeAttribute('src');
+  if(hadSource)audio.load();
+  clearMusicSession();syncPlayer();
+}
+async function startMusic(){
+  if(!musicVisible()||musicLoadState!=='ready'||!playlist.length)return;
+  if(playlistFinished){trackIndex=0;resumeTime=0;lastDuration=0;playlistFinished=false;}
+  const track=musicTrack(),request=++playRequest;
+  playRequested=true;playPending=true;musicPlayError=false;
+  if(!sourceTrackId){sourceTrackId=track.id;audio.src=track.url;audio.load();}
+  audio.volume=.14;syncPlayer();
+  try{
+    await audio.play();
+    if(request!==playRequest){if(!playRequested||!musicVisible())audio.pause();return;}
+    playPending=false;
+    if(!playRequested||!musicVisible()){stopMusic(true);return;}
+    setMusicSession();syncPlayer();
+  }catch(_){
+    if(request!==playRequest)return;
+    stopMusic(true);musicPlayError=true;syncPlayer();
   }
-};
-document.addEventListener('pointerdown',startOnFirstTouch,true);
-document.addEventListener('touchstart',startOnFirstTouch,true);
-document.addEventListener('click',startOnFirstTouch,true);
+}
+function acceptMusic(value){
+  const previous=musicTrack();
+  const next=Object.entries(value&&typeof value==='object'?value:{}).map(([id,item])=>{
+    if(!item||typeof item!=='object')return null;
+    const url=safeMusicUrl(item.fileUrl),title=typeof item.title==='string'?item.title.trim():'';
+    return url&&title?{id,url,title,date:Number.isFinite(Number(item.date))?Number(item.date):0}:null;
+  }).filter(Boolean).sort((a,b)=>a.date-b.date||a.id.localeCompare(b.id));
+  const retained=previous?next.findIndex(track=>track.id===previous.id&&track.url===previous.url):-1;
+  if(retained<0){stopMusic(false);trackIndex=0;playlistFinished=false;}
+  else trackIndex=retained;
+  playlist=next;musicLoadState='ready';musicPlayError=false;
+  if(playRequested)setMusicSession();
+  syncPlayer();
+}
+function loadMusic(){
+  const request=++musicRequest;
+  clearTimeout(musicLoadTimer);
+  if(musicRef&&musicCallback)musicRef.off('value',musicCallback);
+  musicLoadState='loading';musicPlayError=false;syncPlayer();
+  const fail=error=>{
+    if(request!==musicRequest)return;
+    clearTimeout(musicLoadTimer);stopMusic(true);musicLoadState='error';syncPlayer();
+    if(error)console.warn('Music list unavailable',error.code||'connection error');
+  };
+  musicLoadTimer=setTimeout(()=>fail(),12000);
+  try{
+    if(typeof firebase==='undefined')throw new Error('Firebase SDK unavailable');
+    if(!firebase.apps.length)firebase.initializeApp(publicFirebaseConfig);
+    musicRef=firebase.database().ref('music');
+    musicCallback=snapshot=>{if(request!==musicRequest)return;clearTimeout(musicLoadTimer);acceptMusic(snapshot.val());};
+    musicRef.on('value',musicCallback,fail);
+  }catch(error){fail(error);}
+}
+btn.addEventListener('click',()=>{
+  if(musicLoadState==='error'){loadMusic();return;}
+  if(playRequested)stopMusic(true);else startMusic();
+});
+function seekMusic(time){
+  if(!sourceTrackId||!Number.isFinite(audio.duration)||audio.duration<=0)return;
+  audio.currentTime=Math.max(0,Math.min(audio.duration,time));resumeTime=audio.currentTime;syncPlayer();
+}
+seek.addEventListener('click',event=>{const r=seek.getBoundingClientRect();if(r.width>0)seekMusic((event.clientX-r.left)/r.width*audio.duration);});
+seek.addEventListener('keydown',event=>{
+  if(!['ArrowLeft','ArrowRight','ArrowDown','ArrowUp','Home','End'].includes(event.key))return;
+  event.preventDefault();
+  const next=event.key==='Home'?0:event.key==='End'?audio.duration:audio.currentTime+(['ArrowRight','ArrowUp'].includes(event.key)?5:-5);
+  seekMusic(next);
+});
+audio.addEventListener('loadedmetadata',()=>{
+  if(!sourceTrackId)return;
+  if(Number.isFinite(audio.duration)&&audio.duration>0){lastDuration=audio.duration;if(resumeTime>0)audio.currentTime=Math.min(resumeTime,audio.duration);}
+  syncPlayer();
+});
+audio.addEventListener('timeupdate',()=>{if(sourceTrackId&&Number.isFinite(audio.currentTime))resumeTime=audio.currentTime;syncPlayer();});
+audio.addEventListener('play',()=>{if(!playRequested||!musicVisible()){stopMusic(true);return;}syncPlayer();});
+audio.addEventListener('pause',()=>{
+  if(audio.paused&&!audio.ended&&sourceTrackId&&playRequested&&!playPending){stopMusic(true);return;}
+  syncPlayer();
+});
+audio.addEventListener('error',()=>{if(!sourceTrackId)return;stopMusic(true);musicPlayError=true;syncPlayer();});
+audio.addEventListener('ended',()=>{
+  if(!sourceTrackId||!audio.ended||!playRequested)return;
+  if(!musicVisible()){stopMusic(true);return;}
+  const next=trackIndex+1;
+  stopMusic(false);
+  if(next>=playlist.length){playlistFinished=true;syncPlayer();return;}
+  trackIndex=next;startMusic();
+});
+function suspendMusic(){pageActive=false;stopMusic(true);}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)suspendMusic();else{pageActive=true;syncPlayer();}});
+window.addEventListener('pagehide',suspendMusic);
+window.addEventListener('pageshow',()=>{pageActive=!document.hidden;syncPlayer();});
+document.addEventListener('freeze',suspendMusic);
+window.addEventListener('blur',suspendMusic);
+window.addEventListener('focus',()=>{pageActive=!document.hidden;syncPlayer();});
 syncPlayer();
 
 
@@ -512,5 +642,6 @@ nowCta.addEventListener('click',()=>{
   window.open(safeCampaignLink(campaignState.link),'_blank','noopener,noreferrer');
 });
 loadCampaign();
+loadMusic();
 </script>
 </body></html>
