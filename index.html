@@ -1,12 +1,30 @@
 <!doctype html>
 <html lang="ko">
 <head>
-<meta name="app-version" content="8.16-now-heartbeat">
+<meta name="app-version" content="8.17-catalog-polish">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#f6f2e9">
-<title>Skin Anointing</title>
-<meta name="application-version" content="8.16-now-heartbeat">
+<title>스킨어노인팅 · Skin Anointing</title>
+<meta name="application-version" content="8.17-catalog-polish">
+<meta name="description" content="가장 소중한 당신에게, 온전한 케어를 붓다. 18년의 피부 관리 경험을 바탕으로 피부·바디·두피를 위한 일상의 리추얼을 제안합니다.">
+<link rel="canonical" href="https://skinanointing.com/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:site_name" content="Skin Anointing · 스킨어노인팅">
+<meta property="og:title" content="스킨어노인팅 · 가장 소중한 당신에게, 온전한 케어를 붓다">
+<meta property="og:description" content="18년의 피부 관리 경험으로 제안하는 피부·바디·두피 케어. 스킨어노인팅의 리추얼 라인업과 홈케어 이야기를 만나보세요.">
+<meta property="og:url" content="https://skinanointing.com/">
+<meta property="og:image" content="https://skinanointing.com/brand-a8a1ba6ebc41e828.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1672">
+<meta property="og:image:height" content="941">
+<meta property="og:image:alt" content="햇빛과 잎 그림자가 비치는 스킨어노인팅의 따뜻한 리추얼 공간">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="스킨어노인팅 · Skin Anointing">
+<meta name="twitter:description" content="가장 소중한 당신에게, 온전한 케어를 붓다. 피부·바디·두피를 위한 일상의 리추얼.">
+<meta name="twitter:image" content="https://skinanointing.com/brand-a8a1ba6ebc41e828.jpg">
+<link rel="preload" as="image" href="brand-0e0148d460995469.webp" type="image/webp" fetchpriority="high">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&amp;family=Noto+Serif+KR:wght@400&amp;display=swap" rel="stylesheet">
@@ -25,7 +43,7 @@
 html{scroll-behavior:smooth;scroll-padding-top:calc(var(--header-height) + var(--player-height) + 24px)}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-weight:400;letter-spacing:-.01em;-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
-button{font:inherit}img{display:block;max-width:100%}
+button{font:inherit}img{display:block;max-width:100%;height:auto}
 button,a,[role="slider"]{-webkit-tap-highlight-color:transparent}
 a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--gold);outline-offset:5px}
 button{touch-action:manipulation}
@@ -56,7 +74,7 @@ h1,h2,h3{text-wrap:balance}p{text-wrap:pretty}
 .mini-seek span{height:2px;width:0;background:#d7c294;border-radius:9px;position:relative;z-index:1;pointer-events:none}
 .mini-time{font-variant-numeric:tabular-nums;font-size:11px;color:#c5bdae;text-align:right}
 .hero-wrap{padding-top:20px}
-.hero{position:relative;display:flex;align-items:flex-end;min-height:680px;padding:clamp(24px,3.3vw,44px);border-radius:34px;overflow:hidden;box-shadow:var(--shadow);background-image:linear-gradient(90deg,rgba(248,244,236,.22),rgba(248,244,236,.02)),url('brand-9b3e92524e6089a1.png');background-size:cover;background-position:center}
+.hero{position:relative;display:flex;align-items:flex-end;min-height:680px;padding:clamp(24px,3.3vw,44px);border-radius:34px;overflow:hidden;box-shadow:var(--shadow);background-image:linear-gradient(90deg,rgba(248,244,236,.22),rgba(248,244,236,.02)),url('brand-0e0148d460995469.webp');background-size:cover;background-position:center}
 .hero-panel{position:relative;width:min(560px,100%);padding:34px 36px 32px;background:rgba(251,248,242,.93);border:1px solid rgba(255,255,255,.8);border-radius:28px;backdrop-filter:blur(14px);box-shadow:0 18px 60px rgba(59,43,27,.14)}
 .hero-logo{width:250px;max-width:80%;margin-bottom:20px}
 .hero-kicker{font-size:11px;line-height:1.6;letter-spacing:.2em;font-weight:600;color:#766d5f;margin-bottom:14px}
@@ -72,6 +90,7 @@ h1,h2,h3{text-wrap:balance}p{text-wrap:pretty}
 .section-head h2{font-family:var(--display);font-size:clamp(34px,3.2vw,40px);line-height:1.5;letter-spacing:-.02em;font-weight:400;margin:0}
 .section-lead{flex:0 1 310px;max-width:310px;color:var(--muted);font-size:15px;line-height:1.85;margin:0}
 .products{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.products-empty{grid-column:1/-1;margin:0;padding:40px 24px;border:1px solid var(--line);border-radius:24px;text-align:center;color:var(--muted);font-size:15px;line-height:1.8}
 .product-card{min-width:0;display:flex;flex-direction:column;background:#fff;border:1px solid rgba(40,28,18,.08);border-radius:24px;overflow:hidden;transition:transform .28s ease,box-shadow .28s ease;box-shadow:0 9px 32px rgba(68,50,34,.06)}
 .product-media{position:relative;aspect-ratio:1/1.06;background:linear-gradient(145deg,#e7dfd1,#f7f1e7);overflow:hidden}
 .product-media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2}
@@ -112,17 +131,23 @@ h1,h2,h3{text-wrap:balance}p{text-wrap:pretty}
 .footer{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;padding:44px 0 60px;color:#746c64;font-size:11px;line-height:1.7;overflow-wrap:anywhere}
 .footer-logo{width:180px;opacity:.72;margin-bottom:18px}
 .reveal{opacity:0;transform:translateY(18px);transition:opacity .65s ease,transform .65s ease}.reveal.show{opacity:1;transform:none}
-.now-float{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(22px,env(safe-area-inset-bottom));z-index:70;width:224px;max-width:calc(100vw - 36px);min-height:48px;border:1px solid rgba(255,255,255,.12);border-radius:999px;background:#201f18;color:#fff;padding:12px 14px;display:flex;align-items:center;gap:8px;box-shadow:0 14px 38px rgba(28,23,17,.22);cursor:pointer;font-weight:500;font-size:12px;line-height:1.4;white-space:nowrap;transform-origin:center;transition:border-color .2s ease}
+.now-float{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(22px,env(safe-area-inset-bottom));z-index:70;isolation:isolate;width:224px;max-width:calc(100vw - 36px);min-height:48px;border:1px solid rgba(255,255,255,.12);border-radius:999px;background:#201f18;color:#fff;padding:12px 14px;display:flex;align-items:center;gap:8px;box-shadow:0 14px 38px rgba(28,23,17,.22);cursor:pointer;font-weight:500;font-size:12px;line-height:1.4;white-space:nowrap;transform-origin:center;transition:border-color .2s ease}
+.now-float:before,.now-float:after{content:"";position:absolute;border-radius:inherit;pointer-events:none;opacity:0}
+.now-float:before{inset:-1px;z-index:-1;border:1px solid rgba(255,245,207,.95);box-shadow:0 0 5px 1px rgba(255,235,165,.95),0 0 16px 4px rgba(222,165,47,.64),0 0 30px 9px rgba(184,124,26,.24)}
+.now-float:after{inset:0;box-shadow:inset 0 1px 1px rgba(255,248,220,.72),inset 0 -1px 1px rgba(224,178,79,.25)}
 .now-dot{flex:0 0 7px;height:7px;border-radius:50%;background:#8e9088;box-shadow:0 0 0 4px rgba(255,255,255,.05)}
 .now-word{font-size:11px;font-weight:600;letter-spacing:.09em}.now-separator{opacity:.4}.now-label{flex:1;letter-spacing:-.01em;text-align:center}
-.now-float.is-live{border-color:rgba(213,186,117,.48)}
-.now-float.is-live .now-dot{background:#d5ba75;box-shadow:0 0 0 4px rgba(213,186,117,.13)}
+.now-float.is-live{border-color:rgba(246,222,159,.72);box-shadow:0 12px 30px rgba(35,27,14,.32)}
+.now-float.is-live:before{opacity:.54}.now-float.is-live:after{opacity:.8}
+.now-float.is-live .now-dot{background:#fff3c1;box-shadow:0 0 5px 1px rgba(255,231,159,.9),0 0 12px 4px rgba(223,171,52,.38)}
 .now-float.is-live[aria-expanded="false"]{animation:now-heartbeat 3s ease-in-out infinite}
+.now-float.is-live[aria-expanded="false"]:before{animation:now-radiance 3s ease-in-out infinite}
+.now-float.is-live[aria-expanded="false"]:after{animation:now-highlight 3s ease-in-out infinite}
 @keyframes now-heartbeat{
-  0%,14%,32%,100%{transform:scale(1);border-color:rgba(213,186,117,.48);box-shadow:0 14px 38px rgba(28,23,17,.22),0 0 0 rgba(213,186,117,0)}
-  7%{transform:scale(1.02);border-color:rgba(231,206,146,.9);box-shadow:0 14px 38px rgba(28,23,17,.22),0 0 18px rgba(213,186,117,.2)}
-  23%{transform:scale(1.016);border-color:rgba(231,206,146,.78);box-shadow:0 14px 38px rgba(28,23,17,.22),0 0 14px rgba(213,186,117,.16)}
+  0%,14%,32%,100%{transform:scale(1)}7%{transform:scale(1.02)}23%{transform:scale(1.016)}
 }
+@keyframes now-radiance{0%,14%,32%,100%{opacity:.38}7%{opacity:1}23%{opacity:.84}}
+@keyframes now-highlight{0%,14%,32%,100%{opacity:.45}7%{opacity:1}23%{opacity:.9}}
 .now-backdrop{position:fixed;inset:0;background:rgba(18,16,14,.42);backdrop-filter:blur(8px);z-index:79;opacity:0;pointer-events:none;transition:opacity .22s ease}.now-backdrop.open{opacity:1;pointer-events:auto}
 .now-sheet{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(76px,calc(env(safe-area-inset-bottom) + 70px));z-index:80;width:min(390px,calc(100% - 36px));max-height:calc(100dvh - 110px);overflow-y:auto;overscroll-behavior:contain;background:#f7f3eb;border:1px solid rgba(32,24,20,.12);border-radius:26px;box-shadow:0 28px 80px rgba(32,24,20,.3);padding:24px;opacity:0;transform:translateY(16px) scale(.98);pointer-events:none;transition:opacity .24s ease,transform .24s ease;color:#201814}
 .now-sheet.open{opacity:1;transform:none;pointer-events:auto}.now-sheet[hidden],.now-backdrop[hidden]{display:none}
@@ -184,12 +209,13 @@ h1,h2,h3{text-wrap:balance}p{text-wrap:pretty}
 }
 </style>
 
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+<script defer src="/catalog-v817.js"></script>
 </head>
 <body>
 <header class="header"><div class="container header-in">
-  <a class="brand" href="#top" aria-label="Skin Anointing 홈"><img src="brand-0cad4807e2132296.png" alt="Skin Anointing"></a>
+  <a class="brand" href="#top" aria-label="Skin Anointing 홈"><img src="brand-d665bdbd7703fe28.webp" alt="Skin Anointing" width="750" height="342"></a>
   <nav class="nav" aria-label="주요 메뉴"><a href="#products">제품</a><a href="#story">브랜드</a><a href="#media">콘텐츠</a></nav>
 </div></header>
 <div class="mini-music paused" id="miniMusic" aria-label="Skin Anointing 음악 플레이어">
@@ -208,7 +234,7 @@ h1,h2,h3{text-wrap:balance}p{text-wrap:pretty}
   <div class="container hero-wrap">
     <section class="hero" aria-label="Skin Anointing 브랜드 소개">
       <div class="hero-panel">
-        <img class="hero-logo" src="brand-0cad4807e2132296.png" alt="Skin Anointing">
+        <img class="hero-logo" src="brand-d665bdbd7703fe28.webp" alt="Skin Anointing" width="750" height="342">
         <div class="hero-kicker">18 YEARS · SKIN RITUAL</div>
         <h1><span class="phrase">가장 소중한 당신에게,</span> <span class="phrase">온전한 케어를 붓다.</span></h1>
         <p>18년의 피부 관리 경험을 바탕으로, 피부·바디·두피를 위한 일상의 리추얼을 제안합니다.</p>
@@ -221,7 +247,7 @@ h1,h2,h3{text-wrap:balance}p{text-wrap:pretty}
 
   <section class="section" id="products"><div class="container">
     <div class="section-head reveal"><div><p class="eyebrow">OUR PRODUCTS</p><h2><span class="phrase">당신의 일상에 쉼을 더하는</span> <span class="phrase">리추얼 라인업.</span></h2></div><p class="section-lead">피부·바디·두피, 오늘 필요한 케어를 만나보세요.</p></div>
-    <div class="products"><a class="product-card reveal" href="https://mkt.shopping.naver.com/link/6829808d46ee00714bd1c941" target="_blank" rel="noopener" aria-label="바이옴 클렌징 세럼 스마트스토어에서 보기">
+    <div class="products" id="productGrid"><a class="product-card reveal" href="https://mkt.shopping.naver.com/link/6829808d46ee00714bd1c941" target="_blank" rel="noopener" aria-label="바이옴 클렌징 세럼 스마트스토어에서 보기">
   <div class="product-media">
     <div class="product-fallback"><span>CLEANSING SERUM</span><strong>바이옴 클렌징 세럼</strong></div>
     <img src="https://shop-phinf.pstatic.net/20260717_16/1784247462110fd52z_PNG/4290432937109319_1132649221.png" alt="바이옴 클렌징 세럼" loading="lazy" onerror="this.remove()">
@@ -290,7 +316,7 @@ h1,h2,h3{text-wrap:balance}p{text-wrap:pretty}
 
   <section class="section" id="story"><div class="container">
   <div class="story-scene reveal">
-      <img class="story-bg-img" src="brand-eaef8b8d2b9bcb20.png" alt="Skin Anointing story background">
+      <img class="story-bg-img" src="brand-a3696e5629fc2624.webp" alt="Skin Anointing story background" width="1122" height="1402" loading="lazy" decoding="async">
     <div class="story-scene-copy">
       <p class="eyebrow">OUR STORY</p>
       <h2>The ritual<br>of anointing.</h2>
@@ -306,7 +332,7 @@ h1,h2,h3{text-wrap:balance}p{text-wrap:pretty}
       <a class="connect-row" href="https://www.youtube.com/@skinanointing" target="_blank" rel="noopener"><strong>YouTube</strong><span>담백한 에스테틱 실전 홈케어 코칭</span><b>↗</b></a>
       <a class="connect-row" href="https://pf.kakao.com/_BlAxfb" target="_blank" rel="noopener"><strong>Kakao</strong><span>프라이빗 1:1 맞춤 상담</span><b>↗</b></a>
     </div>
-    <footer class="footer"><div><img class="footer-logo" src="brand-0cad4807e2132296.png" alt="Skin Anointing"><div>SKIN ANOINTING · OFFICIAL BRAND SITE</div></div><div>Products · Story · Media · Connect</div></footer>
+    <footer class="footer"><div><img class="footer-logo" src="brand-d665bdbd7703fe28.webp" alt="Skin Anointing" width="750" height="342" loading="lazy" decoding="async"><div>SKIN ANOINTING · OFFICIAL BRAND SITE</div></div><div>Products · Story · Media · Connect</div></footer>
   </div></section>
 </main>
 
@@ -323,6 +349,58 @@ h1,h2,h3{text-wrap:balance}p{text-wrap:pretty}
 </section>
 <script>
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('show')}),{threshold:.08});document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+// Homepage product catalog: preserve the published design while allowing live admin edits.
+const productGrid=document.getElementById('productGrid');
+let productsRef=null,productsCallback=null,lastProductSignature=null;
+function visibleProducts(raw){
+  if(!window.SkinCatalog) return [];
+  const text=(value,max)=>typeof value==='string'?value.trim().slice(0,max):'';
+  return window.SkinCatalog.merge(raw).filter(item=>item.homepageVisible===true).map(item=>({
+    key:item.key,name:text(item.name,100),label:text(item.label,80),desc:text(item.desc,160),
+    link:window.SkinCatalog.safeUrl(item.link),
+    image:(Array.isArray(item.images)?item.images:[]).map(window.SkinCatalog.safeUrl).find(Boolean)||''
+  })).filter(item=>item.name&&item.link);
+}
+function productSignature(items){return JSON.stringify(items);}
+function renderProducts(raw){
+  if(!productGrid||!window.SkinCatalog) return;
+  const items=visibleProducts(raw),signature=productSignature(items);
+  if(signature===lastProductSignature) return;
+  const fragment=document.createDocumentFragment();
+  const element=(tag,className,text)=>{const el=document.createElement(tag);if(className)el.className=className;if(text!==undefined)el.textContent=text;return el;};
+  items.forEach(item=>{
+    const naver=/(^|\.)naver\.com$/.test(new URL(item.link).hostname);
+    const card=element('a','product-card');
+    card.href=item.link;card.target='_blank';card.rel='noopener noreferrer';
+    card.setAttribute('aria-label',item.name+(naver?' 스마트스토어에서 보기':' 구매처에서 보기'));
+    const media=element('div','product-media'),fallback=element('div','product-fallback');
+    fallback.append(element('span','',item.label||'SKIN ANOINTING'),element('strong','',item.name));media.append(fallback);
+    if(item.image){
+      const img=element('img');img.src=item.image;img.alt=item.name;img.loading='lazy';img.decoding='async';
+      img.addEventListener('error',()=>img.remove(),{once:true});media.append(img);
+    }
+    media.append(element('span','store-chip',naver?'NAVER STORE ↗':'구매처 보기 ↗'));
+    const copy=element('div','product-copy'),heading=element('div');
+    if(item.label)heading.append(element('p','',item.label));
+    heading.append(element('h3','',item.name));copy.append(heading);
+    if(item.desc)copy.append(element('span','',item.desc));
+    card.append(media,copy);fragment.append(card);
+  });
+  if(!items.length)fragment.append(element('p','products-empty','새로운 리추얼을 준비하고 있습니다.'));
+  productGrid.replaceChildren(fragment);lastProductSignature=signature;
+}
+function loadProducts(){
+  if(!productGrid||!window.SkinCatalog) return;
+  if(lastProductSignature===null)lastProductSignature=productSignature(visibleProducts(null));
+  try{
+    if(typeof firebase==='undefined') return;
+    if(!firebase.apps.length)firebase.initializeApp(publicFirebaseConfig);
+    if(productsRef&&productsCallback)productsRef.off('value',productsCallback);
+    productsRef=firebase.database().ref('products');
+    productsCallback=snapshot=>renderProducts(snapshot.val());
+    productsRef.on('value',productsCallback,error=>console.warn('Product catalog unavailable',error&&error.code||'connection error'));
+  }catch(error){console.warn('Product catalog unavailable',error.code||'connection error');}
+}
 // Registered music plays only after an explicit player action.
 const audio=document.getElementById('audio');
 audio.volume=.14;
@@ -652,7 +730,8 @@ nowCta.addEventListener('click',()=>{
   if(campaignLoadState!=='ready'||!campaignIsLive(campaignState)){renderCampaign();return;}
   window.open(safeCampaignLink(campaignState.link),'_blank','noopener,noreferrer');
 });
-loadCampaign();
-loadMusic();
+function startPublicData(){loadCampaign();loadMusic();loadProducts();}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startPublicData,{once:true});
+else startPublicData();
 </script>
 </body></html>
