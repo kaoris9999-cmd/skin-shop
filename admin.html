@@ -114,7 +114,7 @@
         </div>
 
         <div id="admin-section" style="display:none;" hidden>
-            <div style="text-align:center; margin-bottom:20px;"><b>관리자 모드 · V8.22</b></div>
+            <div style="text-align:center; margin-bottom:20px;"><b>관리자 모드 · V8.23</b></div>
 
             <div class="tab-menu">
                 <button class="tab-btn" onclick="showTab('product')">제품</button>
@@ -201,6 +201,7 @@
     </div>
 
     <script src="/catalog-v817.js"></script>
+    <script src="/public-data.js"></script>
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyDUoJtrTbXdYaq1MG_QXipkGPC0frKTFHk",
@@ -221,7 +222,7 @@
         let subscriptions = [], lastCampaign = {}, campaignDirty = false, campaignReady = false;
         let productsState = [], productReady = false, productPreviewUrls = [], productFormDirty = false;
         let productPendingKey = null, productSavedKey = null;
-        let musicState = [], musicReady = false;
+        let musicState = [], musicReady = false, musicPendingKey = null;
         const $ = id => document.getElementById(id);
 
         function notice(message, kind = '') {
@@ -465,6 +466,25 @@
             const card = document.getElementById('product-card-' + productSavedKey);
             if (card) { card.tabIndex = -1; card.focus({preventScroll:true}); if (card.scrollIntoView) card.scrollIntoView({behavior:'smooth', block:'center'}); }
         }
+        function productPatch(updates, key, patch, orderOnly = false) {
+            const current = productsState.find(value => value.key === key) || SkinCatalog.merge({[key]: {}}).find(value => value.key === key);
+            const projected = SkinPublicData.projectProduct({...current, ...patch});
+            Object.entries(patch).forEach(([field, value]) => { updates['products/' + key + '/' + field] = value; });
+            // Reorders touch order only; never replace other public fields from a list snapshot.
+            if (orderOnly && projected) updates['public/products/' + key + '/sortOrder'] = projected.sortOrder;
+            else updates['public/products/' + key] = projected;
+        }
+        function writeProductPatch(key, patch) {
+            const updates = {}; productPatch(updates, key, patch);
+            return db.ref().update(updates);
+        }
+        function musicPatch(updates, key, patch, orderOnly = false) {
+            const current = musicState.find(entry => entry.key === key)?.value || {};
+            const projected = SkinPublicData.projectMusic({...current, ...patch});
+            Object.entries(patch).forEach(([field, value]) => { updates['music/' + key + '/' + field] = value; });
+            if (orderOnly && projected) updates['public/music/' + key + '/order'] = projected.order;
+            else updates['public/music/' + key] = projected;
+        }
         async function saveProduct() {
             if (!ensureSession()) return;
             if (!productReady) return productValidation('제품 목록을 불러온 후 다시 저장해주세요.');
@@ -505,7 +525,7 @@
                 data.images = images;
                 productStatus('제품 저장 중... 서버에서 완료를 확인하고 있습니다.');
                 if (!savedKey) { savedKey = db.ref('products').push().key; productPendingKey = savedKey; }
-                await db.ref('products/' + savedKey).update(data);
+                await writeProductPatch(savedKey, data);
             }, visible ? '제품이 저장되어 홈페이지에 반영되었습니다.' : '제품이 숨김 상태로 저장되었습니다.');
             if (success) { productSavedKey = savedKey; resetProductForm(); showProductList(); renderProductList(); focusSavedProduct(); }
         }
@@ -571,7 +591,7 @@
                 editProduct(key, product);
                 return productValidation('공개 전에 제품명·구매 링크·이미지를 확인하고 저장해주세요.');
             }
-            await runProductOperation(visible ? '제품 공개' : '제품 숨김', () => db.ref('products/' + key).update({homepageVisible: visible, date: new Date().toISOString()}), visible ? '제품이 홈페이지에 표시됩니다.' : '제품을 홈페이지에서 숨겼습니다. 목록에서 다시 공개할 수 있습니다.');
+            await runProductOperation(visible ? '제품 공개' : '제품 숨김', () => writeProductPatch(key, {homepageVisible: visible, date: new Date().toISOString()}), visible ? '제품이 홈페이지에 표시됩니다.' : '제품을 홈페이지에서 숨겼습니다. 목록에서 다시 공개할 수 있습니다.');
         }
         async function moveProduct(key, direction) {
             if (!ensureSession() || !productReady || ![-1, 1].includes(direction)) return;
@@ -582,15 +602,15 @@
             const reordered = [...activeProducts];
             [reordered[index], reordered[next]] = [reordered[next], reordered[index]];
             const updates = {};
-            reordered.forEach((product, position) => { if (validKey(product.key)) updates[product.key + '/sortOrder'] = (position + 1) * 10; });
-            await runProductOperation('진열 순서 저장', () => db.ref('products').update(updates), '진열 순서가 홈페이지에 반영되었습니다.');
+            reordered.forEach((product, position) => { if (validKey(product.key)) productPatch(updates, product.key, {sortOrder: (position + 1) * 10}, true); });
+            await runProductOperation('진열 순서 저장', () => db.ref().update(updates), '진열 순서가 홈페이지에 반영되었습니다.');
         }
         async function setProductTrash(key, trashed) {
             if (!ensureSession() || !productReady || !validKey(key)) return;
             const product = productsState.find(value => value.key === key);
             if (!product) return;
             if (trashed && !confirm('“' + (product.name || '제품') + '”을 휴지통으로 옮길까요? 홈페이지에서 내려가며 나중에 복원할 수 있습니다.')) return;
-            await runProductOperation(trashed ? '휴지통으로 이동' : '제품 복원', () => db.ref('products/' + key).update({trashed, date: new Date().toISOString()}), trashed ? '휴지통으로 옮겼습니다. 아래 휴지통에서 복원할 수 있습니다.' : '제품을 복원했습니다. 이전 공개 설정이 유지됩니다.');
+            await runProductOperation(trashed ? '휴지통으로 이동' : '제품 복원', () => writeProductPatch(key, {trashed, date: new Date().toISOString()}), trashed ? '휴지통으로 옮겼습니다. 아래 휴지통에서 복원할 수 있습니다.' : '제품을 복원했습니다. 이전 공개 설정이 유지됩니다.');
         }
         window.addEventListener('pagehide', () => { productPreviewUrls.forEach(value => URL.revokeObjectURL(value)); productPreviewUrls = []; });
         $('p-files').addEventListener('change', () => { productFormDirty = true; previewProductImages(); if ($('p-files').files.length > 3) productValidation('제품 사진은 최대 3장까지 선택해주세요.'); });
@@ -661,8 +681,8 @@ function orderedMusicEntries(value){
             if (index < 0 || next < 0 || next >= musicState.length) return;
             const reordered = [...musicState]; [reordered[index], reordered[next]] = [reordered[next], reordered[index]];
             const updates = {};
-            reordered.forEach((entry, order) => { updates[entry.key + '/order'] = order; });
-            await runMusicOperation('음악 순서 저장', () => db.ref('music').update(updates), '재생 순서가 저장되었습니다. 홈페이지 목록과 이전·다음 곡에 반영됩니다.');
+            reordered.forEach((entry, order) => { musicPatch(updates, entry.key, {order}, true); });
+            await runMusicOperation('음악 순서 저장', () => db.ref().update(updates), '재생 순서가 저장되었습니다. 홈페이지 목록과 이전·다음 곡에 반영됩니다.');
         }
         async function saveMusic() {
             if (!ensureSession()) return;
@@ -686,12 +706,18 @@ function orderedMusicEntries(value){
                 }
                 const data = {title, fileUrl: downloadUrl, lyrics};
                 // Preserve date/order on edit; new songs append after every current effective rank.
-                if (key) await db.ref('music/' + key).update(data);
-                else await db.ref('music').push({...data, date: Date.now(), order: musicState.reduce((max, entry) => Math.max(max, entry.order), -1) + 1});
+                if (!key) {
+                    data.date = Date.now();
+                    data.order = musicState.reduce((max, entry) => Math.max(max, entry.order), -1) + 1;
+                    if (!musicPendingKey) musicPendingKey = db.ref('music').push().key;
+                }
+                const updates = {}; musicPatch(updates, key || musicPendingKey, data);
+                await db.ref().update(updates);
             }, '음악 정보가 저장되었습니다.');
             if (success) resetMusicForm();
         }
         function resetMusicForm() {
+            musicPendingKey = null;
             ['m-key','m-old-url','m-file','m-title','m-lyrics'].forEach(id => $(id).value = '');
             $('m-btn').textContent = '음악 등록';
         }
@@ -916,7 +942,7 @@ function orderedMusicEntries(value){
             if (!ensureSession()) return;
             if (!['music','videos'].includes(collection) || !validKey(key)) return validation('삭제할 항목 정보를 확인해주세요.');
             if (!confirm('정말 삭제하시겠습니까? (복구 불가)')) return;
-            await (collection === 'music' ? runMusicOperation : runOperation)('항목 삭제', () => db.ref(collection + '/' + key).remove(), '항목이 삭제되었습니다.');
+            await (collection === 'music' ? runMusicOperation : runOperation)('항목 삭제', () => collection === 'music' ? db.ref().update({['music/' + key]: null, ['public/music/' + key]: null}) : db.ref(collection + '/' + key).remove(), '항목이 삭제되었습니다.');
         }
         function showTab(tab) {
             if (!['product','campaign','music','video'].includes(tab)) return;

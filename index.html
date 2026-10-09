@@ -1,12 +1,12 @@
 <!doctype html>
 <html lang="ko">
 <head>
-<meta name="app-version" content="8.22-admin-access">
+<meta name="app-version" content="8.23-private-admin-data">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#f6f2e9">
 <title>스킨어노인팅 · Skin Anointing</title>
-<meta name="application-version" content="8.22-admin-access">
+<meta name="application-version" content="8.23-private-admin-data">
 <meta name="description" content="가장 소중한 당신에게, 온전한 케어를 붓다. 18년의 피부 관리 경험을 바탕으로 피부·바디·두피를 위한 일상의 리추얼을 제안합니다.">
 <link rel="canonical" href="https://skinanointing.com/">
 <meta property="og:type" content="website">
@@ -102,6 +102,7 @@ h1,h2,h3{text-wrap:balance}p{text-wrap:pretty}
 .section-lead{flex:0 1 310px;max-width:310px;color:var(--muted);font-size:15px;line-height:1.85;margin:0}
 .products{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
 .products-empty{grid-column:1/-1;margin:0;padding:40px 24px;border:1px solid var(--line);border-radius:24px;text-align:center;color:var(--muted);font-size:15px;line-height:1.8}
+.products-notice{margin:16px 0 0;color:var(--muted);font-size:13px;line-height:1.8;text-align:center}.products-notice:empty{display:none}.products-retry{display:block;margin:14px auto 0;padding:6px 12px;border:0;background:none;color:inherit;font:inherit;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
 .product-card{min-width:0;display:flex;flex-direction:column;background:#fff;border:1px solid rgba(40,28,18,.08);border-radius:24px;overflow:hidden;transition:transform .28s ease,box-shadow .28s ease;box-shadow:0 9px 32px rgba(68,50,34,.06)}
 .product-media{position:relative;aspect-ratio:1/1.06;background:linear-gradient(145deg,#e7dfd1,#f7f1e7);overflow:hidden}
 .product-media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2}
@@ -261,61 +262,8 @@ h1,h2,h3{text-wrap:balance}p{text-wrap:pretty}
 
   <section class="section" id="products"><div class="container">
     <div class="section-head reveal"><div><p class="eyebrow">OUR PRODUCTS</p><h2><span class="phrase">당신의 일상에 쉼을 더하는</span> <span class="phrase">리추얼 라인업.</span></h2></div><p class="section-lead">피부·바디·두피, 오늘 필요한 케어를 만나보세요.</p></div>
-    <div class="products" id="productGrid"><a class="product-card reveal" href="https://mkt.shopping.naver.com/link/6829808d46ee00714bd1c941" target="_blank" rel="noopener" aria-label="바이옴 클렌징 세럼 스마트스토어에서 보기">
-  <div class="product-media">
-    <div class="product-fallback"><span>CLEANSING SERUM</span><strong>바이옴 클렌징 세럼</strong></div>
-    <img src="https://shop-phinf.pstatic.net/20260717_16/1784247462110fd52z_PNG/4290432937109319_1132649221.png" alt="바이옴 클렌징 세럼" loading="lazy" onerror="this.remove()">
-    <span class="store-chip">NAVER STORE ↗</span>
-  </div>
-  <div class="product-copy">
-    <div><p>CLEANSING SERUM</p><h3>바이옴 클렌징 세럼</h3></div>
-    <span>200ml · Cleansing Care</span>
-  </div>
-</a>
-<a class="product-card reveal" href="https://mkt.shopping.naver.com/link/6829807fefd7a65d5547d1a5" target="_blank" rel="noopener" aria-label="항당겔 스마트스토어에서 보기">
-  <div class="product-media">
-    <div class="product-fallback"><span>RELAXING SKIN PACK</span><strong>항당겔</strong></div>
-    <img src="https://shop-phinf.pstatic.net/20260629_254/1782687507156FqfnG_PNG/116820342256335010_691975064.png" alt="항당겔" loading="lazy" onerror="this.remove()">
-    <span class="store-chip">NAVER STORE ↗</span>
-  </div>
-  <div class="product-copy">
-    <div><p>RELAXING SKIN PACK</p><h3>항당겔</h3></div>
-    <span>500ml · Skin Pack</span>
-  </div>
-</a>
-<a class="product-card reveal" href="https://mkt.shopping.naver.com/link/691a75d5a1cbbe7452e4b2cb" target="_blank" rel="noopener" aria-label="석류탱글 스마트스토어에서 보기">
-  <div class="product-media">
-    <div class="product-fallback"><span>POMEGRANATE CARE</span><strong>석류탱글</strong></div>
-    <img src="https://shop-phinf.pstatic.net/20260129_246/1769643360404bnRm7_JPEG/42630213480465380_1620318322.jpg" alt="석류탱글" loading="lazy" onerror="this.remove()">
-    <span class="store-chip">NAVER STORE ↗</span>
-  </div>
-  <div class="product-copy">
-    <div><p>POMEGRANATE CARE</p><h3>석류탱글</h3></div>
-    <span>30ml · Daily Skin Care</span>
-  </div>
-</a>
-<a class="product-card reveal" href="https://mkt.shopping.naver.com/link/693f638abe63905e26b001a7" target="_blank" rel="noopener" aria-label="스칼프 솔루션 스마트스토어에서 보기">
-  <div class="product-media">
-    <div class="product-fallback"><span>SCALP SOLUTION</span><strong>스칼프 솔루션</strong></div>
-    <img src="https://shop-phinf.pstatic.net/20260910_191/1789014236962034ke_JPEG/31966994191114774_650984267.jpg" alt="스칼프 솔루션" loading="lazy" onerror="this.remove()">
-    <span class="store-chip">NAVER STORE ↗</span>
-  </div>
-  <div class="product-copy">
-    <div><p>SCALP SOLUTION</p><h3>스칼프 솔루션</h3></div>
-    <span>150ml · Scalp Care</span>
-  </div>
-</a>
-<a class="product-card reveal" href="https://mkt.shopping.naver.com/link/682980df2f0ac57821773eb7" target="_blank" rel="noopener" aria-label="선크림 스마트스토어에서 보기">
-  <div class="product-media">
-    <div class="product-fallback"><span>SUN CARE</span><strong>선크림</strong></div>
-    <img src="https://shop-phinf.pstatic.net/20241012_30/1728716441174nS9Co_JPEG/8291805034102213_331207072.jpg" alt="선크림" loading="lazy" onerror="this.remove()">
-    <span class="store-chip">NAVER STORE ↗</span>
-  </div>
-  <div class="product-copy">
-    <div><p>SUN CARE</p><h3>선크림</h3></div>
-    <span>Daily UV Care</span>
-  </div>
-</a></div>
+    <div class="products" id="productGrid" aria-busy="true"><p class="products-empty">리추얼 라인업을 불러오고 있습니다.</p></div>
+    <p class="products-notice" id="productStatus" role="status" aria-live="polite"></p>
   </div></section>
 
   <section class="media-band" id="media"><div class="container">
@@ -363,17 +311,19 @@ h1,h2,h3{text-wrap:balance}p{text-wrap:pretty}
 </section>
 <script>
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('show')}),{threshold:.08});document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
-// Homepage product catalog: preserve the published design while allowing live admin edits.
-const productGrid=document.getElementById('productGrid');
-let productsRef=null,productsCallback=null,lastProductSignature=null;
+// Public catalog is authoritative: omitted products must never return from built-in defaults.
+const productGrid=document.getElementById('productGrid'),productStatus=document.getElementById('productStatus');
+let productsRef=null,productsCallback=null,lastProductSignature=null,productsLoadTimer=null,productsRequest=0;
 function visibleProducts(raw){
-  if(!window.SkinCatalog) return [];
+  if(!window.SkinCatalog||!raw||typeof raw!=='object'||Array.isArray(raw)) return [];
   const text=(value,max)=>typeof value==='string'?value.trim().slice(0,max):'';
-  return window.SkinCatalog.merge(raw).filter(item=>item.homepageVisible===true&&item.trashed!==true).map(item=>({
-    key:item.key,name:text(item.name,100),label:text(item.label,80),desc:text(item.desc,160),
-    link:window.SkinCatalog.safeUrl(item.link),
-    image:(Array.isArray(item.images)?item.images:[]).map(window.SkinCatalog.safeUrl).find(Boolean)||''
-  })).filter(item=>item.name&&item.link);
+  const order=value=>typeof value==='number'&&Number.isFinite(value)?value:1000;
+  return Object.entries(raw).filter(([key,item])=>key&&!/[.#$\[\]\/]/.test(key)&&item&&typeof item==='object'&&!Array.isArray(item))
+    .map(([key,item])=>({
+      key,name:text(item.name,100),label:text(item.label,80),desc:text(item.desc,160),sortOrder:order(item.sortOrder),
+      link:window.SkinCatalog.safeUrl(item.link),
+      image:(Array.isArray(item.images)?item.images:[]).map(window.SkinCatalog.safeUrl).find(Boolean)||''
+    })).filter(item=>item.name&&item.link).sort((a,b)=>a.sortOrder-b.sortOrder||a.key.localeCompare(b.key));
 }
 function productSignature(items){return JSON.stringify(items);}
 function renderProducts(raw){
@@ -403,17 +353,41 @@ function renderProducts(raw){
   if(!items.length)fragment.append(element('p','products-empty','새로운 리추얼을 준비하고 있습니다.'));
   productGrid.replaceChildren(fragment);lastProductSignature=signature;
 }
+function productMessage(message,retry=false){
+  const box=document.createElement('div');box.className='products-empty';
+  const copy=document.createElement('p');copy.textContent=message;box.append(copy);
+  if(retry){const button=document.createElement('button');button.type='button';button.className='products-retry';button.textContent='다시 불러오기';button.addEventListener('click',loadProducts);box.append(button);}
+  productGrid.replaceChildren(box);
+}
 function loadProducts(){
-  if(!productGrid||!window.SkinCatalog) return;
-  if(lastProductSignature===null)lastProductSignature=productSignature(visibleProducts(null));
+  if(!productGrid) return;
+  const request=++productsRequest;
+  clearTimeout(productsLoadTimer);
+  if(productsRef&&productsCallback)productsRef.off('value',productsCallback);
+  if(lastProductSignature===null){productGrid.setAttribute('aria-busy','true');productMessage('리추얼 라인업을 불러오고 있습니다.');}
+  if(productStatus)productStatus.textContent='';
+  const fail=error=>{
+    if(request!==productsRequest)return;
+    clearTimeout(productsLoadTimer);productGrid.setAttribute('aria-busy','false');
+    if(lastProductSignature===null)productMessage('상품 정보를 불러오지 못했습니다. 잠시 후 다시 확인해주세요.',true);
+    else if(productStatus){
+      productStatus.textContent='연결이 원활하지 않아 마지막으로 확인한 라인업을 표시하고 있습니다.';
+      const retry=document.createElement('button');retry.type='button';retry.className='products-retry';retry.textContent='다시 불러오기';retry.addEventListener('click',loadProducts);productStatus.append(retry);
+    }
+    if(error)console.warn('Product catalog unavailable',error.code||'connection error');
+  };
+  productsLoadTimer=setTimeout(()=>fail(),12000);
   try{
-    if(typeof firebase==='undefined') return;
+    if(typeof firebase==='undefined'||!window.SkinCatalog)throw new Error('Catalog dependency unavailable');
     if(!firebase.apps.length)firebase.initializeApp(publicFirebaseConfig);
-    if(productsRef&&productsCallback)productsRef.off('value',productsCallback);
-    productsRef=firebase.database().ref('products');
-    productsCallback=snapshot=>renderProducts(snapshot.val());
-    productsRef.on('value',productsCallback,error=>console.warn('Product catalog unavailable',error&&error.code||'connection error'));
-  }catch(error){console.warn('Product catalog unavailable',error.code||'connection error');}
+    productsRef=firebase.database().ref('public/products');
+    productsCallback=snapshot=>{
+      if(request!==productsRequest)return;
+      clearTimeout(productsLoadTimer);
+      try{renderProducts(snapshot.val());productGrid.setAttribute('aria-busy','false');if(productStatus)productStatus.textContent='';}catch(error){fail(error);}
+    };
+    productsRef.on('value',productsCallback,fail);
+  }catch(error){fail(error);}
 }
 // Registered music plays only after an explicit player action.
 const audio=document.getElementById('audio');
@@ -581,7 +555,7 @@ function loadMusic(){
   try{
     if(typeof firebase==='undefined')throw new Error('Firebase SDK unavailable');
     if(!firebase.apps.length)firebase.initializeApp(publicFirebaseConfig);
-    musicRef=firebase.database().ref('music');
+    musicRef=firebase.database().ref('public/music');
     musicCallback=snapshot=>{if(request!==musicRequest)return;clearTimeout(musicLoadTimer);acceptMusic(snapshot.val());};
     musicRef.on('value',musicCallback,fail);
   }catch(error){fail(error);}
