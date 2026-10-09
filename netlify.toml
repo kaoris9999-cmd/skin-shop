@@ -1,4 +1,4 @@
 [build]
   publish = "."
 
-# Static site: keep the existing root files and legacy asset URLs.
+# Static site. Legacy HTML entry points redirect to the current protected interface.

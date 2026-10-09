@@ -104,7 +104,7 @@
     <div class="container">
         <div id="connection-status" class="notice" role="status" aria-live="polite">관리자 연결을 확인하고 있습니다...</div>
         <button id="retry-connection" type="button" onclick="location.reload()" hidden>연결 다시 확인</button>
-        <div id="login-section" style="text-align:center;">
+        <div id="login-section" style="text-align:center;" hidden>
             <h2>관리자 로그인</h2>
             <form id="login-form">
                 <input type="email" id="email" placeholder="아이디 (이메일)" aria-label="관리자 이메일" autocomplete="username" required>
@@ -113,8 +113,8 @@
             </form>
         </div>
 
-        <div id="admin-section" style="display:none;">
-            <div style="text-align:center; margin-bottom:20px;"><b>관리자 모드 · V8.21</b></div>
+        <div id="admin-section" style="display:none;" hidden>
+            <div style="text-align:center; margin-bottom:20px;"><b>관리자 모드 · V8.22</b></div>
 
             <div class="tab-menu">
                 <button class="tab-btn" onclick="showTab('product')">제품</button>
@@ -213,6 +213,9 @@
             databaseURL: "https://skin-anointing-default-rtdb.firebaseio.com"
         };
 
+        // Client visibility/flow guard. Firebase Rules separately enforce server-side access.
+        const ADMIN_UID = 'J2n2pU4elcYRFXTCd7gyts5lhY22';
+        let authEpoch = 0;
         let auth = null, db = null, storage = null;
         let sdkReady = false, operationBusy = false, currentUid = null;
         let subscriptions = [], lastCampaign = {}, campaignDirty = false, campaignReady = false;
@@ -254,8 +257,32 @@
             });
             $('login-button').disabled = b || !sdkReady;
         }
+        function hasAdminSession(epoch = authEpoch) {
+            return epoch === authEpoch && sdkReady && currentUid === ADMIN_UID && auth?.currentUser?.uid === ADMIN_UID;
+        }
+        function assertAdminSession(epoch) {
+            if (!hasAdminSession(epoch)) throw Object.assign(new Error('Administrator session ended'), {code:'unauthenticated'});
+        }
+        function authView(authorized, loginReady = true) {
+            $('admin-section').hidden = !authorized;
+            $('admin-section').style.display = authorized ? 'block' : 'none';
+            $('login-section').hidden = authorized || !loginReady;
+            $('login-section').style.display = authorized || !loginReady ? 'none' : 'block';
+        }
+        function revokeAdmin(loginReady = true) {
+            currentUid = null; authEpoch++;
+            authView(false, loginReady); stopSubscriptions();
+            campaignReady = false; campaignDirty = false; lastCampaign = {};
+            productSavedKey = null;
+            resetProductForm(); showProductList(); productStatus(''); resetMusicForm(); fillCampaign({});
+            ['v-link','v-title','password'].forEach(id => $(id).value = '');
+            ['product-list','product-trash-list','music-list-admin','video-list-admin','campaign-status','product-count','product-trash-count'].forEach(id => $(id).replaceChildren());
+            document.querySelectorAll('#product-editor input, #product-editor textarea').forEach(el => el.disabled = false);
+            document.querySelectorAll('#tab-music input, #tab-music textarea').forEach(el => el.disabled = false);
+            setLoading(false);
+        }
         function ensureSession() {
-            if (!sdkReady || !auth || !auth.currentUser) return validation('먼저 관리자 계정으로 로그인해주세요.');
+            if (!hasAdminSession()) return validation('먼저 관리자 계정으로 로그인해주세요.');
             if (operationBusy) return false;
             return true;
         }
@@ -271,23 +298,27 @@
         function validKey(key) { return typeof key === 'string' && !!key && !/[.#$\[\]\/]/.test(key); }
         async function runOperation(label, task, successMessage) {
             if (!ensureSession()) return false;
+            const epoch = authEpoch;
             setLoading(true, label + ' 중...');
             notice(label + ' 중입니다. 완료 메시지가 표시될 때까지 기다려주세요.');
             const watchdog = setTimeout(() => {
+                if (!hasAdminSession(epoch)) return;
                 notice('서버 응답이 지연되고 있습니다. 아직 완료가 확인되지 않았습니다. 중복 저장하지 말고 연결을 확인해주세요.', 'error');
                 $('retry-connection').hidden = false;
             }, 20000);
             try {
-                await task();
+                await task(() => assertAdminSession(epoch));
+                if (!hasAdminSession(epoch)) return false;
                 notice(successMessage, 'success');
                 $('retry-connection').hidden = true;
                 return true;
             } catch (error) {
+                if (!hasAdminSession(epoch)) return false;
                 notice(label + ' 실패: ' + readableError(error), 'error');
                 return false;
             } finally {
                 clearTimeout(watchdog);
-                setLoading(false);
+                if (hasAdminSession(epoch)) setLoading(false);
             }
         }
 
@@ -316,32 +347,33 @@
                 await Promise.all(['auth', 'database', 'storage'].map(loadSdkFile));
                 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
                 auth = firebase.auth();
+                await auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
                 db = firebase.database();
                 storage = firebase.storage();
                 sdkReady = true;
                 $('login-button').textContent = '접속하기';
-                $('login-button').disabled = false;
-                notice(location.protocol === 'file:' ? '다운로드한 파일을 직접 여셨습니다. 운영 홈페이지의 /admin/ 주소에서 로그인해주세요.' : '관리자 이메일과 비밀번호로 로그인해주세요.');
+                // Wait for Firebase's initial auth result before exposing either view.
                 auth.onAuthStateChanged(user => {
-                    $('login-section').style.display = user ? 'none' : 'block';
-                    $('admin-section').style.display = user ? 'block' : 'none';
-                    if (user && currentUid !== user.uid) {
-                        stopSubscriptions();
-                        currentUid = user.uid;
-                        campaignDirty = false;
-                        campaignReady = false;
-                        lastCampaign = {};
-                        showTab('campaign');
-                        notice('로그인되었습니다. 저장된 데이터를 불러오고 있습니다.', 'success');
-                        loadData();
-                    } else if (!user) {
-                        currentUid = null;
-                        campaignReady = false;
-                        stopSubscriptions();
+                    if (user?.uid === ADMIN_UID) {
+                        if (!hasAdminSession()) {
+                            revokeAdmin(false);
+                            currentUid = user.uid;
+                            authView(true); showTab('campaign');
+                            notice('로그인되었습니다. 저장된 데이터를 불러오고 있습니다.', 'success');
+                            loadData();
+                        }
+                    } else {
+                        revokeAdmin();
+                        notice(user ? '이 계정은 관리자 권한이 없습니다. 관리자 계정으로 로그인해주세요.' : '관리자 이메일과 비밀번호로 로그인해주세요.', user ? 'error' : '');
                     }
-                }, error => notice('로그인 상태 확인 실패: ' + readableError(error), 'error'));
+                }, error => {
+                    revokeAdmin();
+                    notice('로그인 상태 확인 실패: ' + readableError(error), 'error');
+                    $('retry-connection').hidden = false;
+                });
             } catch (error) {
                 sdkReady = false;
+                revokeAdmin(false);
                 $('login-button').textContent = '연결할 수 없습니다';
                 $('login-button').disabled = true;
                 $('retry-connection').hidden = false;
@@ -353,10 +385,12 @@
             const email = $('email').value.trim();
             const password = $('password').value;
             if (!email || !password) return validation('이메일과 비밀번호를 입력해주세요.');
+            const epoch = authEpoch;
             setLoading(true);
             $('login-button').textContent = '로그인 중...';
             notice('로그인 정보를 확인하고 있습니다...');
             const watchdog = setTimeout(() => {
+                if (epoch !== authEpoch) return;
                 notice('로그인 서버의 응답이 지연되고 있습니다. 인터넷 연결을 확인하거나 연결 다시 확인을 눌러주세요.', 'error');
                 $('retry-connection').hidden = false;
             }, 20000);
@@ -365,24 +399,27 @@
                 $('password').value = '';
                 $('retry-connection').hidden = true;
             } catch (error) {
-                notice('로그인 실패: ' + readableError(error), 'error');
+                if (epoch === authEpoch) notice('로그인 실패: ' + readableError(error), 'error');
             } finally {
                 clearTimeout(watchdog);
-                setLoading(false);
+                if (epoch === authEpoch || !operationBusy) setLoading(false);
                 $('login-button').textContent = '접속하기';
             }
         }
         async function adminLogout() {
             if (!auth || operationBusy) return;
+            revokeAdmin(false);
+            const epoch = authEpoch;
+            notice('로그아웃 중입니다...');
             try {
                 await auth.signOut();
-                $('password').value = '';
-                resetProductForm(); showProductList(); productStatus(''); resetMusicForm();
-                $('v-link').value = ''; $('v-title').value = '';
-                fillCampaign({}); campaignDirty = false; lastCampaign = {};
-                ['product-list','music-list-admin','video-list-admin'].forEach(id => $(id).replaceChildren());
-                notice('로그아웃되었습니다.');
-            } catch (error) { notice('로그아웃 실패: ' + readableError(error), 'error'); }
+                if (!hasAdminSession()) { authView(false); notice('로그아웃되었습니다.'); }
+            } catch (error) {
+                if (epoch !== authEpoch) return;
+                authView(false);
+                notice('로그아웃 확인 실패: ' + readableError(error), 'error');
+                $('retry-connection').hidden = false;
+            }
         }
         $('login-form').addEventListener('submit', event => { event.preventDefault(); adminLogin(); });
 
@@ -394,20 +431,26 @@
         function productValidation(message) { productStatus(message, 'error'); return false; }
         async function runProductOperation(label, task, successMessage) {
             if (!ensureSession()) return false;
+            const epoch = authEpoch;
             setLoading(true, label + ' 중...');
             document.querySelectorAll('#product-editor input, #product-editor textarea').forEach(element => element.disabled = true);
             productStatus(label + ' 중입니다. 서버에서 완료를 확인하고 있습니다.');
-            const watchdog = setTimeout(() => productStatus('서버 응답을 기다리고 있습니다. 완료가 확인될 때까지 이 화면을 유지해주세요. 다시 누르지 않아도 됩니다.'), 20000);
+            const watchdog = setTimeout(() => hasAdminSession(epoch) && productStatus('서버 응답을 기다리고 있습니다. 완료가 확인될 때까지 이 화면을 유지해주세요. 다시 누르지 않아도 됩니다.'), 20000);
             try {
-                await task();
+                await task(() => assertAdminSession(epoch));
+                if (!hasAdminSession(epoch)) return false;
                 productStatus(successMessage, 'success');
                 return true;
             } catch (error) {
+                if (!hasAdminSession(epoch)) return false;
                 productStatus(label + '을 완료하지 못했습니다. 입력 내용은 유지됩니다. ' + readableError(error), 'error');
                 return false;
             } finally {
-                clearTimeout(watchdog); setLoading(false);
-                document.querySelectorAll('#product-editor input, #product-editor textarea').forEach(element => element.disabled = false);
+                clearTimeout(watchdog);
+                if (hasAdminSession(epoch)) {
+                    setLoading(false);
+                    document.querySelectorAll('#product-editor input, #product-editor textarea').forEach(element => element.disabled = false);
+                }
             }
         }
         function showProductList() { $('product-editor').hidden = true; $('product-list-view').hidden = false; }
@@ -447,14 +490,16 @@
             if (visible && !files.length && !imageUrls.length) return productValidation('홈페이지에 표시하려면 이미지를 최소 1장 등록해주세요.');
             const data = {name, label: $('p-label').value.trim(), priceNormal: $('p-price-normal').value.trim(), priceSale, link, desc: $('p-desc').value.trim(), sortOrder, homepageVisible: visible, date: new Date().toISOString()};
             let savedKey = key || productPendingKey;
-            const success = await runProductOperation('제품 저장', async () => {
+            const success = await runProductOperation('제품 저장', async assertActive => {
                 const images = [];
                 if (files.length) {
                     for (let i = 0; i < files.length; i++) {
                         productStatus('사진 업로드 중 · ' + (i + 1) + '/' + files.length);
                         const ref = storage.ref('products/' + Date.now() + '_' + i);
                         await ref.put(files[i]);
+                        assertActive();
                         images.push(await ref.getDownloadURL());
+                        assertActive();
                     }
                 } else images.push(...imageUrls);
                 data.images = images;
@@ -565,20 +610,26 @@ function orderedMusicEntries(value){
         }
         async function runMusicOperation(label, task, successMessage) {
             if (!ensureSession()) return false;
+            const epoch = authEpoch;
             setLoading(true, label + ' 중...');
             document.querySelectorAll('#tab-music input, #tab-music textarea').forEach(el => el.disabled = true);
             musicStatus(label + ' 중입니다. 서버에서 완료를 확인하고 있습니다.');
-            const watchdog = setTimeout(() => musicStatus('서버 응답을 기다리고 있습니다. 완료가 확인될 때까지 다시 누르지 않아도 됩니다.'), 20000);
+            const watchdog = setTimeout(() => hasAdminSession(epoch) && musicStatus('서버 응답을 기다리고 있습니다. 완료가 확인될 때까지 다시 누르지 않아도 됩니다.'), 20000);
             try {
-                await task();
+                await task(() => assertAdminSession(epoch));
+                if (!hasAdminSession(epoch)) return false;
                 musicStatus(successMessage, 'success');
                 return true;
             } catch (error) {
+                if (!hasAdminSession(epoch)) return false;
                 musicStatus(label + ' 실패: ' + readableError(error), 'error');
                 return false;
             } finally {
-                clearTimeout(watchdog); setLoading(false);
-                document.querySelectorAll('#tab-music input, #tab-music textarea').forEach(el => el.disabled = false);
+                clearTimeout(watchdog);
+                if (hasAdminSession(epoch)) {
+                    setLoading(false);
+                    document.querySelectorAll('#tab-music input, #tab-music textarea').forEach(el => el.disabled = false);
+                }
             }
         }
         function renderMusic(snapshot) {
@@ -624,12 +675,14 @@ function orderedMusicEntries(value){
             if (!title) return musicStatus('곡 제목은 필수입니다.', 'error');
             if (key && (!validKey(key) || !musicState.some(entry => entry.key === key))) return musicStatus('음악 정보를 다시 불러와주세요.', 'error');
             if (!file && !oldUrl) return musicStatus('음악 파일을 선택해주세요.', 'error');
-            const success = await runMusicOperation('음악 저장', async () => {
+            const success = await runMusicOperation('음악 저장', async assertActive => {
                 let downloadUrl = oldUrl;
                 if (file) {
                     const ref = storage.ref('music/' + Date.now() + '_' + file.name);
                     const snapshot = await ref.put(file);
+                    assertActive();
                     downloadUrl = await snapshot.ref.getDownloadURL();
+                    assertActive();
                 }
                 const data = {title, fileUrl: downloadUrl, lyrics};
                 // Preserve date/order on edit; new songs append after every current effective rank.
@@ -734,7 +787,7 @@ function orderedMusicEntries(value){
             if (success) { campaignDirty = false; lastCampaign = {...lastCampaign, enabled: false}; fillCampaign(lastCampaign); showCampaignStatus(lastCampaign); }
         }
         document.querySelectorAll('#tab-campaign input, #tab-campaign textarea').forEach(input => input.addEventListener('input', () => { campaignDirty = true; }));
-        setInterval(() => { if (auth && auth.currentUser && campaignReady) showCampaignStatus(lastCampaign); }, 30000);
+        setInterval(() => { if (hasAdminSession() && campaignReady) showCampaignStatus(lastCampaign); }, 30000);
 
         function stopSubscriptions() {
             subscriptions.forEach(({ref, callback, timer}) => { clearTimeout(timer); ref.off('value', callback); });
@@ -744,19 +797,24 @@ function orderedMusicEntries(value){
             musicReady = false; musicState = []; musicStatus('');
         }
         function subscribe(path, callback, target) {
+            if (!hasAdminSession()) return;
+            const epoch = authEpoch;
             const ref = db.ref(path);
             $(target).textContent = '저장된 정보를 불러오는 중...';
             const timer = setTimeout(() => {
+                if (!hasAdminSession(epoch)) return;
                 if (path === 'products') productReady = false;
                 if (path === 'music') musicReady = false;
                 $(target).textContent = '서버 연결이 지연되고 있습니다. 인터넷 연결을 확인해주세요.';
             }, 20000);
             const onValue = snapshot => {
+                if (!hasAdminSession(epoch)) return;
                 clearTimeout(timer);
                 try { callback(snapshot); }
                 catch (_) { $(target).textContent = '데이터 형식을 확인해주세요. 일부 항목을 표시할 수 없습니다.'; }
             };
             ref.on('value', onValue, error => {
+                if (!hasAdminSession(epoch)) return;
                 clearTimeout(timer);
                 if (path === 'campaign/current') campaignReady = false;
                 if (path === 'products') productReady = false;
@@ -842,6 +900,7 @@ function orderedMusicEntries(value){
             if (activeProducts.length === productsState.length) trashContainer.textContent = '휴지통이 비어 있습니다.';
         }
         function loadData() {
+            if (!hasAdminSession()) return;
             subscribe('campaign/current', snapshot => {
                 const value = snapshot.val();
                 lastCampaign = value && typeof value === 'object' ? value : {};
