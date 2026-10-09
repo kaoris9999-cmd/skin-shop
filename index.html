@@ -1,12 +1,12 @@
 <!doctype html>
 <html lang="ko">
 <head>
-<meta name="app-version" content="8.20-product-new-tab">
+<meta name="app-version" content="8.21-music-order">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#f6f2e9">
 <title>스킨어노인팅 · Skin Anointing</title>
-<meta name="application-version" content="8.20-product-new-tab">
+<meta name="application-version" content="8.21-music-order">
 <meta name="description" content="가장 소중한 당신에게, 온전한 케어를 붓다. 18년의 피부 관리 경험을 바탕으로 피부·바디·두피를 위한 일상의 리추얼을 제안합니다.">
 <link rel="canonical" href="https://skinanointing.com/">
 <meta property="og:type" content="website">
@@ -545,13 +545,20 @@ async function startMusic(){
     stopMusic(true);musicPlayError=true;syncPlayer();
   }
 }
+function orderedMusicEntries(value){
+  // Unordered legacy songs keep their date/key position until an explicit order is saved.
+  return Object.entries(value&&typeof value==='object'?value:{}).filter(([,item])=>item&&typeof item==='object')
+    .map(([key,item])=>({key,value:item,date:Number.isFinite(Number(item.date))?Number(item.date):0}))
+    .sort((a,b)=>a.date-b.date||a.key.localeCompare(b.key))
+    .map((entry,index)=>({...entry,order:typeof entry.value.order==='number'&&Number.isFinite(entry.value.order)&&entry.value.order>=0?entry.value.order:index}))
+    .sort((a,b)=>a.order-b.order||a.date-b.date||a.key.localeCompare(b.key));
+}
 function acceptMusic(value){
   const previous=musicTrack();
-  const next=Object.entries(value&&typeof value==='object'?value:{}).map(([id,item])=>{
-    if(!item||typeof item!=='object')return null;
+  const next=orderedMusicEntries(value).map(({key:id,value:item})=>{
     const url=safeMusicUrl(item.fileUrl),title=typeof item.title==='string'?item.title.trim():'';
-    return url&&title?{id,url,title,date:Number.isFinite(Number(item.date))?Number(item.date):0}:null;
-  }).filter(Boolean).sort((a,b)=>a.date-b.date||a.id.localeCompare(b.id));
+    return url&&title?{id,url,title}:null;
+  }).filter(Boolean);
   const retained=previous?next.findIndex(track=>track.id===previous.id&&track.url===previous.url):-1;
   if(retained<0){stopMusic(false);trackIndex=0;playlistFinished=false;}
   else trackIndex=retained;

@@ -78,6 +78,12 @@
         .product-admin-actions button:disabled{cursor:default;opacity:.38}
         @media(max-width:480px){body{padding:10px}.container{padding:18px 14px;border-radius:12px}.product-fields{grid-template-columns:minmax(0,1fr) 100px;gap:8px}.product-form-heading span{font-size:10px}.product-admin-actions button{padding:8px 11px}.product-form-actions .reset-btn{padding:12px}}
 
+        .music-admin-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:12px 0;border-top:1px solid #e7e1d6}
+        .music-admin-title{flex:1 1 160px;min-width:0;font-size:13px;line-height:1.6;overflow-wrap:anywhere}
+        .music-admin-actions{display:flex;gap:6px;flex-shrink:0}.music-admin-actions button{width:auto;min-width:44px;min-height:44px;margin:0;padding:8px 11px;background:#eee9df;color:#514a3e;font-size:12px}
+        .music-admin-actions button:disabled{cursor:default;opacity:.38}.music-admin-actions .music-edit{background:#24231f;color:#fff}
+        #tab-music .item-list{max-height:none;overflow:visible;border-top:1px solid #d6ccba}
+        #music-status{position:sticky;bottom:max(10px,env(safe-area-inset-bottom));z-index:6;border:1px solid #ded6c7;box-shadow:0 4px 20px #24231f12}
         [hidden]{display:none!important}
         #tab-product input:not([type=checkbox]),#tab-product textarea{font-size:16px;min-height:46px}
         .product-save-bar{position:sticky;bottom:0;z-index:5;background:rgba(255,253,249,.97);border-top:1px solid #dfd6c7;padding:12px 0 max(12px,env(safe-area-inset-bottom));margin-top:20px}
@@ -108,7 +114,7 @@
         </div>
 
         <div id="admin-section" style="display:none;">
-            <div style="text-align:center; margin-bottom:20px;"><b>관리자 모드 · V8.18</b></div>
+            <div style="text-align:center; margin-bottom:20px;"><b>관리자 모드 · V8.21</b></div>
 
             <div class="tab-menu">
                 <button class="tab-btn" onclick="showTab('product')">제품</button>
@@ -164,7 +170,7 @@
 
             <div id="tab-music" class="form-group">
                 <h3>🎵 음악 등록/수정</h3>
-                <p class="notice">저장·삭제한 내용은 홈페이지 음악 목록에 자동 반영됩니다.</p>
+                <p class="notice">위·아래 화살표로 재생 순서를 바꿀 수 있습니다. 저장된 순서는 홈페이지 목록과 이전·다음 곡에 함께 반영됩니다.</p>
                 <input type="hidden" id="m-key">
                 <input type="hidden" id="m-old-url">
 
@@ -176,7 +182,8 @@
                 <button id="m-btn" onclick="saveMusic()">음악 등록</button>
                 <button onclick="resetMusicForm()" class="reset-btn">초기화</button>
 
-                <div class="item-list"><h4>등록된 음악</h4><div id="music-list-admin"></div></div>
+                <div class="item-list"><h4>등록된 음악 · 재생 순서</h4><div id="music-list-admin"></div></div>
+                <div id="music-status" class="product-status" role="status" aria-live="polite" hidden></div>
             </div>
 
             <div id="tab-video" class="form-group">
@@ -211,6 +218,7 @@
         let subscriptions = [], lastCampaign = {}, campaignDirty = false, campaignReady = false;
         let productsState = [], productReady = false, productPreviewUrls = [], productFormDirty = false;
         let productPendingKey = null, productSavedKey = null;
+        let musicState = [], musicReady = false;
         const $ = id => document.getElementById(id);
 
         function notice(message, kind = '') {
@@ -242,7 +250,7 @@
             $('loading-msg').style.display = b ? 'block' : 'none';
             $('loading-msg').textContent = message;
             document.querySelectorAll('button').forEach(button => {
-                if (button.id !== 'retry-connection') button.disabled = b || button.dataset.productBlocked === 'true';
+                if (button.id !== 'retry-connection') button.disabled = b || button.dataset.productBlocked === 'true' || button.dataset.musicBlocked === 'true';
             });
             $('login-button').disabled = b || !sdkReady;
         }
@@ -543,26 +551,90 @@
         $('p-files').addEventListener('change', () => { productFormDirty = true; previewProductImages(); if ($('p-files').files.length > 3) productValidation('제품 사진은 최대 3장까지 선택해주세요.'); });
         $('p-image-urls').addEventListener('input', previewProductImages);
         document.querySelectorAll('#tab-product input, #tab-product textarea').forEach(input => input.addEventListener('input', () => { productFormDirty = true; }));
+function orderedMusicEntries(value){
+  // Unordered legacy songs keep their date/key position until an explicit order is saved.
+  return Object.entries(value&&typeof value==='object'?value:{}).filter(([,item])=>item&&typeof item==='object')
+    .map(([key,item])=>({key,value:item,date:Number.isFinite(Number(item.date))?Number(item.date):0}))
+    .sort((a,b)=>a.date-b.date||a.key.localeCompare(b.key))
+    .map((entry,index)=>({...entry,order:typeof entry.value.order==='number'&&Number.isFinite(entry.value.order)&&entry.value.order>=0?entry.value.order:index}))
+    .sort((a,b)=>a.order-b.order||a.date-b.date||a.key.localeCompare(b.key));
+}
+        function musicStatus(message, kind = '') {
+            const el = $('music-status');
+            el.textContent = message; el.className = 'product-status' + (kind ? ' ' + kind : ''); el.hidden = !message;
+        }
+        async function runMusicOperation(label, task, successMessage) {
+            if (!ensureSession()) return false;
+            setLoading(true, label + ' 중...');
+            document.querySelectorAll('#tab-music input, #tab-music textarea').forEach(el => el.disabled = true);
+            musicStatus(label + ' 중입니다. 서버에서 완료를 확인하고 있습니다.');
+            const watchdog = setTimeout(() => musicStatus('서버 응답을 기다리고 있습니다. 완료가 확인될 때까지 다시 누르지 않아도 됩니다.'), 20000);
+            try {
+                await task();
+                musicStatus(successMessage, 'success');
+                return true;
+            } catch (error) {
+                musicStatus(label + ' 실패: ' + readableError(error), 'error');
+                return false;
+            } finally {
+                clearTimeout(watchdog); setLoading(false);
+                document.querySelectorAll('#tab-music input, #tab-music textarea').forEach(el => el.disabled = false);
+            }
+        }
+        function renderMusic(snapshot) {
+            musicState = orderedMusicEntries(snapshot.val()); musicReady = true;
+            const container = $('music-list-admin'); container.replaceChildren();
+            musicState.forEach((entry, index) => {
+                const row = document.createElement('div'); row.className = 'music-admin-row'; row.dataset.musicKey = entry.key;
+                const title = String(entry.value.title || '제목 없음');
+                const name = document.createElement('div'); name.className = 'music-admin-title'; name.textContent = (index + 1) + '. ' + title;
+                const actions = document.createElement('div'); actions.className = 'music-admin-actions';
+                const button = (text, label, onClick, blocked = false, className = '') => {
+                    const el = document.createElement('button'); el.type = 'button'; el.textContent = text; el.className = className;
+                    el.setAttribute('aria-label', title + ' ' + label); el.dataset.musicBlocked = String(blocked);
+                    el.disabled = operationBusy || blocked; el.addEventListener('click', onClick); return el;
+                };
+                actions.append(
+                    button('수정', '수정', () => editMusic(entry.key, entry.value), false, 'music-edit'),
+                    button('↑', '순서 위로', () => moveMusic(entry.key, -1), index === 0),
+                    button('↓', '순서 아래로', () => moveMusic(entry.key, 1), index === musicState.length - 1),
+                    button('삭제', '삭제', () => del('music', entry.key))
+                );
+                row.append(name, actions); container.appendChild(row);
+            });
+            if (!musicState.length) container.textContent = '등록된 음악이 없습니다.';
+        }
+        async function moveMusic(key, direction) {
+            if (!ensureSession() || !musicReady || ![-1, 1].includes(direction)) return;
+            const index = musicState.findIndex(entry => entry.key === key), next = index + direction;
+            if (index < 0 || next < 0 || next >= musicState.length) return;
+            const reordered = [...musicState]; [reordered[index], reordered[next]] = [reordered[next], reordered[index]];
+            const updates = {};
+            reordered.forEach((entry, order) => { updates[entry.key + '/order'] = order; });
+            await runMusicOperation('음악 순서 저장', () => db.ref('music').update(updates), '재생 순서가 저장되었습니다. 홈페이지 목록과 이전·다음 곡에 반영됩니다.');
+        }
         async function saveMusic() {
             if (!ensureSession()) return;
+            if (!musicReady) return musicStatus('음악 목록을 불러온 뒤 저장해주세요.', 'error');
             const key = $('m-key').value;
             const file = $('m-file').files[0];
             const title = $('m-title').value.trim();
             const lyrics = $('m-lyrics').value;
             const oldUrl = $('m-old-url').value;
-            if (!title) return validation('곡 제목은 필수입니다.');
-            if (key && !validKey(key)) return validation('음악 정보를 다시 불러와주세요.');
-            if (!file && !oldUrl) return validation('음악 파일을 선택해주세요.');
-            const success = await runOperation('음악 저장', async () => {
+            if (!title) return musicStatus('곡 제목은 필수입니다.', 'error');
+            if (key && (!validKey(key) || !musicState.some(entry => entry.key === key))) return musicStatus('음악 정보를 다시 불러와주세요.', 'error');
+            if (!file && !oldUrl) return musicStatus('음악 파일을 선택해주세요.', 'error');
+            const success = await runMusicOperation('음악 저장', async () => {
                 let downloadUrl = oldUrl;
                 if (file) {
                     const ref = storage.ref('music/' + Date.now() + '_' + file.name);
                     const snapshot = await ref.put(file);
                     downloadUrl = await snapshot.ref.getDownloadURL();
                 }
-                const data = {title, fileUrl: downloadUrl, lyrics, date: Date.now()};
+                const data = {title, fileUrl: downloadUrl, lyrics};
+                // Preserve date/order on edit; new songs append after every current effective rank.
                 if (key) await db.ref('music/' + key).update(data);
-                else await db.ref('music').push(data);
+                else await db.ref('music').push({...data, date: Date.now(), order: musicState.reduce((max, entry) => Math.max(max, entry.order), -1) + 1});
             }, '음악 정보가 저장되었습니다.');
             if (success) resetMusicForm();
         }
@@ -669,12 +741,14 @@
             subscriptions = [];
             productReady = false;
             productsState = [];
+            musicReady = false; musicState = []; musicStatus('');
         }
         function subscribe(path, callback, target) {
             const ref = db.ref(path);
             $(target).textContent = '저장된 정보를 불러오는 중...';
             const timer = setTimeout(() => {
                 if (path === 'products') productReady = false;
+                if (path === 'music') musicReady = false;
                 $(target).textContent = '서버 연결이 지연되고 있습니다. 인터넷 연결을 확인해주세요.';
             }, 20000);
             const onValue = snapshot => {
@@ -686,6 +760,7 @@
                 clearTimeout(timer);
                 if (path === 'campaign/current') campaignReady = false;
                 if (path === 'products') productReady = false;
+                if (path === 'music') musicReady = false;
                 $(target).textContent = '불러오기 실패: ' + readableError(error);
                 notice('데이터 연결 오류: ' + readableError(error), 'error');
             });
@@ -775,14 +850,14 @@
                 showCampaignStatus(lastCampaign);
             }, 'campaign-status');
             subscribe('products', renderProducts, 'product-list');
-            subscribe('music', snapshot => renderList('music-list-admin', snapshot, 'music', 'title', editMusic), 'music-list-admin');
+            subscribe('music', renderMusic, 'music-list-admin');
             subscribe('videos', snapshot => renderList('video-list-admin', snapshot, 'videos', 'title', null), 'video-list-admin');
         }
         async function del(collection, key) {
             if (!ensureSession()) return;
             if (!['music','videos'].includes(collection) || !validKey(key)) return validation('삭제할 항목 정보를 확인해주세요.');
             if (!confirm('정말 삭제하시겠습니까? (복구 불가)')) return;
-            await runOperation('항목 삭제', () => db.ref(collection + '/' + key).remove(), '항목이 삭제되었습니다.');
+            await (collection === 'music' ? runMusicOperation : runOperation)('항목 삭제', () => db.ref(collection + '/' + key).remove(), '항목이 삭제되었습니다.');
         }
         function showTab(tab) {
             if (!['product','campaign','music','video'].includes(tab)) return;
