@@ -1,12 +1,12 @@
 <!doctype html>
 <html lang="ko">
 <head>
-<meta name="app-version" content="8.23-private-admin-data">
+<meta name="app-version" content="8.24-groupbuy-product-card">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#f6f2e9">
 <title>스킨어노인팅 · Skin Anointing</title>
-<meta name="application-version" content="8.23-private-admin-data">
+<meta name="application-version" content="8.24-groupbuy-product-card">
 <meta name="description" content="가장 소중한 당신에게, 온전한 케어를 붓다. 18년의 피부 관리 경험을 바탕으로 피부·바디·두피를 위한 일상의 리추얼을 제안합니다.">
 <link rel="canonical" href="https://skinanointing.com/">
 <meta property="og:type" content="website">
@@ -143,31 +143,31 @@ h1,h2,h3{text-wrap:balance}p{text-wrap:pretty}
 .footer{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;padding:44px 0 60px;color:#746c64;font-size:11px;line-height:1.7;overflow-wrap:anywhere}
 .footer-logo{width:180px;opacity:.72;margin-bottom:18px}
 .reveal{opacity:0;transform:translateY(18px);transition:opacity .65s ease,transform .65s ease}.reveal.show{opacity:1;transform:none}
-.now-float{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(22px,env(safe-area-inset-bottom));z-index:70;isolation:isolate;width:224px;max-width:calc(100vw - 36px);min-height:48px;border:1px solid rgba(255,255,255,.12);border-radius:999px;background:#201f18;color:#fff;padding:12px 14px;display:flex;align-items:center;gap:8px;box-shadow:0 14px 38px rgba(28,23,17,.22);cursor:pointer;font-weight:500;font-size:12px;line-height:1.4;white-space:nowrap;transform-origin:center;transition:border-color .2s ease}
-.now-float:before,.now-float:after{content:"";position:absolute;border-radius:inherit;pointer-events:none;opacity:0}
-.now-float:before{inset:-1px;z-index:-1;border:1px solid rgba(255,245,207,.95);box-shadow:0 0 5px 1px rgba(255,235,165,.95),0 0 16px 4px rgba(222,165,47,.64),0 0 30px 9px rgba(184,124,26,.24)}
-.now-float:after{inset:0;box-shadow:inset 0 1px 1px rgba(255,248,220,.72),inset 0 -1px 1px rgba(224,178,79,.25)}
-.now-dot{flex:0 0 7px;height:7px;border-radius:50%;background:#8e9088;box-shadow:0 0 0 4px rgba(255,255,255,.05)}
-.now-word{font-size:11px;font-weight:600;letter-spacing:.09em}.now-separator{opacity:.4}.now-label{flex:1;letter-spacing:-.01em;text-align:center}
-.now-float.is-live{border-color:rgba(246,222,159,.72);box-shadow:0 12px 30px rgba(35,27,14,.32)}
-.now-float.is-live:before{opacity:.54}.now-float.is-live:after{opacity:.8}
-.now-float.is-live .now-dot{background:#fff3c1;box-shadow:0 0 5px 1px rgba(255,231,159,.9),0 0 12px 4px rgba(223,171,52,.38)}
-.now-float.is-live[aria-expanded="false"]{animation:now-heartbeat 3s ease-in-out infinite}
-.now-float.is-live[aria-expanded="false"]:before{animation:now-radiance 3s ease-in-out infinite}
-.now-float.is-live[aria-expanded="false"]:after{animation:now-highlight 3s ease-in-out infinite}
-@keyframes now-heartbeat{
-  0%,14%,32%,100%{transform:scale(1)}7%{transform:scale(1.02)}23%{transform:scale(1.016)}
-}
-@keyframes now-radiance{0%,14%,32%,100%{opacity:.38}7%{opacity:1}23%{opacity:.84}}
-@keyframes now-highlight{0%,14%,32%,100%{opacity:.45}7%{opacity:1}23%{opacity:.9}}
-.now-backdrop{position:fixed;inset:0;background:rgba(18,16,14,.42);backdrop-filter:blur(8px);z-index:79;opacity:0;pointer-events:none;transition:opacity .22s ease}.now-backdrop.open{opacity:1;pointer-events:auto}
-.now-sheet{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(76px,calc(env(safe-area-inset-bottom) + 70px));z-index:80;width:min(390px,calc(100% - 36px));max-height:calc(100dvh - 110px);overflow-y:auto;overscroll-behavior:contain;background:#f7f3eb;border:1px solid rgba(32,24,20,.12);border-radius:26px;box-shadow:0 28px 80px rgba(32,24,20,.3);padding:24px;opacity:0;transform:translateY(16px) scale(.98);pointer-events:none;transition:opacity .24s ease,transform .24s ease;color:#201814}
+/* V8.24: a product-led group-buy card, always reachable while scrolling. */
+body{padding-bottom:calc(126px + env(safe-area-inset-bottom))}
+html{scroll-padding-bottom:calc(142px + env(safe-area-inset-bottom))}
+.now-float{position:fixed;right:max(20px,env(safe-area-inset-right));bottom:calc(18px + env(safe-area-inset-bottom));z-index:70;width:270px;max-width:calc(100% - 28px);min-height:64px;display:flex;align-items:center;gap:12px;border:1px solid #49473d;border-radius:18px;background:#24251f;color:#faf7ef;padding:13px 16px;box-shadow:0 8px 32px rgba(32,30,23,.19);text-align:left;cursor:pointer;font:inherit;transition:box-shadow .2s ease,border-color .2s ease}
+.now-float.is-live{width:420px;background:#faf7ef;color:#25261f;border-color:#d4c9b5;padding:12px;gap:12px;box-shadow:0 10px 40px rgba(38,31,20,.23)}
+.now-float:focus-visible,.now-close:focus-visible,.now-cta:focus-visible{outline:3px solid #b48c49;outline-offset:4px}
+.now-thumb{flex:0 0 64px;width:64px;height:76px;object-fit:contain;border-radius:11px;background:#eee8dc;border:1px solid #e5ddce}
+.now-thumb[hidden]{display:none}
+.now-float-copy{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.now-word{font-size:10px;line-height:1.5;font-weight:600;letter-spacing:.05em;color:#c5c0b1}
+.is-live .now-word{color:#806840}
+.now-label{font-size:14px;line-height:1.5;font-weight:600;letter-spacing:-.035em;word-break:keep-all;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.now-summary{font-size:11px;line-height:1.6;color:#766f62;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.now-summary[hidden]{display:none}
+.now-action{flex:none;font-size:18px;line-height:1.5;font-weight:500;white-space:nowrap}
+.is-live .now-action{font-size:11px;background:#25261f;color:#fffaf0;border-radius:10px;padding:11px 10px;min-height:44px;display:flex;align-items:center}
+.now-backdrop{position:fixed;inset:0;background:rgba(18,16,14,.42);backdrop-filter:blur(6px);z-index:79;opacity:0;pointer-events:none;transition:opacity .22s ease}.now-backdrop.open{opacity:1;pointer-events:auto}
+.now-sheet{position:fixed;right:max(20px,env(safe-area-inset-right));bottom:calc(18px + env(safe-area-inset-bottom));z-index:80;width:min(420px,calc(100% - 28px));max-height:calc(100dvh - 36px - env(safe-area-inset-bottom));overflow-y:auto;overscroll-behavior:contain;background:#faf7ef;border:1px solid #ded5c5;border-radius:24px;box-shadow:0 28px 80px rgba(32,24,20,.3);padding:24px;opacity:0;transform:translateY(16px);pointer-events:none;transition:opacity .24s ease,transform .24s ease;color:#25261f}
 .now-sheet.open{opacity:1;transform:none;pointer-events:auto}.now-sheet[hidden],.now-backdrop[hidden]{display:none}
-.now-sheet-top{display:flex;align-items:center;justify-content:space-between;gap:12px}.now-badge{font-size:10px;font-weight:600;letter-spacing:.16em;color:#8a713d;overflow-wrap:anywhere}
+.now-sheet-top{display:flex;align-items:center;justify-content:space-between;gap:12px}.now-badge{font-size:11px;font-weight:600;letter-spacing:.06em;color:#806840;overflow-wrap:anywhere}
 .now-close{border:0;background:transparent;font-size:26px;line-height:1;cursor:pointer;color:#70665d;padding:8px;min-width:44px;min-height:44px;margin:-8px -8px -8px 0}
-.now-sheet h3{font-family:var(--sans);font-size:27px;line-height:1.4;font-weight:500;letter-spacing:-.045em;margin:20px 0 12px}.now-sheet p{margin:0;color:#6f675f;font-size:14px;line-height:1.8}
+.now-product-image{display:block;width:100%;height:220px;object-fit:contain;background:#f0ebe1;border-radius:16px;margin-top:18px}.now-product-image[hidden]{display:none}
+.now-sheet h3{font-family:var(--sans);font-size:25px;line-height:1.45;font-weight:500;letter-spacing:-.04em;margin:20px 0 10px;word-break:keep-all;overflow-wrap:anywhere}.now-sheet p{margin:0;color:#70695f;font-size:14px;line-height:1.85;white-space:pre-line;overflow-wrap:anywhere}
 .now-period{display:block;margin-top:14px;font-size:11px;line-height:1.7;color:#948b81;overflow-wrap:anywhere}
-.now-cta{margin-top:22px;width:100%;min-height:48px;border:0;border-radius:999px;background:#202119;color:#fff;padding:15px 18px;font-weight:600;line-height:1.6;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:14px}.now-cta span{overflow-wrap:anywhere}.now-cta[hidden]{display:none}.now-empty{padding-top:8px}
+.now-cta{margin-top:22px;width:100%;min-height:50px;border:0;border-radius:12px;background:#25261f;color:#fffaf0;padding:15px 18px;font-weight:600;line-height:1.6;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:14px}.now-cta span{overflow-wrap:anywhere}.now-cta[hidden]{display:none}
 @media(hover:hover){.nav a:hover:after{right:0}.product-card:hover{transform:translateY(-5px);box-shadow:0 20px 50px rgba(68,50,34,.12)}.mini-play:hover{background:rgba(255,255,255,.13)}.now-float:hover{border-color:rgba(213,186,117,.65)}}
 @media(max-width:1023px){
   .products{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
@@ -202,8 +202,8 @@ h1,h2,h3{text-wrap:balance}p{text-wrap:pretty}
   .connect{padding:4px 0 24px}.connect-title{font-size:clamp(34px,8.5vw,48px);line-height:1.2;margin-bottom:26px}
   .connect-row{grid-template-columns:minmax(0,1fr) 28px;gap:7px 16px;padding:22px 0}.connect-row strong{grid-column:1;font-size:16px}.connect-row span{grid-column:1;font-size:14px;max-width:none}.connect-row b{grid-column:2;grid-row:1 / 3;align-self:center}
   .footer{display:block;padding:34px 0 68px}.footer>div+div{margin-top:20px}.footer-logo{width:160px;margin-bottom:18px}
-  .now-float{right:max(14px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom))}
-  .now-sheet{right:12px;bottom:max(72px,calc(env(safe-area-inset-bottom) + 64px));width:calc(100% - 24px);max-height:calc(100dvh - 96px);border-radius:24px;padding:22px}.now-sheet h3{font-size:25px}
+  .now-float{right:max(12px,env(safe-area-inset-right));bottom:calc(12px + env(safe-area-inset-bottom))}.now-float.is-live{width:calc(100% - 24px);max-width:420px}.now-thumb{flex-basis:56px;width:56px;height:70px}.now-float.is-live{gap:10px}.now-action{font-size:16px}.is-live .now-action{padding:10px 8px;font-size:11px}
+  .now-sheet{right:12px;bottom:calc(12px + env(safe-area-inset-bottom));width:calc(100% - 24px);max-height:calc(100dvh - 24px - env(safe-area-inset-bottom));border-radius:22px;padding:22px}.now-sheet h3{font-size:23px}
 }
 @media(max-width:379px){
   :root{--gutter:16px}.brand{width:116px}.nav{gap:0}.header-in{gap:8px}
@@ -298,11 +298,16 @@ h1,h2,h3{text-wrap:balance}p{text-wrap:pretty}
   </div></section>
 </main>
 
-<button class="now-float" id="nowFloat" type="button" aria-label="NOW · 확인 중" aria-haspopup="dialog" aria-expanded="false" aria-controls="nowSheet"><span class="now-dot" aria-hidden="true"></span><span class="now-word">NOW</span><span class="now-separator" aria-hidden="true">·</span><span class="now-label" id="nowLabel">확인 중</span></button>
+<button class="now-float" id="nowFloat" type="button" aria-label="공구·혜택 확인 중" aria-haspopup="dialog" aria-expanded="false" aria-controls="nowSheet">
+  <img class="now-thumb" id="nowThumb" alt="" width="64" height="76" hidden>
+  <span class="now-float-copy"><span class="now-word" id="nowEyebrow">공구·혜택</span><span class="now-label" id="nowLabel">확인 중</span><span class="now-summary" id="nowSummary" hidden></span></span>
+  <span class="now-action" id="nowAction" aria-hidden="true">→</span>
+</button>
 <div class="now-backdrop" id="nowBackdrop" aria-hidden="true" hidden></div>
 <section class="now-sheet" id="nowSheet" role="dialog" aria-modal="true" aria-labelledby="nowTitle" aria-describedby="nowText" tabindex="-1" hidden inert>
   <div class="now-sheet-top"><span class="now-badge" id="nowBadge">CURRENT</span><button class="now-close" id="nowClose" type="button" aria-label="닫기">×</button></div>
   <div id="nowContent" aria-live="polite" aria-atomic="true" aria-busy="true">
+    <img class="now-product-image" id="nowImage" alt="" hidden>
     <h3 id="nowTitle">지금 만나볼 수 있는 혜택</h3>
     <p id="nowText">현재 진행 중인 특별 혜택을 확인하고 있습니다.</p>
     <span class="now-period" id="nowPeriod"></span>
@@ -631,6 +636,19 @@ const nowPeriod=document.getElementById('nowPeriod');
 const nowCta=document.getElementById('nowCta');
 const nowCtaText=document.getElementById('nowCtaText');
 const nowContent=document.getElementById('nowContent');
+const nowThumb=document.getElementById('nowThumb');
+const nowImage=document.getElementById('nowImage');
+const nowEyebrow=document.getElementById('nowEyebrow');
+const nowSummary=document.getElementById('nowSummary');
+const nowAction=document.getElementById('nowAction');
+function setCampaignImage(el,url,alt){
+  if(url){if(el.getAttribute('src')!==url) el.src=url;el.alt=alt;el.hidden=false;}
+  else{el.hidden=true;el.removeAttribute('src');el.alt='';}
+}
+[nowThumb,nowImage].forEach(el=>el.addEventListener('error',()=>{
+  if(el===nowThumb&&el.getAttribute('src')!=='brand-d665bdbd7703fe28.webp') el.src='brand-d665bdbd7703fe28.webp';
+  else el.hidden=true;
+}));
 let campaignState=null;
 let campaignLoadState='loading';
 let campaignRef=null;
@@ -676,26 +694,33 @@ function renderCampaign(){
   const c=campaignState; const live=campaignLoadState==='ready'&&campaignIsLive(c);
   const ctaHadFocus=document.activeElement===nowCta;
   nowFloat.classList.toggle('is-live',live);
-  nowLabel.textContent=campaignLoadState==='loading'?'확인 중':campaignLoadState==='error'?'다시 확인':live?'혜택 보기 ↗':'다음 혜택 준비 중';
-  nowFloat.setAttribute('aria-label','NOW · '+nowLabel.textContent);
+  nowLabel.textContent=campaignLoadState==='loading'?'혜택 확인 중':campaignLoadState==='error'?'혜택 다시 확인':live?(c.title||'지금 진행 중인 공구'):'다음 공구 준비 중';
+  nowEyebrow.textContent=live?'공구 진행 중':'공구·혜택';
+  nowSummary.textContent=live?(c.text||'등록된 공구 혜택을 확인해 보세요.') : '';
+  nowSummary.hidden=!live;
+  nowAction.textContent=live?'공구 보기 →':'→';
+  nowFloat.setAttribute('aria-label',live?'공구 보기 · '+nowLabel.textContent:'공구·혜택 · '+nowLabel.textContent);
+  const imageUrl=live&&typeof c.imageUrl==='string'&&c.imageUrl.length<=2048&&c.imageUrl.startsWith('https://')?safeCampaignLink(c.imageUrl):'';
+  setCampaignImage(nowThumb,live?(imageUrl||'brand-d665bdbd7703fe28.webp'):'','');
+  setCampaignImage(nowImage,imageUrl,live?(c.title||'공구 상품'):'');
   nowContent.setAttribute('aria-busy',String(campaignLoadState==='loading'));
   nowPeriod.textContent=''; nowCta.hidden=true;
   if(campaignLoadState==='loading'){
-    nowBadge.textContent='CURRENT';
+    nowBadge.textContent='공구·혜택';
     nowTitle.textContent='혜택을 확인하고 있습니다.';
     nowText.textContent='잠시만 기다려 주세요.';
   }else if(campaignLoadState==='error'){
-    nowBadge.textContent='CURRENT';
+    nowBadge.textContent='공구·혜택';
     nowTitle.textContent='혜택 정보를 불러오지 못했습니다.';
-    nowText.textContent='잠시 후 NOW를 다시 눌러 확인해 주세요.';
+    nowText.textContent='잠시 후 공구·혜택을 다시 눌러 확인해 주세요.';
   }else if(live){
-    nowBadge.textContent=c.badge||'NOW OPEN';
+    nowBadge.textContent=c.badge||'공구 진행 중';
     nowTitle.textContent=c.title||'지금 만나보세요';
     nowText.textContent=c.text||'현재 진행 중인 특별 혜택이 있습니다.';
     const a=kDate(c.startAt),b=kDate(c.endAt); nowPeriod.textContent=(a||b)?[a,b].filter(Boolean).join(' — '):'';
-    nowCta.hidden=false; nowCtaText.textContent=c.buttonText||'지금 만나보기';
+    nowCta.hidden=false; nowCtaText.textContent=c.buttonText||'공구 구매하러 가기';
   }else{
-    nowBadge.textContent='CURRENT';
+    nowBadge.textContent='공구·혜택';
     nowTitle.textContent='다음 혜택을 준비하고 있어요';
     nowText.textContent='새로운 소식이 준비되면 이곳에서 안내해드릴게요.';
     nowPeriod.textContent=''; nowCta.hidden=true;

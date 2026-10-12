@@ -98,6 +98,7 @@
         #product-list-view:has(#product-list-status:not([hidden])) .product-admin-card{scroll-margin-bottom:110px}
         #product-add{margin:8px 0 0}#product-list-view .item-list{margin-top:24px}
         @media(max-width:480px){.product-admin-actions{gap:7px}.product-admin-actions button{flex:1 0 auto}.product-admin-actions .product-order{flex:0 0 44px}.product-form-heading h3{font-size:22px}.product-save-bar{padding-bottom:max(14px,env(safe-area-inset-bottom))}}
+        .campaign-preview{display:flex;gap:10px;align-items:center;background:#faf7ef;border:1px solid #d4c9b5;border-radius:16px;padding:12px;margin-bottom:12px}.campaign-preview img{width:56px;height:70px;object-fit:contain;background:#eee8dc;border-radius:9px;flex:none}.campaign-preview img[hidden]{display:none}.campaign-preview>div{flex:1;min-width:0}.campaign-preview small{display:block;color:#806840;font-size:10px}.campaign-preview strong{font-size:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}.campaign-preview p{margin:3px 0 0;font-size:11px;color:#766f62;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.campaign-preview>span{background:#25261f;color:#fffaf0;padding:12px 8px;border-radius:9px;font-size:10px;white-space:nowrap}#campaign-save-status.error{color:#972a22}#campaign-save-status.success{color:#315c2b}
     </style>
 </head>
 <body>
@@ -114,7 +115,7 @@
         </div>
 
         <div id="admin-section" style="display:none;" hidden>
-            <div style="text-align:center; margin-bottom:20px;"><b>관리자 모드 · V8.23</b></div>
+            <div style="text-align:center; margin-bottom:20px;"><b>관리자 모드 · V8.24</b></div>
 
             <div class="tab-menu">
                 <button class="tab-btn" onclick="showTab('product')">제품</button>
@@ -151,21 +152,27 @@
             </div>
 
             <div id="tab-campaign" class="form-group active">
-                <h3>✨ NOW / 특별 판매 링크</h3>
+                <h3>공구·혜택 상품</h3><p class="product-help">등록한 사진과 상품명이 홈페이지 하단의 고정 카드에 표시됩니다. 일반 상품 구매 링크와 별도로 운영됩니다.</p>
                 <div id="campaign-status" class="campaign-status">상태를 불러오는 중...</div>
-                <div class="check-row"><input type="checkbox" id="c-enabled"><label for="c-enabled" style="margin:0">홈페이지 NOW 활성화</label></div>
-                <label>상단 배지</label><input type="text" id="c-badge" placeholder="예: NOW OPEN">
-                <label>제목</label><input type="text" id="c-title" placeholder="예: 이번 주 특별 혜택">
-                <label>짧은 안내 문구</label><textarea id="c-text" rows="3" placeholder="고객에게 보여줄 짧은 문구"></textarea>
-                <label>전용 링크</label><input type="url" id="c-link" placeholder="https://...">
-                <label>버튼 문구</label><input type="text" id="c-button" placeholder="예: 지금 만나보기">
+                <div class="check-row"><input type="checkbox" id="c-enabled"><label for="c-enabled" style="margin:0">홈페이지 공구 카드 활성화</label></div>
+                <label for="c-badge">상단 배지 · 선택</label><input type="text" id="c-badge" maxlength="24" placeholder="예: 공구 진행 중">
+                <label for="c-files">공구 상품 사진</label><input type="file" id="c-files" accept="image/jpeg,image/png,image/webp,image/gif">
+                <p class="product-help">사진 1장 · JPG, PNG, WEBP, GIF · 최대 5MB. 새 사진을 선택하면 기존 사진을 교체합니다.</p>
+                <details class="product-price-fields"><summary>이미지 주소 직접 입력 · 선택</summary><label for="c-image-url">이미지 주소</label><input type="url" id="c-image-url" maxlength="2048" placeholder="https://..."></details>
+                <label for="c-title">공구 상품명</label><input type="text" id="c-title" maxlength="80" placeholder="예: 바이옴 클렌징 세럼">
+                <label for="c-text">상품 소개 · 혜택 문구</label><textarea id="c-text" rows="3" maxlength="240" placeholder="상품 특징과 실제 공구 혜택을 짧게 알려주세요"></textarea>
+                <label for="c-link">공구 전용 구매 링크</label><input type="url" id="c-link" placeholder="https://...">
+                <label for="c-button">구매 버튼 문구 · 선택</label><input type="text" id="c-button" maxlength="24" placeholder="예: 공구 구매하러 가기">
                 <label for="c-start">시작일 · 시간 (선택, 한국 시간)</label><input type="datetime-local" id="c-start">
                 <label for="c-end">종료일 · 시간 (선택, 한국 시간)</label><input type="datetime-local" id="c-end">
+                <p class="product-help" style="margin-top:22px">고정 카드 미리보기 · 저장 전 화면</p>
+                <div class="campaign-preview" aria-label="공구 카드 미리보기"><img id="c-preview-image" alt="공구 상품 미리보기" hidden><div><small>공구 진행 중</small><strong id="c-preview-title">공구 상품명</strong><p id="c-preview-text">상품 소개와 혜택 문구</p></div><span>공구 보기 →</span></div>
+                <p id="campaign-save-status" class="product-help" role="status" aria-live="polite"></p>
                 <div class="campaign-actions">
-                    <button onclick="saveCampaign()">NOW 저장</button>
+                    <button onclick="saveCampaign()">공구 상품 저장</button>
                     <button class="secondary-btn" onclick="disableCampaign()">즉시 종료</button>
                 </div>
-                <p style="font-size:12px;color:#777;line-height:1.6">저장하면 홈페이지에 즉시 반영됩니다. 링크가 없거나 OFF 상태면 고객에게 진행 중인 특별 혜택이 없다고 표시됩니다.</p>
+                <p style="font-size:12px;color:#777;line-height:1.6">활성화하여 저장하면 홈페이지에 즉시 반영됩니다. OFF이거나 기간이 끝나면 상품 카드 대신 준비 중 안내가 표시됩니다.</p>
             </div>
 
             <div id="tab-music" class="form-group">
@@ -220,6 +227,8 @@
         let auth = null, db = null, storage = null;
         let sdkReady = false, operationBusy = false, currentUid = null;
         let subscriptions = [], lastCampaign = {}, campaignDirty = false, campaignReady = false;
+        let campaignPreviewUrl = '', campaignUploadedFile = null, campaignUploadedUrl = '';
+        const campaignImageTypes = ['image/jpeg','image/png','image/webp','image/gif'];
         let productsState = [], productReady = false, productPreviewUrls = [], productFormDirty = false;
         let productPendingKey = null, productSavedKey = null;
         let musicState = [], musicReady = false, musicPendingKey = null;
@@ -280,6 +289,8 @@
             ['product-list','product-trash-list','music-list-admin','video-list-admin','campaign-status','product-count','product-trash-count'].forEach(id => $(id).replaceChildren());
             document.querySelectorAll('#product-editor input, #product-editor textarea').forEach(el => el.disabled = false);
             document.querySelectorAll('#tab-music input, #tab-music textarea').forEach(el => el.disabled = false);
+            document.querySelectorAll('#tab-campaign input, #tab-campaign textarea').forEach(el => el.disabled = false);
+            campaignStatus('');
             setLoading(false);
         }
         function ensureSession() {
@@ -784,35 +795,91 @@ function orderedMusicEntries(value){
             else if (value.enabled && value.endAt && Date.now() >= Number(value.endAt)) el.textContent = '저장된 설정: 기간 종료 · 고객에게 진행 중인 특별 혜택이 없다고 표시됩니다.';
             else el.textContent = '저장된 설정: OFF · 고객에게 진행 중인 특별 혜택이 없다고 표시됩니다.';
         }
+        function campaignStatus(message, type = '') {
+            $('campaign-save-status').textContent = message;
+            $('campaign-save-status').className = 'product-help ' + type;
+        }
+        function campaignValidation(message) { campaignStatus(message, 'error'); return validation(message); }
+        function safeCampaignImage(value) {
+            const url = safeWebUrl(value, true);
+            return url === '' ? '' : url && url.startsWith('https://') && url.length <= 2048 ? url : null;
+        }
+        function previewCampaign() {
+            if (campaignPreviewUrl) { URL.revokeObjectURL(campaignPreviewUrl); campaignPreviewUrl = ''; }
+            const file = $('c-files').files[0];
+            let url = safeCampaignImage($('c-image-url').value);
+            if (file && campaignImageTypes.includes(file.type) && file.size <= 5 * 1024 * 1024) url = campaignPreviewUrl = URL.createObjectURL(file);
+            const image = $('c-preview-image');
+            image.hidden = !url;
+            if (url) image.src = url; else image.removeAttribute('src');
+            $('c-preview-title').textContent = $('c-title').value.trim() || '공구 상품명';
+            $('c-preview-text').textContent = $('c-text').value.trim() || '상품 소개와 혜택 문구';
+        }
+        $('c-preview-image').addEventListener('error', () => { $('c-preview-image').hidden = true; });
         function fillCampaign(value) {
             $('c-enabled').checked = value.enabled === true;
-            $('c-badge').value = value.badge || 'NOW OPEN';
+            $('c-badge').value = value.badge || '공구 진행 중';
+            $('c-files').value = '';
+            $('c-image-url').value = value.imageUrl || '';
+            campaignUploadedFile = null; campaignUploadedUrl = '';
             $('c-title').value = value.title || '';
             $('c-text').value = value.text || '';
             $('c-link').value = value.link || '';
-            $('c-button').value = value.buttonText || '지금 만나보기';
+            $('c-button').value = value.buttonText || '공구 구매하러 가기';
             $('c-start').value = toLocalInput(value.startAt);
             $('c-end').value = toLocalInput(value.endAt);
+            previewCampaign();
         }
         async function saveCampaign() {
             if (!ensureSession()) return;
+            if (!campaignReady) return campaignValidation('공구 설정을 불러온 후 다시 저장해주세요.');
             const link = safeWebUrl($('c-link').value, true);
-            const startAt = parseCampaignDate($('c-start').value);
-            const endAt = parseCampaignDate($('c-end').value);
-            if (link === null) return validation('전용 링크는 http:// 또는 https://로 시작하는 올바른 주소여야 합니다.');
-            if ($('c-enabled').checked && !link) return validation('활성화하려면 전용 링크를 입력해주세요.');
-            if (Number.isNaN(startAt) || Number.isNaN(endAt)) return validation('시작일과 종료일을 올바르게 입력해주세요.');
-            if (startAt !== null && endAt !== null && endAt <= startAt) return validation('종료 시간은 시작 시간보다 뒤여야 합니다.');
-            const data = {enabled: $('c-enabled').checked, badge: $('c-badge').value.trim() || 'NOW OPEN', title: $('c-title').value.trim(), text: $('c-text').value.trim(), link, buttonText: $('c-button').value.trim() || '지금 만나보기', startAt, endAt, updatedAt: firebase.database.ServerValue.TIMESTAMP};
-            const success = await runOperation('NOW 저장', () => db.ref('campaign/current').set(data), 'NOW 설정 저장이 완료되었습니다. 홈페이지에서 표시 상태를 확인할 수 있습니다.');
-            if (success) { campaignDirty = false; lastCampaign = data; showCampaignStatus(data); }
+            const imageUrl = safeCampaignImage($('c-image-url').value);
+            const files = [...$('c-files').files];
+            const title = $('c-title').value.trim(), text = $('c-text').value.trim();
+            const startAt = parseCampaignDate($('c-start').value), endAt = parseCampaignDate($('c-end').value);
+            if (link === null) return campaignValidation('전용 링크는 http:// 또는 https://로 시작하는 올바른 주소여야 합니다.');
+            if (files.length > 1 || files.some(file => !campaignImageTypes.includes(file.type) || !file.size || file.size > 5 * 1024 * 1024)) return campaignValidation('사진은 JPG, PNG, WEBP, GIF 중 5MB 이하 파일 1장으로 선택해주세요.');
+            if (!files.length && imageUrl === null) return campaignValidation('사진 주소는 2048자 이하의 https:// 주소로 입력해주세요.');
+            if (title.length > 80 || text.length > 240 || $('c-badge').value.trim().length > 24 || $('c-button').value.trim().length > 24) return campaignValidation('상품명 80자, 소개 240자, 배지·버튼 문구 24자 이내로 입력해주세요.');
+            if ($('c-enabled').checked && (!link || !title || (!files.length && !imageUrl))) return campaignValidation('활성화하려면 상품명, 사진, 공구 전용 구매 링크를 입력해주세요.');
+            if (Number.isNaN(startAt) || Number.isNaN(endAt)) return campaignValidation('시작일과 종료일을 올바르게 입력해주세요.');
+            if (startAt !== null && endAt !== null && endAt <= startAt) return campaignValidation('종료 시간은 시작 시간보다 뒤여야 합니다.');
+            const data = {enabled: $('c-enabled').checked, badge: $('c-badge').value.trim() || '공구 진행 중', title, text, link, buttonText: $('c-button').value.trim() || '공구 구매하러 가기', startAt, endAt, imageUrl: imageUrl || '', updatedAt: firebase.database.ServerValue.TIMESTAMP};
+            const epoch = authEpoch;
+            document.querySelectorAll('#tab-campaign input, #tab-campaign textarea').forEach(el => el.disabled = true);
+            campaignStatus('공구 상품을 저장하고 있습니다.');
+            const success = await runOperation('공구 상품 저장', async assertActive => {
+                if (files.length) {
+                    campaignStatus('사진 업로드 중... 완료될 때까지 기다려주세요.');
+                    if (campaignUploadedFile !== files[0] || !campaignUploadedUrl) {
+                        const ref = storage.ref('campaigns/' + Date.now() + '_' + Math.random().toString(36).slice(2,10));
+                        await ref.put(files[0], {contentType: files[0].type});
+                        assertActive();
+                        const uploadedUrl = await ref.getDownloadURL();
+                        assertActive();
+                        if (!safeCampaignImage(uploadedUrl)) throw new Error('사진 주소를 확인할 수 없습니다.');
+                        campaignUploadedFile = files[0]; campaignUploadedUrl = uploadedUrl;
+                    }
+                    data.imageUrl = campaignUploadedUrl;
+                }
+                assertActive();
+                campaignStatus('사진 준비 완료 · 서버에서 저장을 확인하고 있습니다.');
+                await db.ref('campaign/current').update(data);
+            }, '공구 상품 저장이 완료되었습니다. 홈페이지에서 표시 상태를 확인할 수 있습니다.');
+            if (hasAdminSession(epoch)) {
+                document.querySelectorAll('#tab-campaign input, #tab-campaign textarea').forEach(el => el.disabled = false);
+                if (success) { campaignDirty = false; lastCampaign = {...lastCampaign, ...data}; fillCampaign(lastCampaign); showCampaignStatus(lastCampaign); campaignStatus(data.enabled ? '저장되었습니다. 설정한 기간에 홈페이지에 표시됩니다.' : 'OFF 상태로 저장되었습니다. 준비가 되면 활성화해주세요.', 'success'); }
+                else campaignStatus('저장을 완료하지 못했습니다. 입력한 내용은 유지됩니다. 상단 오류를 확인한 뒤 다시 저장해주세요.', 'error');
+            }
         }
         async function disableCampaign() {
             if (!ensureSession() || !confirm('현재 특별 판매를 종료할까요?')) return;
             const success = await runOperation('NOW 종료', () => db.ref('campaign/current').update({enabled: false, updatedAt: firebase.database.ServerValue.TIMESTAMP}), 'NOW 특별 판매가 종료되었습니다.');
             if (success) { campaignDirty = false; lastCampaign = {...lastCampaign, enabled: false}; fillCampaign(lastCampaign); showCampaignStatus(lastCampaign); }
         }
-        document.querySelectorAll('#tab-campaign input, #tab-campaign textarea').forEach(input => input.addEventListener('input', () => { campaignDirty = true; }));
+        document.querySelectorAll('#tab-campaign input, #tab-campaign textarea').forEach(input => input.addEventListener('input', () => { campaignDirty = true; previewCampaign(); }));
+        $('c-files').addEventListener('change', () => { campaignDirty = true; campaignUploadedFile = null; campaignUploadedUrl = ''; previewCampaign(); });
         setInterval(() => { if (hasAdminSession() && campaignReady) showCampaignStatus(lastCampaign); }, 30000);
 
         function stopSubscriptions() {
