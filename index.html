@@ -223,11 +223,16 @@ html{scroll-padding-bottom:calc(142px + env(safe-area-inset-bottom))}
 <script defer src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 <script defer src="/catalog-v817.js"></script>
+
+<!-- Product usage guide: independent from existing homepage/catalog/music -->
+<link rel="stylesheet" href="/usage.css?v=20261105">
+<script defer src="/usage-data.js?v=20261105"></script>
+<script defer src="/usage.js?v=20261105"></script>
 </head>
 <body>
 <header class="header"><div class="container header-in">
   <a class="brand" href="#top" aria-label="Skin Anointing 홈"><img src="brand-d665bdbd7703fe28.webp" alt="Skin Anointing" width="750" height="342"></a>
-  <nav class="nav" aria-label="주요 메뉴"><a href="#products">제품</a><a href="#story">브랜드</a><a href="#media">콘텐츠</a></nav>
+  <nav class="nav" aria-label="주요 메뉴"><a href="#products">제품</a><a href="#usage">제품 사용법</a><a href="#story">브랜드</a><a href="#media">콘텐츠</a></nav>
 </div></header>
 <div class="mini-music paused" id="miniMusic" role="region" aria-label="Skin Anointing 음악 플레이어">
   <div class="container mini-music-in">
@@ -254,7 +259,7 @@ html{scroll-padding-bottom:calc(142px + env(safe-area-inset-bottom))}
         <h1><span class="phrase">가장 소중한 당신에게,</span> <span class="phrase">온전한 케어를 붓다.</span></h1>
         <p>18년의 피부 관리 경험을 바탕으로, 피부·바디·두피를 위한 일상의 리추얼을 제안합니다.</p>
 
-        <a class="primary" href="#products"><span>리추얼 라인업 보기</span><b>↓</b></a>
+        <div class="usage-hero-actions"><a class="primary" href="#products"><span>리추얼 라인업 보기</span><b>↓</b></a><a class="usage-open-button" href="#usage">사용법 보기 <span>↗</span></a></div>
       </div>
       <div class="scroll-hint">DISCOVER ↓</div>
     </section>
@@ -798,4 +803,5 @@ function startPublicData(){loadCampaign();loadMusic();loadProducts();}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startPublicData,{once:true});
 else startPublicData();
 </script>
+<dialog id="usageDialog" class="usage-dialog" aria-labelledby="usageTitle"><div class="usage-dialog-top"><button id="usageListBack" type="button">← 제품 목록</button><span>제품 사용법</span><button id="usageClose" class="usage-close" type="button" aria-label="사용법 닫기">×</button></div><div id="usagePicker" class="usage-picker"><h2 id="usagePickerTitle">어떤 제품을 사용하시나요?</h2><p>제품을 누르면 사용 순서가 바로 열립니다.</p><label class="usage-picker-search">제품 찾기<input id="usageSearch" type="search" placeholder="제품명 검색" aria-label="제품 사용법 검색"></label><div id="usageFilters" class="usage-filters" role="group" aria-label="사용법 제품 카테고리"></div><div id="usageShelf" class="usage-picker-grid"></div><p id="usageCount" role="status"></p></div><div id="usageDetail" class="usage-detail" hidden></div><div class="usage-dialog-footer"><button id="usagePrev" type="button">← 이전 제품</button><button id="usageBack" type="button">목록으로</button><button id="usageNext" type="button">다음 제품 →</button><button id="usageDone" type="button">닫기 ×</button></div></dialog>
 </body></html>
