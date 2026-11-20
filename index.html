@@ -228,12 +228,25 @@ html{scroll-padding-bottom:calc(142px + env(safe-area-inset-bottom))}
 <link rel="stylesheet" href="/usage.css?v=20261105">
 <script defer src="/usage-data.js?v=20261105"></script>
 <script defer src="/usage.js?v=20261105"></script>
+
+<style>
+.skin-consult-cta{background:var(--paper);padding-block:9px}
+.skin-consult-cta .container{display:flex;justify-content:flex-end}
+.skin-consult-cta a{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:46px;padding:8px 43px;border-radius:9px;background:#302820;color:#fff9ee;font-size:14px;font-weight:600;line-height:1.35;text-align:center;touch-action:manipulation}
+.skin-consult-cta a:hover{background:#483a2c}
+.skin-consult-cta svg{flex:none;width:16px;height:16px;fill:none;stroke:#e0c48a;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.skin-consult-cta svg{position:absolute;left:17px}.skin-consult-cta a>span{position:absolute;right:17px;color:#e0c48a}
+@media(max-width:600px){.skin-consult-cta a{width:100%;font-size:15px}}
+</style>
 </head>
 <body>
 <header class="header"><div class="container header-in">
   <a class="brand" href="#top" aria-label="Skin Anointing 홈"><img src="brand-d665bdbd7703fe28.webp" alt="Skin Anointing" width="750" height="342"></a>
   <nav class="nav" aria-label="주요 메뉴"><a href="#products">제품</a><a href="#usage">제품 사용법</a><a href="#story">브랜드</a><a href="#media">콘텐츠</a></nav>
 </div></header>
+<div class="skin-consult-cta"><div class="container">
+  <a href="https://pf.kakao.com/_BlAxfb" target="_blank" rel="noopener"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 3h12a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9l-4 3v-3H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/></svg>피부본질상담 · 카카오톡 <span aria-hidden="true">↗</span></a>
+</div></div>
 <div class="mini-music paused" id="miniMusic" role="region" aria-label="Skin Anointing 음악 플레이어">
   <div class="container mini-music-in">
     <button class="mini-music-title" id="miniTitleBtn" type="button" aria-label="음악 목록" aria-expanded="false" aria-controls="miniDrawer"><b>SKIN ANOINTING MUSIC</b><small id="miniStatus" aria-live="polite">불러오는 중</small></button>
